@@ -1,6 +1,13 @@
 # Maven
 /target/
 !.mvn/wrapper/maven-wrapper.jar
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
 
 # IDEs
 /.idea/
@@ -15,15 +22,16 @@ Thumbs.db
 
 # Logs
 *.log
-
-# Environment
-.env
-
-# Others
-*.class
-
-# Spring Boot
 spring.log
 
-# Render
-render.yaml
+# Environment & Secrets
+.env
+src/main/resources/application-prod.yml
+
+# Class files
+*.class
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
