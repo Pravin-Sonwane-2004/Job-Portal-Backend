@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.pravin.job_portal_backend.dto.SavedJobDto;
-import com.pravin.job_portal_backend.entity.User;
 import com.pravin.job_portal_backend.service.interfaces.SavedJobService;
 
+//remaining
 @Service
 public class SavedJobServiceImpl implements SavedJobService {
   @Override

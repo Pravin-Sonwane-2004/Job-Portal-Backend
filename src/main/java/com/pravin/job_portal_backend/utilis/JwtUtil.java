@@ -71,8 +71,7 @@ public class JwtUtil {
   public java.util.List<String> extractRoles(String token) {
     Claims claims = extractAllClaims(token);
     Object rolesObj = claims.get("role");
-    if (rolesObj instanceof java.util.List<?>) {
-      java.util.List<?> rawList = (java.util.List<?>) rolesObj;
+    if (rolesObj instanceof java.util.List<?> rawList) {
       java.util.List<String> roles = new java.util.ArrayList<>();
       for (Object o : rawList) {
         if (o != null) roles.add(o.toString());

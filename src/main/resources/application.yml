@@ -1,12 +1,3 @@
-server:
-  port: 8080
 spring:
-  output:
-    ansi:
-      enabled: always
-  security:
-    debug: true
-
-output:
-  ansi:
-    enabled: always
+  profiles:
+    active: prod

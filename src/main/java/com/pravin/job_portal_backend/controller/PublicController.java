@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pravin.job_portal_backend.dto.UserDto;
 import com.pravin.job_portal_backend.dto.UserLoginDTO;
 import com.pravin.job_portal_backend.entity.Job;
-import com.pravin.job_portal_backend.service.interfaces.EmailService;
 import com.pravin.job_portal_backend.service.interfaces.JobService;
 import com.pravin.job_portal_backend.service.interfaces.UserProfileService;
 import com.pravin.job_portal_backend.service.interfaces.UserRegistrationService;
@@ -48,8 +47,8 @@ public class PublicController {
   @Autowired
   private UserRegistrationService userRegistrationService;
 
-  @Autowired
-  private EmailService emailService;
+  // @Autowired
+  // private EmailService emailService;
 
   @Autowired
   private JwtUtil jwtUtil;

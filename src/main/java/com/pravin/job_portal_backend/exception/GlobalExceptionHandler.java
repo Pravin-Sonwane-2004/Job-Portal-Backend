@@ -1,19 +1,15 @@
 package com.pravin.job_portal_backend.exception;
 
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,11 +66,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Utility method to build a consistent error response.
      */
-    private ResponseEntity<Object> buildErrorResponse(HttpStatus status, String message) {
+    private ResponseEntity<Object> buildErrorResponse(HttpStatusCode status, String message) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("status", status.value());
-        body.put("error", status.getReasonPhrase());
+        body.put("error", ((HttpStatus) status).getReasonPhrase());
         body.put("message", message);
         return new ResponseEntity<>(body, status);
     }

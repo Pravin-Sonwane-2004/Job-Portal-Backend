@@ -1,6 +1,5 @@
 package com.pravin.job_portal_backend.service.interfaces;
 
-import com.pravin.job_portal_backend.dto.JobDto;
 import com.pravin.job_portal_backend.dto.ApplyJobDto;
 import com.pravin.job_portal_backend.dto.ApplyJobResponseDTO;
 import com.pravin.job_portal_backend.dto.ApplicationProfileDto;

@@ -10,7 +10,6 @@ import com.pravin.job_portal_backend.entity.User;
 import com.pravin.job_portal_backend.exception.UserNotFoundException;
 import com.pravin.job_portal_backend.mapper.UserMapper;
 import com.pravin.job_portal_backend.repository.UserRepository;
-import com.pravin.job_portal_backend.service.interfaces.UserProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -34,7 +32,6 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
     public UserProfileServiceImpl(UserRepository repository) {
         this.repository = repository;
     }

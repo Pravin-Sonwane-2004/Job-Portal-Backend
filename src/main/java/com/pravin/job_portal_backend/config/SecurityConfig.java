@@ -23,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.core.env.Environment;
 
 import com.pravin.job_portal_backend.filter.JwtFilter;
 
@@ -32,14 +33,16 @@ public class SecurityConfig {
 
   private final JwtFilter jwtFilter;
   private final UserDetailsService userDetailsService;
+  private final Environment environment;
 
-  public SecurityConfig(JwtFilter jwtFilter, UserDetailsService userDetailsService) {
+  public SecurityConfig(JwtFilter jwtFilter, UserDetailsService userDetailsService, Environment environment) {
     this.jwtFilter = jwtFilter;
     this.userDetailsService = userDetailsService;
+    this.environment = environment;
   }
 
-  @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
         .cors(withDefaults())
         .csrf(csrf -> csrf.disable())
@@ -53,9 +56,7 @@ public class SecurityConfig {
                 "/swagger-resources/**",
                 "/webjars/**")
             .access((authentication, context) -> {
-              boolean isProd = Optional.ofNullable(System.getenv("SPRING_PROFILES_ACTIVE"))
-                  .map("prod"::equalsIgnoreCase)
-                  .orElse(false);
+              boolean isProd = environment.acceptsProfiles("prod");
               return new org.springframework.security.authorization.AuthorizationDecision(!isProd);
             })
 
@@ -163,26 +164,26 @@ public class SecurityConfig {
     return http.build();
   }
 
-  @Bean
-  public AuthenticationProvider authenticationProvider() {
+    @Bean
+    AuthenticationProvider authenticationProvider() {
     DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
     provider.setUserDetailsService(userDetailsService);
     provider.setPasswordEncoder(passwordEncoder());
     return provider;
   }
 
-  @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
     return config.getAuthenticationManager();
   }
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
+    @Bean
+    PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
 
-  @Bean
-  public CorsConfigurationSource corsConfigurationSource() {
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
     // ✅ Use environment variable for prod URL, fallback to localhost

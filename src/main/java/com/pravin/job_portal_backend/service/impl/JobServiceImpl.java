@@ -3,7 +3,6 @@ package com.pravin.job_portal_backend.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +16,6 @@ import com.pravin.job_portal_backend.repository.JobsRepository;
 public class JobServiceImpl implements com.pravin.job_portal_backend.service.interfaces.JobService {
     private final JobsRepository jobsRepository;
 
-    @Autowired
     public JobServiceImpl(JobsRepository jobsRepository) {
         this.jobsRepository = jobsRepository;
     }

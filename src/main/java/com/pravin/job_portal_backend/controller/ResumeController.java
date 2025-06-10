@@ -1,7 +1,6 @@
 package com.pravin.job_portal_backend.controller;
 
 import com.pravin.job_portal_backend.dto.ResumeDto;
-import com.pravin.job_portal_backend.entity.Resume;
 import com.pravin.job_portal_backend.entity.User;
 import com.pravin.job_portal_backend.repository.UserRepository;
 import com.pravin.job_portal_backend.service.interfaces.ResumeService;
@@ -9,7 +8,6 @@ import com.pravin.job_portal_backend.service.interfaces.ResumeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 

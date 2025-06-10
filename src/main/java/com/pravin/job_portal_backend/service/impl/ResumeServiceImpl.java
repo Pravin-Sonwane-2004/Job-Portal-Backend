@@ -4,16 +4,13 @@ import com.pravin.job_portal_backend.dto.ResumeDto;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
-import com.pravin.job_portal_backend.dto.ResumeDto;
 import com.pravin.job_portal_backend.entity.Resume;
 import com.pravin.job_portal_backend.entity.User;
 import com.pravin.job_portal_backend.mapper.ResumeMapper;
 import com.pravin.job_portal_backend.repository.ResumeRepository;
 import com.pravin.job_portal_backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service

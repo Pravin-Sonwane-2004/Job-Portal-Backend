@@ -35,13 +35,7 @@ server:
   error:
     include-stacktrace: never
 
-cors:
-  allowed-origins: https://your-frontend.vercel.app
-
-jwt:
-  secret: TaK+HaV^uvCHEFsEVfypW#7g9^k*Z8$V
 logging:
   level:
     root: INFO
-    org.springframework.web: WARN
-    com.pravin.job_portal_backend: DEBUG
+

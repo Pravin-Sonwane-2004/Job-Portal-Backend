@@ -2,7 +2,6 @@ package com.pravin.job_portal_backend.controller;
 
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,7 +17,6 @@ public class UserProfileController {
 
   private final UserProfileService userProfileService;
 
-  @Autowired
   public UserProfileController(UserProfileService userProfileService) {
     this.userProfileService = userProfileService;
   }

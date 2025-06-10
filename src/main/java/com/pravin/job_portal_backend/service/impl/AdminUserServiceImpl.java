@@ -1,6 +1,5 @@
 package com.pravin.job_portal_backend.service.impl;
 
-import com.pravin.job_portal_backend.service.interfaces.AdminUserService;
 import org.springframework.stereotype.Service;
 
 import com.pravin.job_portal_backend.dto.UserDto;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
