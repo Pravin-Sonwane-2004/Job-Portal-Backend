@@ -1,0 +1,86 @@
+package com.pravin.job_portal_backend.service.impl;
+
+import com.pravin.job_portal_backend.dto.ResumeDto;
+import org.springframework.stereotype.Service;
+import java.util.List;
+
+import com.pravin.job_portal_backend.dto.ResumeDto;
+import com.pravin.job_portal_backend.entity.Resume;
+import com.pravin.job_portal_backend.entity.User;
+import com.pravin.job_portal_backend.mapper.ResumeMapper;
+import com.pravin.job_portal_backend.repository.ResumeRepository;
+import com.pravin.job_portal_backend.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class ResumeServiceImpl implements com.pravin.job_portal_backend.service.interfaces.ResumeService {
+    @Autowired
+    private ResumeRepository resumeRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+    @Override
+    @Transactional
+    public ResumeDto uploadResume(Long userId, ResumeDto resumeDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Resume resume = ResumeMapper.toEntity(resumeDto);
+        resume.setUser(user);
+        Resume saved = resumeRepository.save(resume);
+        return ResumeMapper.toDto(saved);
+    }
+
+    @Override
+    @Transactional
+    public ResumeDto updateResume(Long resumeId, ResumeDto resumeDto) {
+        Resume resume = resumeRepository.findById(resumeId)
+                .orElseThrow(() -> new RuntimeException("Resume not found"));
+        resume.setFilePath(resumeDto.getFilePath());
+        resume.setUploadedAt(resumeDto.getUploadedAt());
+        Resume updated = resumeRepository.save(resume);
+        return ResumeMapper.toDto(updated);
+    }
+
+    @Override
+    @Transactional
+    public void deleteResume(Long resumeId) {
+        if (!resumeRepository.existsById(resumeId)) {
+            throw new RuntimeException("Resume not found");
+        }
+        resumeRepository.deleteById(resumeId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResumeDto getResumeById(Long resumeId) {
+        Resume resume = resumeRepository.findById(resumeId)
+                .orElseThrow(() -> new RuntimeException("Resume not found"));
+        return ResumeMapper.toDto(resume);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ResumeDto> getResumesByUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return resumeRepository.findByUser(user).stream()
+                .map(ResumeMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ResumeDto uploadResume(User user, String filePath) {
+        // Placeholder: return null or implement logic
+        return null;
+    }
+
+    @Override
+    public List<ResumeDto> getResumesByUser(User user) {
+        // Placeholder: return empty list or implement logic
+        return java.util.Collections.emptyList();
+    }
+}

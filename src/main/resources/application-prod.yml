@@ -1,0 +1,47 @@
+  ### application-prod.yml
+  spring:
+    datasource:
+      url: ${DATABASE_URL}
+      username: ${DATABASE_USERNAME}
+      password: ${DATABASE_PASSWORD}
+    mail:
+      host: ${MAIL_HOST}
+      port: ${MAIL_PORT}
+      username: ${MAIL_USERNAME}
+      password: ${MAIL_PASSWORD}
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
+            protocol: smtp
+            test-connection: false
+      default-encoding: UTF-8
+    jpa:
+      hibernate:
+        ddl-auto: validate
+      show-sql: false
+    main:
+      banner-mode: off
+    servlet:
+      multipart:
+        max-file-size: 5MB
+        max-request-size: 5MB
+
+  server:
+    port: 8080
+    error:
+      include-stacktrace: never
+
+  cors:
+    allowed-origins: https://your-frontend.vercel.app
+
+  jwt:
+    secret: ${JWT_SECRET}
+
+  logging:
+    level:
+      root: INFO
+      org.springframework.web: WARN
+      com.pravin.job_portal_backend: DEBUG
