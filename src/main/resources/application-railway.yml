@@ -1,6 +1,6 @@
 spring:
   server: 
-    port: ${PORT}
+    port: 8080
 
   mail:
     host: smtp.gmail.com
