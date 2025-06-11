@@ -1,4 +1,8 @@
+
 spring:
+  config:
+    activate:
+      on-profile: prod
   datasource:
     url: jdbc:postgresql://dpg-d13pr4ggjchc73feh7ng-a.frankfurt-postgres.render.com:5432/jobportal_db_2cy7
     username: jobportal_db_2cy7_user
@@ -7,8 +11,6 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: false
-  flyway:
-    baseline-on-migrate: true
   mail:
     host: smtp.gmail.com
     port: 587
@@ -38,4 +40,3 @@ server:
 logging:
   level:
     root: INFO
-

@@ -1,16 +1,17 @@
 spring:
-  devtools:
-    add-properties: false
-  output:
-    ansi:
-      enabled: always
-
+  datasource:
+    url: jdbc:postgresql://localhost:5432/dev_db
+    username: dev_user
+    password: dev_password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
   mail:
-    default-encoding: UTF-8
     host: smtp.gmail.com
-    username: pravinson222@gmail.com
-    password: fbur wgum xipe wfkf
     port: 587
+    username: your_email@gmail.com
+    password: your_email_app_password
     properties:
       mail:
         smtp:
@@ -19,23 +20,19 @@ spring:
             enable: true
           protocol: smtp
           test-connection: false
-
-  datasource:
-    url: jdbc:postgresql://localhost:5432/jobportal_Db
-    username: postgres
-    password: 3333
-    driver-class-name: org.postgresql.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-
-  # security:
-  #   debug: true
+    default-encoding: UTF-8
+  main:
+    banner-mode: off
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
 
 server:
   port: 8080
   error:
-    include-stacktrace: always
+    include-stacktrace: never
+
+logging:
+  level:
+    root: INFO

@@ -99,9 +99,9 @@ public class JobApplyServiceImpl implements JobApplyService {
     public List<ApplyJobResponseDTO> getAppliedJobByUserDTO(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        System.out.println("[DEBUG] Fetching applied jobs for user: " + user.getEmail() + " (ID: " + userId + ")");
+        // System.out.println("[DEBUG] Fetching applied jobs for user: " + user.getEmail() + " (ID: " + userId + ")");
         List<ApplyJob> applications = jobApplicationRepository.findByUser(user);
-        System.out.println("[DEBUG] Number of applications found: " + applications.size());
+        // System.out.println("[DEBUG] Number of applications found: " + applications.size());
         List<ApplyJobResponseDTO> dtos = applications.stream()
                 .map(app -> {
                     Job job = app.getJob();
@@ -119,7 +119,7 @@ public class JobApplyServiceImpl implements JobApplyService {
                     );
                 })
                 .collect(Collectors.toList());
-        System.out.println("[DEBUG] DTOs to return: " + dtos);
+        // System.out.println("[DEBUG] DTOs to return: " + dtos);
         return dtos;
     }
 
@@ -162,7 +162,7 @@ public class JobApplyServiceImpl implements JobApplyService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         List<ApplyJob> apps = jobApplicationRepository.findByUser(user);
-        System.out.println("[DEBUG] Applications found for user " + userId + ": " + apps.size());
+        // System.out.println("[DEBUG] Applications found for user " + userId + ": " + apps.size());
         return apps.stream()
                 .map(ApplyJobMapper::toDto)
                 .collect(Collectors.toList());
