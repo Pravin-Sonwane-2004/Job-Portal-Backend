@@ -1,6 +1,6 @@
 spring:
   server: 
-    port: 8080
+    port: ${PORT:8080}  # Use Railway's dynamic port, fallback to 8080 locally
 
   mail:
     host: smtp.gmail.com
