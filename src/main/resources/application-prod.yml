@@ -2,7 +2,7 @@
 spring:
   config:
     activate:
-      on-profile: prod
+      on-profile: railway
   datasource:
     url: jdbc:postgresql://dpg-d13pr4ggjchc73feh7ng-a.frankfurt-postgres.render.com:5432/jobportal_db_2cy7
     username: jobportal_db_2cy7_user
