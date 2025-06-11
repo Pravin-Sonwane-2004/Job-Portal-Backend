@@ -1,4 +1,6 @@
 spring:
+  server: 
+    port: ${PORT:8080}  # 
   output:
     ansi:
       enabled: always

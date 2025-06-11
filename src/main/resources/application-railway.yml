@@ -1,7 +1,4 @@
 spring:
-  server: 
-    port: ${PORT:8080}  # Use Railway's dynamic port, fallback to 8080 locally
-
   mail:
     host: smtp.gmail.com
     port: 587
@@ -21,14 +18,7 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
-    hikari:
-      maximum-pool-size: 10
-      minimum-idle: 5
-      idle-timeout: 30000
-      pool-name: HikariCP
-      max-lifetime: 1800000
-      connection-timeout: 30000
-
+    
   jpa:
     hibernate:
       ddl-auto: update
