@@ -1,8 +1,8 @@
 spring:
   server: 
-    port: ${PORT:8080}  # 
+    port: ${PORT:8080}
   output:
     ansi:
       enabled: always
   profiles:
-    active: railway
+    active: pravin

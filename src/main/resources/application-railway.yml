@@ -1,14 +1,40 @@
+spring.config.import: classpath:config.yml
+
+server:
+  port: 8080
+
 spring:
+  application:
+    name: jobs backend
   datasource:
-    url: jdbc:postgresql://postgres.railway.internal:5432/railway
-    username: postgres
-    password: CxZeokVOcQEnBYSiXdjdatZURxYvYGVl
+    url: ${config.datasource.url}
+    username: ${config.datasource.username}
+    password: ${config.datasource.password}
     driver-class-name: org.postgresql.Driver
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
-        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${config.mail.username}
+    password: ${config.mail.password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    protocol: smtp
+    test-connection: false
+  output:
+    ansi:
+      enabled: ALWAYS
+
+logging:
+  level:
+    "[org.springframework.security]": WARN
