@@ -5,9 +5,9 @@ spring:
   application:
     name: jobs backend
   datasource:
-    url: jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}
-    username: ${PGUSER}
-    password: ${PGPASSWORD}
+    url: jdbc:postgresql://ballast.proxy.rlwy.net:47548/railway
+    username: postgres
+    password: SMYoXQDrodkVVEsLRRcvZscClnLqfFxr
     driver-class-name: org.postgresql.Driver
   jpa:
     show-sql: true
