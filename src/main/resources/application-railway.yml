@@ -14,11 +14,11 @@ spring:
     test-connection: false
 
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://${RAILWAY_HOST}:${RAILWAY_PORT}/${RAILWAY_DATABASE}
+    username: ${RAILWAY_USERNAME}
+    password: ${RAILWAY_PASSWORD}
     driver-class-name: org.postgresql.Driver
-    
+
   jpa:
     hibernate:
       ddl-auto: update
