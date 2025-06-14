@@ -11,18 +11,13 @@ public class CorsConfig {
     WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/admin/all")
-                        .allowedOrigins("http://localhost:3000", "http://localhost:3001")
-                        .allowedMethods("GET")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
-                registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000", "http://localhost:3001") // Adjust to your frontend URL
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
-            }
+          public void addCorsMappings(CorsRegistry registry) {
+            registry.addMapping("/admin/all")
+                .allowedOrigins("http://localhost:3000", "http://localhost:3001,", "https://job-portal-backend-production-8f84.up.railway.app/")
+                .allowedMethods("GET")
+                .allowedHeaders("*")
+                .allowCredentials(true);
+          }
         };
     }
 }
