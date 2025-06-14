@@ -7,17 +7,21 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class CorsConfig {
-    @Bean
-    WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-          public void addCorsMappings(CorsRegistry registry) {
-            registry.addMapping("/admin/all")
-                .allowedOrigins("http://localhost:3000", "http://localhost:3001,", "https://job-portal-backend-production-8f84.up.railway.app/")
-                .allowedMethods("GET")
-                .allowedHeaders("*")
-                .allowCredentials(true);
-          }
-        };
-    }
+
+  @Bean
+  public WebMvcConfigurer corsConfigurer() {
+    return new WebMvcConfigurer() {
+      @Override
+      public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/admin/all")
+            .allowedOrigins(
+                "http://localhost:3000",
+                "http://localhost:3001",
+                "https://job-portal-backend-production-8f84.up.railway.app")
+            .allowedMethods("GET")
+            .allowedHeaders("*")
+            .allowCredentials(true);
+      }
+    };
+  }
 }
