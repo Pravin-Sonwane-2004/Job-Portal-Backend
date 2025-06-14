@@ -13,14 +13,13 @@ public class CorsConfig {
     return new WebMvcConfigurer() {
       @Override
       public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/admin/all")
-            .allowedOrigins(
-                "http://localhost:3000",
-                "http://localhost:3001",
-                "https://job-portal-backend-production-8f84.up.railway.app")
-            .allowedMethods("GET")
-            .allowedHeaders("*")
-            .allowCredentials(true);
+        registry
+            .addMapping("/**") // apply to all endpoints
+            .allowedOrigins("*") // allow all origins
+            .allowedMethods("*") // allow all HTTP methods
+            .allowedHeaders("*") // allow all headers
+            .allowCredentials(false) // disable credentials for wildcard origins
+            .maxAge(3600); // cache pre-flight response for 1 hour
       }
     };
   }
