@@ -1,6 +1,6 @@
 package com.pravin.job_portal_backend.controller;
 
-import com.pravin.job_portal_backend.entity.Email;
+import com.pravin.job_portal_backend.entity.EmailRequest;
 import com.pravin.job_portal_backend.service.interfaces.EmailService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class EmailController {
     private EmailService emailService;
 
     @PostMapping("/send")
-    public ResponseEntity<String> sendEmail(@RequestBody Email email) {
+    public ResponseEntity<String> sendEmail(@RequestBody EmailRequest email) {
         emailService.sendEmail(email);
         return ResponseEntity.ok("Email sent successfully");
     }

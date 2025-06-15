@@ -1,30 +1,19 @@
 package com.pravin.job_portal_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.pravin.job_portal_backend.enums.ExperienceLevel;
+import com.pravin.job_portal_backend.enums.Role;
+import com.pravin.job_portal_backend.enums.UserStatus;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.ToString;
 
 /**
  * Entity representing a user in the job portal system.
@@ -39,70 +28,114 @@ import lombok.ToString;
     @Index(name = "idx_user_email", columnList = "email"),
     @Index(name = "idx_user_role", columnList = "role")
 })
-@ToString(exclude = {"appliedJobs", "skills"})
+@ToString(exclude = { "appliedJobs", "skills" })
 public final class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", updatable = false, nullable = false)
-    private Long id;
 
-    @NonNull
-    @Column(name = "email", unique = true, nullable = false, length = 255)
-    private String email;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @NonNull
-    @Column(name = "password", nullable = false, length = 255)
-    private String password;
+  @Email
+  @NotBlank
+  @Size(max = 255)
+  @Column(name = "email", unique = true, nullable = false)
+  private String email;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false, length = 50)
-    private Role role;
+  @NotBlank
+  @Size(min = 8, max = 255)
+  @Column(name = "password", nullable = false)
+  private String password;
 
-    @Column(name = "name", length = 255)
-    private String name;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "role", nullable = false, length = 50)
+  private Role role;
 
-    @Column(name = "avatar_url", length = 512)
-    private String avatarUrl;
+  @Enumerated(EnumType.STRING)
+@Column(name = "experience_level", nullable = false)
+  private ExperienceLevel experienceLevel;
 
-    @Column(name = "designation", length = 255)
-    private String designation;
+  @Enumerated(EnumType.STRING)
+@Column(name = "status", nullable = false)
+private UserStatus status = UserStatus.ACTIVE;
 
-    @Column(name = "verified", nullable = false)
-    private Boolean verified = false;
+  @Size(max = 255)
+  private String name;
 
-    @Column(name = "location", length = 255)
-    private String location;
+  @Size(max = 512)
+  @Column(name = "avatar_url")
+  private String avatarUrl;
 
-    @Column(name = "bio", length = 1024)
-    private String bio;
+  @Size(max = 255)
+  private String designation;
 
-    @Column(name = "phone_number", length = 20)
-    private String phoneNumber;
+  @Column(name = "verified", nullable = false)
+  private Boolean verified = false;
 
-    @Column(name = "linkedin_url", length = 512)
-    private String linkedinUrl;
+  @Size(max = 255)
+  private String location;
 
-    @Column(name = "job_role", length = 255)
-    private String jobRole;
+  @Size(max = 1024)
+  private String bio;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ApplyJob> appliedJobs = new ArrayList<>();
+  @Size(max = 20)
+  @Column(name = "phone_number")
+  private String phoneNumber;
 
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "user_skills", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "skill", length = 100)
-    private List<String> skills = new ArrayList<>();
+  @Size(max = 512)
+  @Column(name = "linkedin_url")
+  private String linkedinUrl;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return id != null && id.equals(user.id);
-    }
+  @Size(max = 512)
+  @Column(name = "github_url")
+  private String githubURL;
 
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
-    }
+  @Size(max = 255)
+  @Column(name = "job_role")
+  private String jobRole;
+
+  @Column(name = "is_deleted", nullable = false)
+  private Boolean isDeleted = false;
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<ApplyJob> appliedJobs = new ArrayList<>();
+
+  @ElementCollection(fetch = FetchType.LAZY)
+  @CollectionTable(name = "user_skills", joinColumns = @JoinColumn(name = "user_id"))
+  @Column(name = "skill", length = 100)
+  private List<String> skills = new ArrayList<>();
+
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+  @Column(name = "created_at", updatable = false)
+  private LocalDateTime createdAt;
+
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+  @Column(name = "updated_at")
+  private LocalDateTime updatedAt;
+
+  @PrePersist
+  public void prePersist() {
+    LocalDateTime now = LocalDateTime.now();
+    this.createdAt = now;
+    this.updatedAt = now;
+  }
+
+  @PreUpdate
+  public void preUpdate() {
+    this.updatedAt = LocalDateTime.now();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (!(o instanceof User user))
+      return false;
+    return id != null && id.equals(user.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return id != null ? id.hashCode() : 0;
+  }
+  
 }

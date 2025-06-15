@@ -1,6 +1,6 @@
 package com.pravin.job_portal_backend.dto;
 
-import com.pravin.job_portal_backend.entity.Role;
+import com.pravin.job_portal_backend.enums.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

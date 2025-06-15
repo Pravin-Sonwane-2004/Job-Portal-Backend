@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.pravin.job_portal_backend.dto.ApplicationProfileDto;
+import com.pravin.job_portal_backend.dto.ApplicationProfileDtoAdmin;
 import com.pravin.job_portal_backend.dto.ApplyJobDto;
 import com.pravin.job_portal_backend.dto.ApplyJobResponseDTO;
 import com.pravin.job_portal_backend.entity.ApplyJob;
@@ -78,12 +78,12 @@ public class JobApplyServiceImpl implements JobApplyService {
     }
 
     @Override
-    public CompletableFuture<List<ApplicationProfileDto>> getAllApplicationsWithProfiles() {
+    public CompletableFuture<List<ApplicationProfileDtoAdmin>> getAllApplicationsWithProfiles() {
         List<ApplyJob> applications = jobApplicationRepository.findAll();
-        List<ApplicationProfileDto> result = applications.stream().map(app -> {
+        List<ApplicationProfileDtoAdmin> result = applications.stream().map(app -> {
             Job job = app.getJob();
             User user = app.getUser();
-            return ApplicationProfileDto.builder()
+            return ApplicationProfileDtoAdmin.builder()
                     .applicationId(app.getId())
                     .jobTitle(job.getTitle())
                     .company(null) // Set company if available
@@ -95,33 +95,33 @@ public class JobApplyServiceImpl implements JobApplyService {
         return CompletableFuture.completedFuture(result);
     }
 
-    @Override
-    public List<ApplyJobResponseDTO> getAppliedJobByUserDTO(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        // System.out.println("[DEBUG] Fetching applied jobs for user: " + user.getEmail() + " (ID: " + userId + ")");
-        List<ApplyJob> applications = jobApplicationRepository.findByUser(user);
-        // System.out.println("[DEBUG] Number of applications found: " + applications.size());
-        List<ApplyJobResponseDTO> dtos = applications.stream()
-                .map(app -> {
-                    Job job = app.getJob();
-                    return new ApplyJobResponseDTO(
-                        app.getId(), // applicationId
-                        job.getTitle(),
-                        job.getCompany(),
-                        user.getEmail(),
-                        app.getAppliedAt(),
-                        null, // status (if available)
-                        null, // recruiterRemarks (if available)
-                        job.getPostedDate(), // LocalDate
-                        job.getLocation(),   // location
-                        job.getSalary()      // salary
-                    );
-                })
-                .collect(Collectors.toList());
-        // System.out.println("[DEBUG] DTOs to return: " + dtos);
-        return dtos;
-    }
+    // @Override
+    // public List<ApplyJobResponseDTO> getAppliedJobByUserDTO(Long userId) {
+    //     User user = userRepository.findById(userId)
+    //             .orElseThrow(() -> new RuntimeException("User not found"));
+    //     // System.out.println("[DEBUG] Fetching applied jobs for user: " + user.getEmail() + " (ID: " + userId + ")");
+    //     List<ApplyJob> applications = jobApplicationRepository.findByUser(user);
+    //     // System.out.println("[DEBUG] Number of applications found: " + applications.size());
+        // List<ApplyJobResponseDTO> dtos = applications.stream()
+        //         // .map(app -> {
+        //         //     Job job = app.getJob();
+        //         //     return new ApplyJobResponseDTO(
+        //         //         app.getId(), // applicationId
+        //         //         job.getTitle(),
+        //         //         job.getCompany(),
+        //         //         user.getEmail(),
+        //         //         app.getAppliedAt(),
+        //         //         null, // status (if available)
+        //         //         null, // recruiterRemarks (if available)
+        //         //         job.getPostedDate(), // LocalDate
+        //         //         job.getLocation(),   // location
+        //         //         job.getSalary()      // salary
+        //         //     );
+        //         // })
+        //         .collect(Collectors.toList());
+        // // System.out.println("[DEBUG] DTOs to return: " + dtos);
+        // return dtos;
+    // }
 
     @Override
     public String cancelApplication(Long userId, Long jobId) {
@@ -166,5 +166,11 @@ public class JobApplyServiceImpl implements JobApplyService {
         return apps.stream()
                 .map(ApplyJobMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ApplyJobResponseDTO> getAppliedJobByUserDTO(Long userId) {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'getAppliedJobByUserDTO'");
     }
 }

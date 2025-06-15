@@ -84,7 +84,7 @@ public class PublicController {
         "If you have any questions or need assistance, we’re here to help.\n\n" +
         "**Welcome aboard and best of luck in your journey!**\n\n" +
         "Best regards,  \nThe Job Portal Team";
-      com.pravin.job_portal_backend.entity.Email email = new com.pravin.job_portal_backend.entity.Email(to, subject, body);
+      com.pravin.job_portal_backend.entity.EmailRequest email = new com.pravin.job_portal_backend.entity.EmailRequest(to, subject, body);
       emailService.sendEmail(email);
       return ResponseEntity.ok("User registered successfully with ID: " + createdUser.get().getId());
     } else {

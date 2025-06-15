@@ -13,4 +13,4 @@ public class SavedJobDto {
     private Long userId;
     private Long jobId;
     private LocalDateTime savedAt;
-}
+  }

@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class JacksonConfig {
-    @Bean
-    Module javaTimeModule() {
-        return new JavaTimeModule();
-    }
+  @Bean
+  Module javaTimeModule() {
+    return new JavaTimeModule();
+  }
 }

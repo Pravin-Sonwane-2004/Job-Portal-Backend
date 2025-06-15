@@ -9,10 +9,25 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class ApplyJobDto {
-    private Long id;
-    private Long userId;
-    private Long jobId;
-    private LocalDateTime appliedAt;
-    private UserDto user; // Full applicant info
-    private JobDto job;   // Full job info (optional, but useful for admin)
+
+  private Long id;
+
+  private Long userId;
+  private Long jobId;
+
+  private LocalDateTime appliedAt;
+  private LocalDateTime updatedAt;
+
+  private String status;
+  private String recruiterRemarks;
+
+  private String resumeLink;
+  private String coverLetter;
+
+  private String appliedFromIp;
+  private String source;
+  private String userAgent;
+
+  private UserDto user; // Full applicant info admin
+  private JobDto job; // Full job info
 }

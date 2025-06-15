@@ -2,8 +2,8 @@ package com.pravin.job_portal_backend.service.impl;
 
 import com.pravin.job_portal_backend.dto.UserLoginDTO;
 import com.pravin.job_portal_backend.dto.UserDto;
-import com.pravin.job_portal_backend.entity.Role;
 import com.pravin.job_portal_backend.entity.User;
+import com.pravin.job_portal_backend.enums.Role;
 import com.pravin.job_portal_backend.exception.UnauthorizedRoleAssignmentException;
 import com.pravin.job_portal_backend.mapper.UserMapper;
 import com.pravin.job_portal_backend.repository.UserRepository;

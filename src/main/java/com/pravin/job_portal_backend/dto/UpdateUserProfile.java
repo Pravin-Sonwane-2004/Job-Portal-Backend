@@ -17,18 +17,19 @@ public class UpdateUserProfile {
     @Size(max = 500)
     private String bio;
     private String phoneNumber;
+    private String githubURL;
     private String linkedinUrl;
     private List<String> skills;
     private String avatarUrl;
     private String designation;
     private Boolean verified;
-    private String jobRole;
+    // private String jobRole;
   // private List<ApplyJob> appliedJobs;
-    private String password;
-    public String getPassword() {
-        return password;
-    }
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    // private String password;
+    // public String getPassword() {
+    //     return password;
+    // }
+    // public void setPassword(String password) {
+    //     this.password = password;
+    // }
 }

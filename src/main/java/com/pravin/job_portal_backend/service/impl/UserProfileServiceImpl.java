@@ -5,8 +5,8 @@ import com.pravin.job_portal_backend.service.interfaces.UserProfileService;
 import org.springframework.stereotype.Service;
 
 import com.pravin.job_portal_backend.dto.UpdateUserProfile;
-import com.pravin.job_portal_backend.entity.Role;
 import com.pravin.job_portal_backend.entity.User;
+import com.pravin.job_portal_backend.enums.Role;
 import com.pravin.job_portal_backend.exception.UserNotFoundException;
 import com.pravin.job_portal_backend.mapper.UserMapper;
 import com.pravin.job_portal_backend.repository.UserRepository;
@@ -95,8 +95,12 @@ public class UserProfileServiceImpl implements UserProfileService {
         }
 
         if (request.getLinkedinUrl() != null) {
-            user.setLinkedinUrl(request.getLinkedinUrl());
-            isUpdated = true;
+          user.setLinkedinUrl(request.getLinkedinUrl());
+          isUpdated = true;
+        }
+        if (request.getGithubURL() != null) {
+          user.setLinkedinUrl(request.getLinkedinUrl());
+          isUpdated = true;
         }
 
         if (request.getSkills() != null) {
@@ -117,22 +121,6 @@ public class UserProfileServiceImpl implements UserProfileService {
         if (request.getVerified() != null) {
             user.setVerified(request.getVerified());
             isUpdated = true;
-        }
-
-        if (request.getPassword() != null && !request.getPassword().isBlank()) {
-            if (!request.getPassword().startsWith("$2a$")) {
-                user.setPassword(passwordEncoder.encode(request.getPassword()));
-            } else {
-                user.setPassword(request.getPassword());
-            }
-            isUpdated = true;
-        }
-
-        if (isUpdated) {
-            repository.save(user);
-            logger.info("User profile updated for userId {}", userId);
-        } else {
-            logger.info("No changes detected for userId {}", userId);
         }
     }
 
