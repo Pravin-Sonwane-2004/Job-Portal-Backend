@@ -1,8 +1,0 @@
-config:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/jobportal_Db
-    username: postgres
-    password: 3333
-  mail:
-    username: codepravo@gmail.com
-    password: ecga dwii xkhz ykwk

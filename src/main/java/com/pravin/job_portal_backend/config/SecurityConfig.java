@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Profiles;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -56,7 +57,7 @@ public class SecurityConfig {
                 "/swagger-resources/**",
                 "/webjars/**")
             .access((authentication, context) -> {
-              boolean isProd = environment.acceptsProfiles("prod");
+              boolean isProd = environment.acceptsProfiles(Profiles.of("prod"));
               return new org.springframework.security.authorization.AuthorizationDecision(!isProd);
             })
 
