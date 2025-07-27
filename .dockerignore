@@ -1,0 +1,8 @@
+target/*.original
+target/*.war
+*.md
+.git
+.gitignore
+Dockerfile
+README*
+src/
