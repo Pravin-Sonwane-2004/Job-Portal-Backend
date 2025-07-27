@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: jobportal-postgres
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}           # e.g., pravin
+      POSTGRES_PASSWORD: ${DB_PASSWORD}       # e.g., pravin
+      POSTGRES_DB: jobportal                  # ✅ correct value (name of DB to create)
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  springboot-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jobportal-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      SPRING_PROFILES_ACTIVE: pravin
+      DB_URL: jdbc:postgresql://postgres:5432/jobportal   # ✅ internal hostname of `postgres` container
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:

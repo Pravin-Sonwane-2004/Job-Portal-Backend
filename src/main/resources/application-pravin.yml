@@ -1,31 +1,35 @@
 spring:
   application:
     name: jobs backend
+
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
+
   jpa:
     show-sql: true
+    hibernate:
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: update
+
   mail:
     host: smtp.gmail.com
     port: 587
     username: ${SMTP_USERNAME}
     password: ${SMTP_PASSWORD}
+    protocol: smtp
+    test-connection: false
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
-    protocol: smtp
-    test-connection: false
+
   output:
     ansi:
       enabled: ALWAYS
