@@ -26,7 +26,7 @@ services:
       - postgres
     environment:
       SPRING_PROFILES_ACTIVE: pravin
-      DB_URL: jdbc:postgresql://postgres:5432/jobportal   # ✅ internal hostname of `postgres` container
+      DB_URL: ${DB_URL}  # ✅ internal hostname of `postgres` container
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       SMTP_USERNAME: ${SMTP_USERNAME}
