@@ -18,19 +18,22 @@ services:
   springboot-app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.pravin  # 🛠️ use Dockerfile.prod in production
     container_name: jobportal-backend
     ports:
       - "8080:8080"
-    depends_on:
-      - postgres
     environment:
       SPRING_PROFILES_ACTIVE: pravin
-      DB_URL: jdbc:postgresql://postgres:5432/jobportal  
+      DB_URL: jdbc:postgresql://postgres:5432/jobportal
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       SMTP_USERNAME: ${SMTP_USERNAME}
       SMTP_PASSWORD: ${SMTP_PASSWORD}
+    volumes:
+      - .:/app     # sync local code with container (only for dev)
+      - ~/.m2:/root/.m2
+    depends_on:
+      - postgres
     networks:
       - app-network
 
