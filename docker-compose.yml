@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: jobportal
     ports:
-      - "5432:5432"
+      - "5432:5432"   # ✅ this is correct
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -18,7 +18,7 @@ services:
   springboot-app:
     build:
       context: .
-      dockerfile: Dockerfile.pravin  # 🛠️ use Dockerfile.prod in production
+      dockerfile: Dockerfile.pravin
     container_name: jobportal-backend
     ports:
       - "8080:8080"
@@ -30,8 +30,21 @@ services:
       SMTP_USERNAME: ${SMTP_USERNAME}
       SMTP_PASSWORD: ${SMTP_PASSWORD}
     volumes:
-      - .:/app     # sync local code with container (only for dev)
+      - .:/app
       - ~/.m2:/root/.m2
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: jobportal-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"   # ✅ pgAdmin listens on port 5050
     depends_on:
       - postgres
     networks:
