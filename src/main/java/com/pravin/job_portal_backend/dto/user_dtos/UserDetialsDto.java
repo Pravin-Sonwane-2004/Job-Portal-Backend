@@ -1,5 +1,6 @@
-package com.pravin.job_portal_backend.dto;
+package com.pravin.job_portal_backend.dto.user_dtos;
 
+import com.pravin.job_portal_backend.enums.Role;
 import lombok.*;
 import java.util.List;
 
@@ -24,9 +25,8 @@ public class UserDto {
     private String bio;
     private String phoneNumber;
     private String linkedinUrl;
-    private String jobRole;
-    private String role;
+//    private String jobRole;
+    private Role role;
     private ExperienceLevel experienceLevel;
-    private List<String> roles; // <-- Add this line
     private List<String> skills;
 }

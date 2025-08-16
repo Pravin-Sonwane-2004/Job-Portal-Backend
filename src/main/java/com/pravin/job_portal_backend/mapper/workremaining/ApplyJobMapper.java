@@ -2,7 +2,7 @@
 
   import com.pravin.job_portal_backend.dto.ApplyJobDto;
   import com.pravin.job_portal_backend.dto.JobDto;
-  import com.pravin.job_portal_backend.dto.UserDto;
+  import com.pravin.job_portal_backend.dto.user_dtos.UserDetialsDto;
   import com.pravin.job_portal_backend.entity.ApplyJob;
   import com.pravin.job_portal_backend.entity.Job;
   import com.pravin.job_portal_backend.entity.User;
@@ -13,9 +13,9 @@
           User user = applyJob.getUser();
           Job job = applyJob.getJob();
 
-          UserDto userDto = null;
+          UserDetialsDto userDto = null;
           if (user != null) {
-              userDto = UserDto.builder()
+              userDto = UserDetialsDto.builder()
                   .id(user.getId())
                   .email(user.getEmail())
                   .name(user.getName())
