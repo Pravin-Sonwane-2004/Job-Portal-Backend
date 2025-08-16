@@ -1,13 +1,11 @@
 spring:
   application:
-    name: jobs backend
+    name: jobs-backend
 
-      # this is for local development 
   datasource:
-    url: jdbc:postgresql://postgres:5432/jobportal
-    # url: jdbc:postgresql://localhost:5432/jobportal
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/jobportal-app
+    username: postgres
+    password: pravin
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -21,8 +19,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${SMTP_USERNAME}
-    password: ${SMTP_PASSWORD}
+    username: codepravo@gmail.com   # Gmail address (App password required)
+    password: gvey ytio ufyp zxan   # Gmail app password
     protocol: smtp
     test-connection: false
     properties:

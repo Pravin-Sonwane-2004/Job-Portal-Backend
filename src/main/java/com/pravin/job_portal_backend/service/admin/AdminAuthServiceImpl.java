@@ -1,4 +1,4 @@
-package com.pravin.job_portal_backend.service.authService;
+package com.pravin.job_portal_backend.service.admin;
 
 import com.pravin.job_portal_backend.dto.user_dtos.UserRegistrationDTO;
 import com.pravin.job_portal_backend.entity.User;
@@ -9,7 +9,7 @@ import com.pravin.job_portal_backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -17,40 +17,32 @@ import java.util.Optional;
 @Service
 public class AdminAuthServiceImpl implements AdminAuthService {
 
-     private static final Logger logger = LoggerFactory.getLogger(AdminAuthServiceImpl.class);
-     private final UserRepository repository;
-     private final BCryptPasswordEncoder passwordEncoder;
+    private static final Logger logger = LoggerFactory.getLogger(AdminAuthServiceImpl.class);
+    private final UserRepository repository;
+    private final PasswordEncoder passwordEncoder; // use interface
 
-     public AdminAuthServiceImpl(UserRepository repository, BCryptPasswordEncoder passwordEncoder) {
-          this.repository = repository;
-          this.passwordEncoder = passwordEncoder;
-     }
+    public AdminAuthServiceImpl(UserRepository repository, PasswordEncoder passwordEncoder) {
+        this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
-     @Override
-     @Transactional
-     public Optional<UserRegistrationDTO> registerAdmin(UserRegistrationDTO registrationDto) {
+    @Override
+    @Transactional
+    public Optional<UserRegistrationDTO> registerAdmin(UserRegistrationDTO registrationDto) {
+        User user = UserAuthMapper.toRegistrationEntity(registrationDto);
 
-          // DTO → Entity
-          User user = UserAuthMapper.toRegistrationEntity(registrationDto);
+        if (repository.findByEmail(user.getEmail()).isPresent()) {
+            logger.warn("Attempt to register admin with existing email: {}", user.getEmail());
+            throw new UnauthorizedRoleAssignmentException("Email already registered.");
+        }
 
-          // Check if email already exists
-          if (repository.findByEmail(user.getEmail()).isPresent()) {
-               logger.warn("Attempt to register admin with existing email: {}", user.getEmail());
-               throw new UnauthorizedRoleAssignmentException("Email already registered.");
-          }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(Role.ADMIN);
+        logger.info("Admin role assigned to user: {}", user.getEmail());
 
-          // Encode password
-          user.setPassword(passwordEncoder.encode(user.getPassword()));
+        User savedAdmin = repository.saveAndFlush(user);
+        logger.info("Admin {} saved with ID: {}", savedAdmin.getEmail(), savedAdmin.getId());
 
-          // Force role to ADMIN
-          user.setRole(Role.ADMIN);
-          logger.info("Admin role assigned to user: {}", user.getEmail());
-
-          // Save admin
-          User savedAdmin = repository.saveAndFlush(user);
-          logger.info("Admin {} saved with ID: {}", savedAdmin.getEmail(), savedAdmin.getId());
-
-          // Entity → DTO
-          return Optional.of(UserAuthMapper.toRegistrationDto(savedAdmin));
-     }
+        return Optional.of(UserAuthMapper.toRegistrationDto(savedAdmin));
+    }
 }

@@ -1,5 +1,5 @@
-package com.pravin.job_portal_backend.mapper;
-
-public class ApplyJobRequestDTO {
-
-}
+//package com.pravin.job_portal_backend.mapper.workremaining;
+//
+//public class ApplyJobRequestDTO {
+//
+//}

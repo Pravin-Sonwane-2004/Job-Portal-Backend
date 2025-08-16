@@ -3,11 +3,7 @@ package com.pravin.job_portal_backend.entity;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -19,7 +15,7 @@ public class EmailRequest {
   @NotBlank
   @Email
   @Size(max = 255)
-  private String to;
+  private String recipient;
 
   @NotBlank
   @Size(max = 150) // limit subject length

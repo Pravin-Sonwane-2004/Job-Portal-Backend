@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pravin.job_portal_backend.enums.ExperienceLevel;
 import com.pravin.job_portal_backend.enums.Role;
 import com.pravin.job_portal_backend.enums.UserStatus;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -51,11 +50,11 @@ public final class User {
   private Role role;
 
   @Enumerated(EnumType.STRING)
-@Column(name = "experience_level", nullable = false)
+  @Column(name = "experience_level", nullable = true)
   private ExperienceLevel experienceLevel;
 
   @Enumerated(EnumType.STRING)
-@Column(name = "status", nullable = false)
+  @Column(name = "status", nullable = true)
 private UserStatus status = UserStatus.ACTIVE;
 
   @Size(max = 255)
@@ -68,7 +67,7 @@ private UserStatus status = UserStatus.ACTIVE;
   @Size(max = 255)
   private String designation;
 
-  @Column(name = "verified", nullable = false)
+  @Column(name = "verified", nullable = true)
   private Boolean verified = false;
 
   @Size(max = 255)
@@ -89,11 +88,14 @@ private UserStatus status = UserStatus.ACTIVE;
   @Column(name = "github_url")
   private String githubURL;
 
-  @Size(max = 255)
-  @Column(name = "job_role")
-  private String jobRole;
+  @Column(nullable = false)
+  private boolean blocked = false;
 
-  @Column(name = "is_deleted", nullable = false)
+//  @Size(max = 255)
+//  @Column(name = "job_role")
+//  private String jobRole;
+
+  @Column(name = "is_deleted", nullable = true)
   private Boolean isDeleted = false;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -104,11 +106,11 @@ private UserStatus status = UserStatus.ACTIVE;
   @Column(name = "skill", length = 100)
   private List<String> skills = new ArrayList<>();
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
   @Column(name = "created_at", updatable = false)
   private LocalDateTime createdAt;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
 
@@ -117,25 +119,33 @@ private UserStatus status = UserStatus.ACTIVE;
     LocalDateTime now = LocalDateTime.now();
     this.createdAt = now;
     this.updatedAt = now;
+
   }
 
-  @PreUpdate
-  public void preUpdate() {
-    this.updatedAt = LocalDateTime.now();
-  }
+  @Column(name = "reset_token")
+  private String resetToken;
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (!(o instanceof User user))
-      return false;
-    return id != null && id.equals(user.id);
-  }
+  @Column(name = "token_expiry")
+  private LocalDateTime tokenExpiry;
 
-  @Override
-  public int hashCode() {
-    return id != null ? id.hashCode() : 0;
-  }
+
+//  @PreUpdate
+//  public void preUpdate() {
+//    this.updatedAt = LocalDateTime.now();
+//  }
+
+//  @Override
+//  public boolean equals(Object o) {
+//    if (this == o)
+//      return true;
+//    if (!(o instanceof User user))
+//      return false;
+//    return id != null && id.equals(user.id);
+//  }
+//
+//  @Override
+//  public int hashCode() {
+//    return id != null ? id.hashCode() : 0;
+//  }
   
 }

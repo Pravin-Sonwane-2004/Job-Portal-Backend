@@ -7,8 +7,11 @@ import java.util.Optional;
 
 public interface UserAuthService {
     Optional<UserRegistrationDTO> register(UserRegistrationDTO registrationDto);
+
     String loginAndGenerateToken(UserLoginDTO toLoginDto);
-//    void assignRole(User user);
+
+    //    void assignRole(User user);
     String forgotPassword(String email);
+
     void resetPassword(String token, String newPassword);
 }

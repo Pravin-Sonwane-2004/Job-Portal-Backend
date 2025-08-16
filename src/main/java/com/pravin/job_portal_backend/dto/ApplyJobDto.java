@@ -1,6 +1,8 @@
 package com.pravin.job_portal_backend.dto;
 
+import com.pravin.job_portal_backend.dto.user_dtos.UserDetialsDto;
 import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Getter
@@ -28,6 +30,6 @@ public class ApplyJobDto {
   private String source;
   private String userAgent;
 
-  private UserDto user; // Full applicant info admin
+    private UserDetialsDto user; // Full applicant info admin
   private JobDto job; // Full job info
 }
