@@ -5,5 +5,7 @@ import org.springframework.lang.NonNull;
 public interface EmailService {
 
     void sendRegistrationWelcomeEmail(@NonNull String recipient);
+
+    public void sendPasswordResetEmail(String toEmail, String resetLink);
 }
 

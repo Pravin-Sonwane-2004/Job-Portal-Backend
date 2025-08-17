@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pravin.job_portal_backend.enums.ExperienceLevel;
 import com.pravin.job_portal_backend.enums.JobStatus;
 import com.pravin.job_portal_backend.enums.JobType;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -24,105 +24,134 @@ import java.util.List;
 @Setter
 @Builder
 @ToString(exclude = { "applications", "postedBy" })
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "job", indexes = {
-    @Index(name = "idx_job_title", columnList = "title"),
-    @Index(name = "idx_job_location", columnList = "location")
+        @Index(name = "idx_job_title", columnList = "title"),
+        @Index(name = "idx_job_location", columnList = "location"),
+        @Index(name = "idx_job_category", columnList = "category"),
+        @Index(name = "idx_job_status", columnList = "status")
 })
 public class Job implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-  // Primary key
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id", updatable = false, nullable = false)
-  private Long id;
+    // Primary key
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
+    @Column(name = "id", updatable = false, nullable = false)
+    private Long id;
 
-  // Job title
-  @NotBlank
-  @Size(max = 255)
-  @Column(name = "title", nullable = false, length = 255)
-  private String title;
+    // Job title
+    @NotBlank
+    @Size(max = 255)
+    @Column(name = "title", nullable = false, length = 255)
+    private String title;
 
-  // Job location
-  @NotBlank
-  @Size(max = 255)
-  @Column(name = "location", nullable = false, length = 255)
-  private String location;
+    // Job location
+    @NotBlank
+    @Size(max = 255)
+    @Column(name = "location", nullable = false, length = 255)
+    private String location;
 
-  // Salary info
-  @NotBlank
-  @Size(max = 100)
-  @Column(name = "salary", nullable = false, length = 100)
-  private String salary;
+    // Salary details
+    @NotNull
+    @Column(name = "min_salary", nullable = false)
+    private Double minSalary;
 
-  // Company name
-  @NotBlank
-  @Size(max = 255)
-  @Column(name = "company", nullable = false, length = 255)
-  private String company;
+    @NotNull
+    @Column(name = "max_salary", nullable = false)
+    private Double maxSalary;
 
-  // Job description
-  @Lob
-  @Column(name = "description", nullable = false, columnDefinition = "TEXT")
-  private String description;
+    @Column(name = "currency", length = 10)
+    private String currency = "INR";
 
-  // Requirements list (skills/experience expected)
-  @ElementCollection
-  @CollectionTable(name = "job_requirements", joinColumns = @JoinColumn(name = "job_id"))
-  @Column(name = "requirement")
-  private List<String> requirements = new ArrayList<>();
+    // Company name
+    @NotBlank
+    @Size(max = 255)
+    @Column(name = "company", nullable = false, length = 255)
+    private String company;
 
-  // Job Type Enum
-  @Enumerated(EnumType.STRING)
-  @Column(name = "job_type", nullable = false)
-  private JobType jobType;
+    // Job description
+    @Lob
+    @NotBlank
+    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
+    private String description;
 
-  // Experience Level Enum
-  @Enumerated(EnumType.STRING)
-  @Column(name = "experience_level", nullable = false)
-  private ExperienceLevel experienceLevel;
+    // Requirements list (skills/experience expected)
+    @ElementCollection
+    @CollectionTable(name = "job_requirements", joinColumns = @JoinColumn(name = "job_id"))
+    @Column(name = "requirement")
+    private List<String> requirements = new ArrayList<>();
 
-  // Job Status Enum
-  @Enumerated(EnumType.STRING)
-  @Column(name = "status", nullable = false)
-  private JobStatus status = JobStatus.OPEN;
+    // Job Type Enum
+    @Enumerated(EnumType.STRING)
+    @Column(name = "job_type", nullable = false)
+    private JobType jobType;
 
-  // Job category
-  @Column(name = "category", length = 100)
-  private String category;
+    // Experience Level Enum
+    @Enumerated(EnumType.STRING)
+    @Column(name = "experience_level", nullable = false)
+    private ExperienceLevel experienceLevel;
 
-  // Who posted the job
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "posted_by", foreignKey = @ForeignKey(name = "fk_job_posted_by"))
-  private User postedBy;
+    // Job Status Enum
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private JobStatus status = JobStatus.OPEN;
 
-  // Auto-generated creation time
-  @Column(name = "posted_date", nullable = false, updatable = false)
-  @org.hibernate.annotations.CreationTimestamp
-  private LocalDate postedDate;
+    // Job category
+    @Column(name = "category", length = 100)
+    private String category;
 
-  // Last date to apply
-  @Column(name = "last_date_to_apply")
-  private LocalDate lastDateToApply;
+    // Who posted the job
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "posted_by", foreignKey = @ForeignKey(name = "fk_job_posted_by"))
+    @JsonIgnore
+    private User postedBy;
 
-  // Timestamp of last update
-  @org.hibernate.annotations.UpdateTimestamp
-  @Column(name = "updated_at")
-  private LocalDateTime updatedAt;
+    // Auto-generated creation time
+    @Column(name = "posted_date", nullable = false, updatable = false)
+    @org.hibernate.annotations.CreationTimestamp
+    private LocalDate postedDate;
 
-  // All applications to this job
-  @JsonIgnore
-  @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<ApplyJob> applications = new ArrayList<>();
+    // Last date to apply
+    @Column(name = "last_date_to_apply")
+    private LocalDate lastDateToApply;
 
-  // Calculate how many days ago it was posted
-  public long postedDaysAgo() {
-    if (postedDate == null) {
-      return -1;
+    // Timestamp of last update
+    @org.hibernate.annotations.UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    // All applications to this job
+    @JsonIgnore
+    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ApplyJob> applications = new ArrayList<>();
+
+    // Soft delete flag
+    @Column(name = "is_deleted", nullable = false)
+    private boolean deleted = false;
+
+    // Calculate how many days ago it was posted
+    public long postedDaysAgo() {
+        if (postedDate == null) {
+            return -1;
+        }
+        return ChronoUnit.DAYS.between(postedDate, LocalDate.now());
     }
-    return ChronoUnit.DAYS.between(postedDate, LocalDate.now());
-  }
+
+    // Set default last date to apply (30 days from now if not provided)
+    @PrePersist
+    public void setDefaultLastDateToApply() {
+        if (this.lastDateToApply == null) {
+            this.lastDateToApply = LocalDate.now().plusDays(30);
+        }
+    }
+
+    public void setStatus(String string) {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'setStatus'");
+    }
 }

@@ -180,3 +180,13 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 * [ChooseAnOpenSourceLicense](https://choosealicense.com/)
 * [Img Shields](https://shields.io/)
 * [GitHub Pages](https://pages.github.com)
+
+#how to reset pass
+
+/forgotpass= post
+
+http://localhost:8080/auth/reset-password?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjpbXSwiaWQiOjYsInN1YiI6InByYXZpbnNvbjIwMUBnbWFpbC5jb20iLCJpYXQiOjE3NTU0MTU2ODAsImV4cCI6MTc1NTQxOTI4MH0.rls3tdjeeAsDkwdx6rKUrXDkjqHgFyglwJbNJAZxm8U
+
+add in this tocken = &newPassword=MyNewSecurePassword123
+
+http://localhost:8080/auth/reset-password?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjpbXSwiaWQiOjYsInN1YiI6InByYXZpbnNvbjIwMUBnbWFpbC5jb20iLCJpYXQiOjE3NTU0MTU2ODAsImV4cCI6MTc1NTQxOTI4MH0.rls3tdjeeAsDkwdx6rKUrXDkjqHgFyglwJbNJAZxm8U&newPassword=MyNewSecurePassword123

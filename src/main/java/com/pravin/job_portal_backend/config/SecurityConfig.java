@@ -64,7 +64,9 @@ public class SecurityConfig {
             // ✅ Public endpoints
             .requestMatchers("/admin/first-admin-signup").permitAll()
             .requestMatchers("/user/jobs/paginated").permitAll()
-            .requestMatchers("/public/**").permitAll()
+                    .requestMatchers("/public/**").permitAll()
+                    .requestMatchers("/auth/**").permitAll()
+
             .requestMatchers("/api/register/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/companies/**").permitAll()
 

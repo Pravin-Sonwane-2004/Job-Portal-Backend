@@ -29,9 +29,9 @@ public class UserAuthServiceImpl implements UserAuthService {
     private final JwtUtil jwtUtil;
 
     public UserAuthServiceImpl(UserRepository repository,
-                               PasswordEncoder passwordEncoder,
-                               JwtUtil jwtUtil,
-                               EmailService emailService) {
+            PasswordEncoder passwordEncoder,
+            JwtUtil jwtUtil,
+            EmailService emailService) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
@@ -52,10 +52,16 @@ public class UserAuthServiceImpl implements UserAuthService {
             throw new IllegalArgumentException("Email already registered.");
         }
 
+        // Prevent ADMIN role during registration
+        if (user.getRole() == Role.ADMIN) {
+            logger.error("Unauthorized attempt to register with ADMIN role: {}", user.getEmail());
+            throw new IllegalArgumentException("Cannot register with ADMIN role.");
+        }
+
         // Encode password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        // Assign default role if not set
+        // Assign default role if not set or invalid
         assignRole(user);
 
         // Save user
@@ -93,40 +99,16 @@ public class UserAuthServiceImpl implements UserAuthService {
         return jwtUtil.generateToken(
                 user.getEmail(),
                 user.getId(),
-                Collections.singleton(authority)
-        );
-    }
-
-
-    /**
-     * Send forgot password link
-     */
-    @Override
-    public String forgotPassword(String email) {
-        // Normally generate token + send email with reset link
-        logger.info("Forgot password requested for {}", email);
-        return "Password reset link sent to " + email;
-    }
-
-    /**
-     * Reset password using token
-     */
-    @Override
-    public void resetPassword(String token, String newPassword) {
-        logger.info("Reset password with token: {}", token);
-        repository.findByEmail(jwtUtil.extractUsername(token)).ifPresent(user -> {
-            user.setPassword(passwordEncoder.encode(newPassword));
-            repository.save(user);
-            logger.info("Password updated for {}", user.getEmail());
-        });
+                Collections.singleton(authority));
     }
 
     /**
      * Assign default role
      */
     private void assignRole(User user) {
-        if (user.getRole() == null) {
-            user.setRole(Role.valueOf("USER")); // default role
+        if (user.getRole() == null || user.getRole() == Role.ADMIN) {
+            user.setRole(Role.USER); // enforce default role
+            logger.warn("Attempt to assign ADMIN role during registration. Defaulting to USER.");
         }
     }
 }

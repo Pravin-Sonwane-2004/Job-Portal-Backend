@@ -3,7 +3,7 @@ package com.pravin.job_portal_backend.controller.admin;
 import com.pravin.job_portal_backend.dto.user_dtos.UserRegistrationDTO;
 import com.pravin.job_portal_backend.service.admin.AdminAuthService;
 
-import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

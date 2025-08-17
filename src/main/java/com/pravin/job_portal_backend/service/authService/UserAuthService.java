@@ -10,8 +10,4 @@ public interface UserAuthService {
 
     String loginAndGenerateToken(UserLoginDTO toLoginDto);
 
-    //    void assignRole(User user);
-    String forgotPassword(String email);
-
-    void resetPassword(String token, String newPassword);
 }
