@@ -1,4 +1,4 @@
-package com.pravin.job_portal_backend.service.impl;
+package com.pravin.job_portal_backend.service.profile;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service("userDetailsService")
-public class CustomUserDetailsServiceImpl implements com.pravin.job_portal_backend.service.interfaces.CustomUserDetailsService {
+public class CustomUserDetailsServiceImpl implements com.pravin.job_portal_backend.service.profile.CustomUserDetailsService {
 
     private static final Logger logger = LoggerFactory.getLogger(CustomUserDetailsServiceImpl.class);
 

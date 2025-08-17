@@ -1,4 +1,4 @@
-package com.pravin.job_portal_backend.service.interfaces;
+package com.pravin.job_portal_backend.service.profile;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
