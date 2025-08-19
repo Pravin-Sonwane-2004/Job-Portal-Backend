@@ -51,9 +51,4 @@ public class JobRequestDTO {
     private String category;
 
     private LocalDate lastDateToApply;
-
-    public LocalDate getPostedDate() {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'getPostedDate'");
-    }
 }

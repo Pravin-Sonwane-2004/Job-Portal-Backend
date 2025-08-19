@@ -1,6 +1,5 @@
 package com.pravin.job_portal_backend.repository;
 
-import com.pravin.job_portal_backend.entity.JobApplication;
 import com.pravin.job_portal_backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 

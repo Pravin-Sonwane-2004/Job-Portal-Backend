@@ -1,7 +1,6 @@
 package com.pravin.job_portal_backend.service.job_service;
 
 import com.pravin.job_portal_backend.dto.job_dtos.*;
-import com.pravin.job_portal_backend.entity.Job;
 
 import org.springframework.data.domain.Page;
 
