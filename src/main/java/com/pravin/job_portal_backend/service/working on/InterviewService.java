@@ -2,7 +2,7 @@
 // package com.pravin.job_portal_backend.service.service_implementation;
 
 // import com.pravin.job_portal_backend.entity.Interview;
-// import com.pravin.job_portal_backend.entity.User;
+// import com.pravin.job_portal_backend.entity.JOB_SEEKER;
 // import com.pravin.job_portal_backend.entity.ApplyJob;
 // import com.pravin.job_portal_backend.repository.InterviewRepository;
 // import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +17,11 @@
 //     @Autowired
 //     private InterviewRepository interviewRepository;
 
-//     public List<Interview> getInterviewsByUser(User user) {
-//         return interviewRepository.findByUser(user);
+//     public List<Interview> getInterviewsByJOB_SEEKER(JOB_SEEKER JOB_SEEKER) {
+//         return interviewRepository.findByJOB_SEEKER(JOB_SEEKER);
 //     }
 
-//     public List<Interview> getInterviewsByEmployer(User employer) {
+//     public List<Interview> getInterviewsByEmployer(JOB_SEEKER employer) {
 //         return interviewRepository.findByEmployer(employer);
 //     }
 
@@ -29,8 +29,8 @@
 //         return interviewRepository.findByApplication(application);
 //     }
 
-//     public Interview scheduleInterview(ApplyJob application, User employer, User user, LocalDateTime scheduledTime, String status) {
-//         return interviewRepository.save(new Interview(application, employer, user, scheduledTime, status));
+//     public Interview scheduleInterview(ApplyJob application, JOB_SEEKER employer, JOB_SEEKER JOB_SEEKER, LocalDateTime scheduledTime, String status) {
+//         return interviewRepository.save(new Interview(application, employer, JOB_SEEKER, scheduledTime, status));
 //     }
 
 //     public void updateInterviewStatus(Long interviewId, String status) {

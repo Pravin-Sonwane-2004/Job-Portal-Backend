@@ -1,22 +1,23 @@
-package com.pravin.job_portal_backend.service.profile;
+package com.pravin.job_portal_backend.service.authService;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.pravin.job_portal_backend.entity.User;
 import com.pravin.job_portal_backend.repository.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import java.util.List;
-import java.util.Optional;
 
-@Service("userDetailsService")
-public class CustomUserDetailsServiceImpl implements com.pravin.job_portal_backend.service.profile.CustomUserDetailsService {
+@Service("LoadUserByEmail")
+public class LoadUserByEmailImpl implements com.pravin.job_portal_backend.service.authService.LoadUserByEmail {
 
-    private static final Logger logger = LoggerFactory.getLogger(CustomUserDetailsServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(LoadUserByEmailImpl.class);
 
     @Autowired
     private UserRepository userRepository;

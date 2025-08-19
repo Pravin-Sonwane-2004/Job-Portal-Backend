@@ -1,13 +1,15 @@
 package com.pravin.job_portal_backend.controller.job;
 
-import com.pravin.job_portal_backend.dto.job_dtos.*;
-import com.pravin.job_portal_backend.service.job_service.JobService;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import com.pravin.job_portal_backend.dto.job_dtos.*;
+import com.pravin.job_portal_backend.service.job_service.JobService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/jobs")
@@ -48,7 +50,7 @@ public class JobController {
         return ResponseEntity.ok(job);
     }
 
-    // === List all jobs (user view, lightweight) ===
+    // === List all jobs (USER view, lightweight) ===
     @GetMapping
     public ResponseEntity<List<JobSummaryDTO>> getAllJobs() {
         List<JobSummaryDTO> jobs = jobService.getAllJobs();

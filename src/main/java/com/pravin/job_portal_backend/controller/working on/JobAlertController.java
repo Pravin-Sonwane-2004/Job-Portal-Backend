@@ -1,8 +1,8 @@
 // package com.pravin.job_portal_backend.controller;
 
 // import com.pravin.job_portal_backend.entity.JobAlert;
-// import com.pravin.job_portal_backend.entity.User;
-// import com.pravin.job_portal_backend.repository.UserRepository;
+// import com.pravin.job_portal_backend.entity.JOB_SEEKER;
+// import com.pravin.job_portal_backend.repository.JOB_SEEKERRepository;
 // import com.pravin.job_portal_backend.service.service_implementation.JobAlertService;
 // import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.http.ResponseEntity;
@@ -16,18 +16,18 @@
 //     @Autowired
 //     private JobAlertService jobAlertService;
 //     @Autowired
-//     private UserRepository userRepository;
+//     private JOB_SEEKERRepository JOB_SEEKERRepository;
 
-//     @GetMapping("/user/{userId}")
-//     public ResponseEntity<List<JobAlert>> getAlerts(@PathVariable Long userId) {
-//         User user = userRepository.findById(userId).orElseThrow();
-//         return ResponseEntity.ok(jobAlertService.getAlertsByUser(user));
+//     @GetMapping("/JOB_SEEKER/{JOB_SEEKERId}")
+//     public ResponseEntity<List<JobAlert>> getAlerts(@PathVariable Long JOB_SEEKERId) {
+//         JOB_SEEKER JOB_SEEKER = JOB_SEEKERRepository.findById(JOB_SEEKERId).orElseThrow();
+//         return ResponseEntity.ok(jobAlertService.getAlertsByJOB_SEEKER(JOB_SEEKER));
 //     }
 
 //     @PostMapping("/create")
-//     public ResponseEntity<JobAlert> createAlert(@RequestParam Long userId, @RequestParam String criteria) {
-//         User user = userRepository.findById(userId).orElseThrow();
-//         return ResponseEntity.ok(jobAlertService.createAlert(user, criteria));
+//     public ResponseEntity<JobAlert> createAlert(@RequestParam Long JOB_SEEKERId, @RequestParam String criteria) {
+//         JOB_SEEKER JOB_SEEKER = JOB_SEEKERRepository.findById(JOB_SEEKERId).orElseThrow();
+//         return ResponseEntity.ok(jobAlertService.createAlert(JOB_SEEKER, criteria));
 //     }
 
 //     @DeleteMapping("/delete/{alertId}")

@@ -11,40 +11,40 @@
 
 ## Table of Contents
 
-* [About The Project](#about-the-project)
-    * [Built With](#built-with)
-* [Getting Started](#getting-started)
-    * [Prerequisites](#prerequisites)
-    * [Installation](#installation)
-* [Usage](#usage)
-* [Roadmap](#roadmap)
-* [Contributing](#contributing)
-* [License](#license)
-* [Contact](#contact)
-* [Acknowledgements](#acknowledgements)
+- [About The Project](#about-the-project)
+  - [Built With](#built-with)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Usage](#usage)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
+- [Acknowledgements](#acknowledgements)
 
 ---
 
 ## About The Project
 
-This repository contains the backend application for a Job Portal. It's designed to provide the core functionalities necessary for a job board, including user management (for job seekers and recruiters), job posting, job searching, application management, and more. This project aims to offer a robust and scalable foundation for a modern job discovery and application platform.
+This repository contains the backend application for a Job Portal. It's designed to provide the core functionalities necessary for a job board, including JOB_SEEKER management (for job seekers and recruiters), job posting, job searching, application management, and more. This project aims to offer a robust and scalable foundation for a modern job discovery and application platform.
 
 ### Key Features (Assumed)
 
-* **User Management:** Handling registration, login, and profiles for job seekers and recruiters.
-* **Job Posting:** Functionality for recruiters to post new job listings.
-* **Job Search & Filtering:** API endpoints for job seekers to search and filter available jobs.
-* **Application Management:** Allowing job seekers to apply for jobs and recruiters to manage applications.
-* **RESTful API:** Exposing well-defined API endpoints for interaction with a frontend application.
+- **JOB_SEEKER Management:** Handling registration, login, and profiles for job seekers and recruiters.
+- **Job Posting:** Functionality for recruiters to post new job listings.
+- **Job Search & Filtering:** API endpoints for job seekers to search and filter available jobs.
+- **Application Management:** Allowing job seekers to apply for jobs and recruiters to manage applications.
+- **RESTful API:** Exposing well-defined API endpoints for interaction with a frontend application.
 
 ### Built With
 
-* [Spring Boot](https://spring.io/projects/spring-boot)
-* [Java](https://www.java.com/)
-* [Spring Data JPA](https://spring.io/projects/spring-data-jpa)
-* [Maven](https://maven.apache.org/) (for dependency management)
-* [MySQL](https://www.mysql.com/) (or other relational database for data persistence)
-* *(Optional: Add [Spring Security](https://spring.io/projects/spring-security) for authentication and authorization)*
+- [Spring Boot](https://spring.io/projects/spring-boot)
+- [Java](https://www.java.com/)
+- [Spring Data JPA](https://spring.io/projects/spring-data-jpa)
+- [Maven](https://maven.apache.org/) (for dependency management)
+- [MySQL](https://www.mysql.com/) (or other relational database for data persistence)
+- _(Optional: Add [Spring Security](https://spring.io/projects/spring-security) for authentication and authorization)_
 
 ---
 
@@ -56,9 +56,9 @@ To get a local copy of this Job Portal Backend Project up and running, follow th
 
 Ensure you have the following installed:
 
-* Java Development Kit (JDK) 17 or higher
-* Apache Maven (or use the included Maven wrapper)
-* A relational database server (e.g., MySQL) running and accessible.
+- Java Development Kit (JDK) 17 or higher
+- Apache Maven (or use the included Maven wrapper)
+- A relational database server (e.g., MySQL) running and accessible.
 
 ### Installation
 
@@ -71,18 +71,19 @@ Ensure you have the following installed:
     cd Job-Portal-Backend
     ```
 3.  **Configure Database:**
-    * Create a database schema (e.g., `jobportal_db`).
-    * Update the `src/main/resources/application.properties` (or `application.yml`) file with your database connection details. For example, if using MySQL:
-        ```properties
-        # application.properties example for MySQL
-        spring.datasource.url=jdbc:mysql://localhost:3306/jobportal_db?useSSL=false&serverTimezone=UTC
-        spring.datasource.username=your_db_username
-        spring.datasource.password=your_db_password
-        spring.jpa.hibernate.ddl-auto=update # Use "create" or "create-drop" for initial setup, then switch to "update"
-        spring.jpa.show-sql=true
-        spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
-        ```
-    * Ensure your database server is running and accessible.
+
+    - Create a database schema (e.g., `jobportal_db`).
+    - Update the `src/main/resources/application.properties` (or `application.yml`) file with your database connection details. For example, if using MySQL:
+      ```properties
+      # application.properties example for MySQL
+      spring.datasource.url=jdbc:mysql://localhost:3306/jobportal_db?useSSL=false&serverTimezone=UTC
+      spring.datasource.USER=your_db_USER
+      spring.datasource.password=your_db_password
+      spring.jpa.hibernate.ddl-auto=update # Use "create" or "create-drop" for initial setup, then switch to "update"
+      spring.jpa.show-sql=true
+      spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+      ```
+    - Ensure your database server is running and accessible.
 
 4.  **Build the project:**
     ```bash
@@ -95,7 +96,7 @@ Ensure you have the following installed:
 
 ## Usage
 
-This application provides the backend API for a Job Portal. It exposes RESTful endpoints that a separate frontend application would consume to allow users to interact with the job portal functionalities.
+This application provides the backend API for a Job Portal. It exposes RESTful endpoints that a separate frontend application would consume to allow JOB_SEEKERs to interact with the job portal functionalities.
 
 To run the application:
 
@@ -108,12 +109,13 @@ To run the application:
 Once running, the application will be accessible via its configured port (typically 8080). You can interact with its API endpoints using tools like Postman or by integrating it with a frontend.
 
 Example API Endpoints (conceptual):
-* `POST /api/auth/register` - Register a new user (job seeker/recruiter)
-* `POST /api/auth/login` - Authenticate a user
-* `POST /api/jobs` - Post a new job (for recruiters)
-* `GET /api/jobs` - Get all job listings
-* `GET /api/jobs/{id}` - Get details of a specific job
-* `POST /api/jobs/{id}/apply` - Apply for a job (for job seekers)
+
+- `POST /api/auth/register` - Register a new JOB_SEEKER (job seeker/recruiter)
+- `POST /api/auth/login` - Authenticate a JOB_SEEKER
+- `POST /api/jobs` - Post a new job (for recruiters)
+- `GET /api/jobs` - Get all job listings
+- `GET /api/jobs/{id}` - Get details of a specific job
+- `POST /api/jobs/{id}/apply` - Apply for a job (for job seekers)
 
 ---
 
@@ -121,15 +123,15 @@ Example API Endpoints (conceptual):
 
 See the [open issues](https://github.com/Pravin-Sonwane-2004/Job-Portal-Backend/issues) for a full list of proposed features (and known issues).
 
-* [ ] Implement robust authentication and authorization mechanisms (e.g., JWT).
-* [ ] Add advanced job search capabilities (full-text search, location-based).
-* [ ] Develop recruiter dashboards for managing job posts and applications.
-* [ ] Create job seeker dashboards for tracking applications and saved jobs.
-* [ ] Integrate email notifications for job alerts and application status.
-* [ ] Implement resume upload and parsing functionality.
-* [ ] Enhance error handling and validation.
-* [ ] Dockerize the application for easier deployment.
-* [ ] Write comprehensive unit and integration tests.
+- [ ] Implement robust authentication and authorization mechanisms (e.g., JWT).
+- [ ] Add advanced job search capabilities (full-text search, location-based).
+- [ ] Develop recruiter dashboards for managing job posts and applications.
+- [ ] Create job seeker dashboards for tracking applications and saved jobs.
+- [ ] Integrate email notifications for job alerts and application status.
+- [ ] Implement resume upload and parsing functionality.
+- [ ] Enhance error handling and validation.
+- [ ] Dockerize the application for easier deployment.
+- [ ] Write comprehensive unit and integration tests.
 
 ---
 
@@ -175,11 +177,11 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 ## Acknowledgements
 
-* [Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/current/reference/html/index.html)
-* [Spring Data JPA Documentation](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/)
-* [ChooseAnOpenSourceLicense](https://choosealicense.com/)
-* [Img Shields](https://shields.io/)
-* [GitHub Pages](https://pages.github.com)
+- [Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/current/reference/html/index.html)
+- [Spring Data JPA Documentation](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/)
+- [ChooseAnOpenSourceLicense](https://choosealicense.com/)
+- [Img Shields](https://shields.io/)
+- [GitHub Pages](https://pages.github.com)
 
 #how to reset pass
 

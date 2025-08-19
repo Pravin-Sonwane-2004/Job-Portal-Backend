@@ -14,19 +14,19 @@ package com.pravin.job_portal_backend.controller.job;
 //    @Autowired
 //    private SavedJobService savedJobService;
 //
-//    @GetMapping("/user/{userId}")
-//    public ResponseEntity<List<SavedJobDto>> getSavedJobsByUser(@PathVariable Long userId) {
-//        return ResponseEntity.ok(savedJobService.getSavedJobsByUser(userId));
+//    @GetMapping("/JOB_SEEKER/{JOB_SEEKERId}")
+//    public ResponseEntity<List<SavedJobDto>> getSavedJobsByJOB_SEEKER(@PathVariable Long JOB_SEEKERId) {
+//        return ResponseEntity.ok(savedJobService.getSavedJobsByJOB_SEEKER(JOB_SEEKERId));
 //    }
 //
 //    @PostMapping("/save")
-//    public ResponseEntity<SavedJobDto> saveJob(@RequestParam Long userId, @RequestParam Long jobId) {
-//        return ResponseEntity.ok(savedJobService.saveJob(userId, jobId));
+//    public ResponseEntity<SavedJobDto> saveJob(@RequestParam Long JOB_SEEKERId, @RequestParam Long jobId) {
+//        return ResponseEntity.ok(savedJobService.saveJob(JOB_SEEKERId, jobId));
 //    }
 //
 //    @DeleteMapping("/unsave")
-//    public ResponseEntity<?> unsaveJob(@RequestParam Long userId, @RequestParam Long jobId) {
-//        savedJobService.unsaveJob(userId, jobId);
+//    public ResponseEntity<?> unsaveJob(@RequestParam Long JOB_SEEKERId, @RequestParam Long jobId) {
+//        savedJobService.unsaveJob(JOB_SEEKERId, jobId);
 //        return ResponseEntity.ok().build();
 //    }
 //}

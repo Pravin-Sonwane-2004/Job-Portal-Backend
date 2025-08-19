@@ -1,21 +1,19 @@
 package com.pravin.job_portal_backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.pravin.job_portal_backend.enums.ExperienceLevel;
-import com.pravin.job_portal_backend.enums.Role;
-import com.pravin.job_portal_backend.enums.UserStatus;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.pravin.job_portal_backend.enums.*;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import lombok.*;
+
 /**
  * Entity representing a user in the job portal system.
+ * Includes authentication, profile, and status information.
  */
 @Getter
 @Setter
@@ -24,128 +22,151 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "users", indexes = {
-    @Index(name = "idx_user_email", columnList = "email"),
-    @Index(name = "idx_user_role", columnList = "role")
+        @Index(name = "idx_user_email", columnList = "email"),
+        @Index(name = "idx_user_role", columnList = "role")
 })
 @ToString(exclude = { "appliedJobs", "skills" })
 public final class User {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Email
-  @NotBlank
-  @Size(max = 255)
-  @Column(name = "email", unique = true, nullable = false)
-  private String email;
+    /** User's unique email address */
+    @Email
+    @NotBlank
+    @Size(max = 255)
+    @Column(name = "email", unique = true, nullable = false)
+    private String email;
 
-  @NotBlank
-  @Size(min = 8, max = 255)
-  @Column(name = "password", nullable = false)
-  private String password;
+    /** User's hashed password */
+    @NotBlank
+    @Size(min = 8, max = 255)
+    @Column(name = "password", nullable = false)
+    private String password;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "role", nullable = false, length = 50)
-  private Role role;
+    // /** Unique username for login */
+    // @NotBlank
+    // @Size(max = 255)
+    // @Column(name = "username", unique = true, nullable = false)
+    // private String username;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "experience_level", nullable = true)
-  private ExperienceLevel experienceLevel;
+    /** Full name */
+    @Size(max = 255)
+    @NotBlank(message = "Name is required")
+    @Column(nullable = true)
+    private String name;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "status", nullable = true)
-private UserStatus status = UserStatus.ACTIVE;
+    /** User's role in the system */
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false, length = 50)
+    private Role role;
 
-  @Size(max = 255)
-  private String name;
+    /** User's experience level */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "experience_level")
+    private ExperienceLevel experienceLevel;
 
-  @Size(max = 512)
-  @Column(name = "avatar_url")
-  private String avatarUrl;
+    /** User's account status */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private UserStatus status;
 
-  @Size(max = 255)
-  private String designation;
+    /** Avatar image URL */
+    @Size(max = 512)
+    @Column(name = "avatar_url")
+    private String avatarUrl;
 
-  @Column(name = "verified", nullable = true)
-  private Boolean verified = false;
+    /** Job designation/title */
+    @Size(max = 255)
+    private String designation;
 
-  @Size(max = 255)
-  private String location;
+    /** Email verification status */
+    @Column(name = "verified")
+    private Boolean verified;
 
-  @Size(max = 1024)
-  private String bio;
+    /** Location/city */
+    @Size(max = 255)
+    private String location;
 
-  @Size(max = 20)
-  @Column(name = "phone_number")
-  private String phoneNumber;
+    /** Short bio */
+    @Size(max = 1024)
+    private String bio;
 
-  @Size(max = 512)
-  @Column(name = "linkedin_url")
-  private String linkedinUrl;
+    /** Phone number */
+    @Size(max = 20)
+    @Pattern(regexp = "^[0-9+\\-() ]*$", message = "Invalid phone number format")
+    @Column(name = "phone_number")
+    private String phoneNumber;
 
-  @Size(max = 512)
-  @Column(name = "github_url")
-  private String githubURL;
+    /** LinkedIn profile URL */
+    @Size(max = 512)
+    @Column(name = "linkedin_url")
+    private String linkedinUrl;
 
-  @Column(nullable = false)
-  private boolean blocked = false;
+    /** GitHub profile URL */
+    @Size(max = 512)
+    @Column(name = "github_url")
+    private String githubUrl;
 
-//  @Size(max = 255)
-//  @Column(name = "job_role")
-//  private String jobRole;
+    /** Blocked status */
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean blocked = false;
 
-  @Column(name = "is_deleted", nullable = true)
-  private Boolean isDeleted = false;
+    /** Soft delete flag */
+    @Column(name = "is_deleted")
+    @Builder.Default
+    private Boolean isDeleted = false;
 
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<ApplyJob> appliedJobs = new ArrayList<>();
+    /** Jobs applied by the user */
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<ApplyJob> appliedJobs = new ArrayList<>();
 
-  @ElementCollection(fetch = FetchType.LAZY)
-  @CollectionTable(name = "user_skills", joinColumns = @JoinColumn(name = "user_id"))
-  @Column(name = "skill", length = 100)
-  private List<String> skills = new ArrayList<>();
+    /** User's skills */
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "user_skills", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "skill", length = 100)
+    @Builder.Default
+    private List<String> skills = new ArrayList<>();
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
-  @Column(name = "created_at", updatable = false)
-  private LocalDateTime createdAt;
+    /** Account creation timestamp */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
-  @Column(name = "updated_at")
-  private LocalDateTime updatedAt;
+    /** Last update timestamp */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
-  @PrePersist
-  public void prePersist() {
-    LocalDateTime now = LocalDateTime.now();
-    this.createdAt = now;
-    this.updatedAt = now;
+    /** Password reset token */
+    @Column(name = "reset_token")
+    private String resetToken;
 
-  }
+    /** Token expiry timestamp */
+    @Column(name = "token_expiry")
+    private LocalDateTime tokenExpiry;
 
-  @Column(name = "reset_token")
-  private String resetToken;
+    /** Set timestamps and defaults before persisting */
+    @PrePersist
+    public void prePersist() {
+        LocalDateTime now = LocalDateTime.now();
+        this.createdAt = now;
+        this.updatedAt = now;
+        if (this.status == null)
+            this.status = UserStatus.ACTIVE;
+        if (this.verified == null)
+            this.verified = false;
+        if (this.isDeleted == null)
+            this.isDeleted = false;
+    }
 
-  @Column(name = "token_expiry")
-  private LocalDateTime tokenExpiry;
-
-
-//  @PreUpdate
-//  public void preUpdate() {
-//    this.updatedAt = LocalDateTime.now();
-//  }
-
-//  @Override
-//  public boolean equals(Object o) {
-//    if (this == o)
-//      return true;
-//    if (!(o instanceof User user))
-//      return false;
-//    return id != null && id.equals(user.id);
-//  }
-//
-//  @Override
-//  public int hashCode() {
-//    return id != null ? id.hashCode() : 0;
-//  }
-  
+    /** Update timestamp before updating */
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

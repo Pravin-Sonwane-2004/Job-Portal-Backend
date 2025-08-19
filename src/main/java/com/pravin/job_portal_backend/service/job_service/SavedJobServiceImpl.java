@@ -12,20 +12,20 @@ package com.pravin.job_portal_backend.service.job_service;
 //@Service
 //public class SavedJobServiceImpl implements SavedJobService {
 //  @Override
-//  public SavedJobDto saveJob(Long userId, Long jobId) {
+//  public SavedJobDto saveJob(Long JOB_SEEKERId, Long jobId) {
 //    // Implement save logic
 //    return null;
 //  }
 //
 //  @Override
-//  public void unsaveJob(Long userId, Long jobId) {
+//  public void unsaveJob(Long JOB_SEEKERId, Long jobId) {
 //    // Implement unsave logic
 //  }
 //
 //  @Override
-//  public List<SavedJobDto> getSavedJobsByUser(Long userId) {
+//  public List<SavedJobDto> getSavedJobsByJOB_SEEKER(Long JOB_SEEKERId) {
 //    // TODO Auto-generated method stub
-//    throw new UnsupportedOperationException("Unimplemented method 'getSavedJobsByUser'");
+//    throw new UnsupportedOperationException("Unimplemented method 'getSavedJobsByJOB_SEEKER'");
 //  }
 //
 //}

@@ -5,6 +5,7 @@ public interface ForgotPasswordService {
     /**
      * Generate reset token and send reset email
      */
+    
     String forgotPassword(String email);
 
     /**

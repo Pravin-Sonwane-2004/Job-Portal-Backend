@@ -1,9 +1,9 @@
 // package com.pravin.job_portal_backend.controller;
 
 // import com.pravin.job_portal_backend.entity.Interview;
-// import com.pravin.job_portal_backend.entity.User;
+// import com.pravin.job_portal_backend.entity.JOB_SEEKER;
 // import com.pravin.job_portal_backend.entity.ApplyJob;
-// import com.pravin.job_portal_backend.repository.UserRepository;
+// import com.pravin.job_portal_backend.repository.JOB_SEEKERRepository;
 // import com.pravin.job_portal_backend.repository.JobApply;
 // import com.pravin.job_portal_backend.service.service_implementation.InterviewService;
 // import org.springframework.beans.factory.annotation.Autowired;
@@ -19,19 +19,19 @@
 //     @Autowired
 //     private InterviewService interviewService;
 //     @Autowired
-//     private UserRepository userRepository;
+//     private JOB_SEEKERRepository JOB_SEEKERRepository;
 //     @Autowired
 //     private JobApply jobApplyRepository;
 
-//     @GetMapping("/user/{userId}")
-//     public ResponseEntity<List<Interview>> getInterviewsByUser(@PathVariable Long userId) {
-//         User user = userRepository.findById(userId).orElseThrow();
-//         return ResponseEntity.ok(interviewService.getInterviewsByUser(user));
+//     @GetMapping("/JOB_SEEKER/{JOB_SEEKERId}")
+//     public ResponseEntity<List<Interview>> getInterviewsByJOB_SEEKER(@PathVariable Long JOB_SEEKERId) {
+//         JOB_SEEKER JOB_SEEKER = JOB_SEEKERRepository.findById(JOB_SEEKERId).orElseThrow();
+//         return ResponseEntity.ok(interviewService.getInterviewsByJOB_SEEKER(JOB_SEEKER));
 //     }
 
 //     @GetMapping("/employer/{employerId}")
 //     public ResponseEntity<List<Interview>> getInterviewsByEmployer(@PathVariable Long employerId) {
-//         User employer = userRepository.findById(employerId).orElseThrow();
+//         JOB_SEEKER employer = JOB_SEEKERRepository.findById(employerId).orElseThrow();
 //         return ResponseEntity.ok(interviewService.getInterviewsByEmployer(employer));
 //     }
 
@@ -45,14 +45,14 @@
 //     public ResponseEntity<Interview> scheduleInterview(
 //             @RequestParam Long applicationId,
 //             @RequestParam Long employerId,
-//             @RequestParam Long userId,
+//             @RequestParam Long JOB_SEEKERId,
 //             @RequestParam String scheduledTime,
 //             @RequestParam String status) {
 //         ApplyJob application = jobApplyRepository.findById(applicationId).orElseThrow();
-//         User employer = userRepository.findById(employerId).orElseThrow();
-//         User user = userRepository.findById(userId).orElseThrow();
+//         JOB_SEEKER employer = JOB_SEEKERRepository.findById(employerId).orElseThrow();
+//         JOB_SEEKER JOB_SEEKER = JOB_SEEKERRepository.findById(JOB_SEEKERId).orElseThrow();
 //         LocalDateTime time = LocalDateTime.parse(scheduledTime);
-//         return ResponseEntity.ok(interviewService.scheduleInterview(application, employer, user, time, status));
+//         return ResponseEntity.ok(interviewService.scheduleInterview(application, employer, JOB_SEEKER, time, status));
 //     }
 
 //     @PutMapping("/update-status/{interviewId}")

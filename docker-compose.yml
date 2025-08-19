@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: jobportal
     ports:
-      - "5432:5432"   # ✅ this is correct
+      - "5432:5432" # ✅ this is correct
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -44,7 +44,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "5050:80"   # ✅ pgAdmin listens on port 5050
+      - "5050:80" # ✅ pgAdmin listens on port 5050
     depends_on:
       - postgres
     networks:

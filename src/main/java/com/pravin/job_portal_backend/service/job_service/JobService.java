@@ -1,6 +1,8 @@
 package com.pravin.job_portal_backend.service.job_service;
 
 import com.pravin.job_portal_backend.dto.job_dtos.*;
+import com.pravin.job_portal_backend.entity.Job;
+
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -19,7 +21,7 @@ public interface JobService {
     // === Get by ID ===
     JobResponseDTO getJobById(Long jobId);
 
-    // === List all (for user display, lightweight summaries) ===
+    // === List all (for JOB_SEEKER display, lightweight summaries) ===
     List<JobSummaryDTO> getAllJobs();
 
     // === Search by keyword & location ===

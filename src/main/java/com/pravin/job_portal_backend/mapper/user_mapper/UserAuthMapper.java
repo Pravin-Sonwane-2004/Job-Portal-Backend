@@ -36,6 +36,8 @@ public final class UserAuthMapper {
         if (user == null) return null;
 
         UserRegistrationDTO dto = new UserRegistrationDTO();
+       dto.setName(user.getName());
+
         dto.setEmail(user.getEmail());
         dto.setPassword(user.getPassword());
         dto.setRole(user.getRole());
@@ -44,9 +46,12 @@ public final class UserAuthMapper {
 
     // === Registration DTO → User ===
     public static User toRegistrationEntity(UserRegistrationDTO dto) {
-        if (dto == null) return null;
+        if (dto == null)
+            return null;
 
         User user = new User();
+
+        user.setName(dto.getName());
         user.setEmail(dto.getEmail());
         user.setPassword(dto.getPassword());
         user.setRole(dto.getRole());

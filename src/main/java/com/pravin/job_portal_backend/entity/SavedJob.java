@@ -1,60 +1,53 @@
 package com.pravin.job_portal_backend.entity;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
-import lombok.*;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity
-@Table(name = "saved_job", indexes = {
-    @Index(name = "idx_savedjob_user", columnList = "user_id"),
-    @Index(name = "idx_savedjob_job", columnList = "job_id")
-})
-@ToString(exclude = { "user", "job" })
-public final class SavedJob {
+public class SavedJob {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id", updatable = false, nullable = false)
-  private Long id;
+    @ManyToOne
+    private User jobSeeker;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_savedjob_user"))
-  private User user;
+    @ManyToOne
+    private Job job;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "job_id", nullable = false, foreignKey = @ForeignKey(name = "fk_savedjob_job"))
-  private Job job;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-  @Column(name = "saved_at", nullable = false, updatable = false)
-  @org.hibernate.annotations.CreationTimestamp
-  private LocalDateTime savedAt;
+    // getters and setters
+    public Long getId() {
+        return id;
+    }
 
-  @Column(name = "updated_at")
-  @org.hibernate.annotations.UpdateTimestamp
-  private LocalDateTime updatedAt;
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (o == null || getClass() != o.getClass())
-      return false;
-    SavedJob that = (SavedJob) o;
-    return user != null && job != null &&
-        user.equals(that.user) &&
-        job.equals(that.job);
-  }
+    public User getJobSeeker() {
+        return jobSeeker;
+    }
 
-  @Override
-  public int hashCode() {
-    int result = user != null ? user.hashCode() : 0;
-    result = 31 * result + (job != null ? job.hashCode() : 0);
-    return result;
-  }
+    public void setJobSeeker(User jobSeeker) {
+        this.jobSeeker = jobSeeker;
+    }
+
+    public Job getJob() {
+        return job;
+    }
+
+    public void setJob(Job job) {
+        this.job = job;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

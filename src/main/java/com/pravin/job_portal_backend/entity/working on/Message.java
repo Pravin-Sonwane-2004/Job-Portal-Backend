@@ -21,11 +21,11 @@
 
 //     @ManyToOne(fetch = FetchType.LAZY)
 //     @JoinColumn(name = "sender_id", nullable = false)
-//     private User sender;
+//     private JOB_SEEKER sender;
 
 //     @ManyToOne(fetch = FetchType.LAZY)
 //     @JoinColumn(name = "receiver_id", nullable = false)
-//     private User receiver;
+//     private JOB_SEEKER receiver;
 
 //     @Column(nullable = false, length = 2000)
 //     private String content;

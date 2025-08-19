@@ -16,6 +16,7 @@ public class AdminController {
 
     private final AdminService adminService;
 
+
     /**
      * Get user by ID
      */
@@ -26,6 +27,7 @@ public class AdminController {
     }
 
     /**
+     * 
      * Get user by Email
      */
     @GetMapping("/user/email/{email}")

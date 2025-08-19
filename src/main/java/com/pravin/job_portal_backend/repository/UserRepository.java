@@ -1,5 +1,6 @@
 package com.pravin.job_portal_backend.repository;
 
+import com.pravin.job_portal_backend.entity.JobApplication;
 import com.pravin.job_portal_backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,4 +12,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 //  void findByResetToken(String token);
 
     Optional<Object> findByResetToken(String token);
+    // Optional<JobApplication> findByUsername(String email);
 }

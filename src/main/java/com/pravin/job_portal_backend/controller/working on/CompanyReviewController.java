@@ -2,9 +2,9 @@
 
 // import com.pravin.job_portal_backend.entity.Company;
 // import com.pravin.job_portal_backend.entity.CompanyReview;
-// import com.pravin.job_portal_backend.entity.User;
+// import com.pravin.job_portal_backend.entity.JOB_SEEKER;
 // import com.pravin.job_portal_backend.repository.CompanyRepository;
-// import com.pravin.job_portal_backend.repository.UserRepository;
+// import com.pravin.job_portal_backend.repository.JOB_SEEKERRepository;
 // import com.pravin.job_portal_backend.service.service_implementation.CompanyReviewService;
 // import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@
 //     @Autowired
 //     private CompanyRepository companyRepository;
 //     @Autowired
-//     private UserRepository userRepository;
+//     private JOB_SEEKERRepository JOB_SEEKERRepository;
 
 //     @GetMapping("/company/{companyId}")
 //     public ResponseEntity<List<CompanyReview>> getReviewsByCompany(@PathVariable Long companyId) {
@@ -29,10 +29,10 @@
 //     }
 
 //     @PostMapping("/add")
-//     public ResponseEntity<CompanyReview> addReview(@RequestParam Long companyId, @RequestParam Long userId, @RequestParam String content, @RequestParam int rating) {
+//     public ResponseEntity<CompanyReview> addReview(@RequestParam Long companyId, @RequestParam Long JOB_SEEKERId, @RequestParam String content, @RequestParam int rating) {
 //         Company company = companyRepository.findById(companyId).orElseThrow();
-//         User user = userRepository.findById(userId).orElseThrow();
-//         return ResponseEntity.ok(companyReviewService.addReview(company, user, content, rating));
+//         JOB_SEEKER JOB_SEEKER = JOB_SEEKERRepository.findById(JOB_SEEKERId).orElseThrow();
+//         return ResponseEntity.ok(companyReviewService.addReview(company, JOB_SEEKER, content, rating));
 //     }
 
 //     @DeleteMapping("/delete/{reviewId}")

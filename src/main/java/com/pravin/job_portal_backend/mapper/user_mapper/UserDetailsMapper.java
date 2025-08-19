@@ -1,21 +1,18 @@
 package com.pravin.job_portal_backend.mapper.user_mapper;
 
-import com.pravin.job_portal_backend.dto.user_dtos.UserDetialsDto;
+import com.pravin.job_portal_backend.dto.user_dtos.UserDetailsDto;
 import com.pravin.job_portal_backend.entity.User;
 
-import java.util.List;
+public class UserDetailsMapper {
 
-public final class UserDetialsMapper {
-
-    private UserDetialsMapper() {
-    }
-
-    public static UserDetialsDto toDto(User user) {
-        if (user == null) return null;
-
-        return UserDetialsDto.builder()
+    public static UserDetailsDto toDto(User user) {
+        if (user == null) {
+            return null;
+        }
+        return UserDetailsDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
+                // .username(user.getUsername())
                 .name(user.getName())
                 .avatarUrl(user.getAvatarUrl())
                 .designation(user.getDesignation())
@@ -24,20 +21,25 @@ public final class UserDetialsMapper {
                 .bio(user.getBio())
                 .phoneNumber(user.getPhoneNumber())
                 .linkedinUrl(user.getLinkedinUrl())
-                .avatarUrl(user.getGithubURL())
-//                   .jobRole(user.getJobRole())
-                .experienceLevel(user.getExperienceLevel())
+                .githubUrl(user.getGithubUrl())
+                .blocked(user.isBlocked())
                 .role(user.getRole())
-                .skills(user.getSkills() != null ? List.copyOf(user.getSkills()) : null)
+                .experienceLevel(user.getExperienceLevel())
+                .status(user.getStatus())
+                .skills(user.getSkills())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
                 .build();
     }
 
-    public static User toEntity(UserDetialsDto dto) {
-        if (dto == null) return null;
-
+    public static User toEntity(UserDetailsDto dto) {
+        if (dto == null) {
+            return null;
+        }
         return User.builder()
                 .id(dto.getId())
                 .email(dto.getEmail())
+                // .username(dto.getUsername())
                 .name(dto.getName())
                 .avatarUrl(dto.getAvatarUrl())
                 .designation(dto.getDesignation())
@@ -46,11 +48,14 @@ public final class UserDetialsMapper {
                 .bio(dto.getBio())
                 .phoneNumber(dto.getPhoneNumber())
                 .linkedinUrl(dto.getLinkedinUrl())
-                .avatarUrl(dto.getGithubURL())
-//                    .jobRole(dto.getJobRole())
-                .experienceLevel(dto.getExperienceLevel())
+                .githubUrl(dto.getGithubUrl())
+                .blocked(dto.isBlocked())
                 .role(dto.getRole())
-                .skills(dto.getSkills() != null ? List.copyOf(dto.getSkills()) : null)
+                .experienceLevel(dto.getExperienceLevel())
+                .status(dto.getStatus())
+                .skills(dto.getSkills())
+                .createdAt(dto.getCreatedAt())
+                .updatedAt(dto.getUpdatedAt())
                 .build();
     }
 }

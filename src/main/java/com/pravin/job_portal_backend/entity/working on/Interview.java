@@ -16,11 +16,11 @@
 
 //     @ManyToOne(fetch = FetchType.LAZY)
 //     @JoinColumn(name = "employer_id", nullable = false)
-//     private User employer;
+//     private JOB_SEEKER employer;
 
 //     @ManyToOne(fetch = FetchType.LAZY)
-//     @JoinColumn(name = "user_id", nullable = false)
-//     private User user;
+//     @JoinColumn(name = "JOB_SEEKER_id", nullable = false)
+//     private JOB_SEEKER JOB_SEEKER;
 
 //     @Column(name = "scheduled_time", nullable = false)
 //     private LocalDateTime scheduledTime;
@@ -30,25 +30,25 @@
 
 //     public Interview() {}
 
-//     public Interview(ApplyJob application, User employer, User user, LocalDateTime scheduledTime, String status) {
+//     public Interview(ApplyJob application, JOB_SEEKER employer, JOB_SEEKER JOB_SEEKER, LocalDateTime scheduledTime, String status) {
 //         this.application = application;
 //         this.employer = employer;
-//         this.user = user;
+//         this.JOB_SEEKER = JOB_SEEKER;
 //         this.scheduledTime = scheduledTime;
 //         this.status = status;
 //     }
 
 //     public Long getId() { return id; }
 //     public ApplyJob getApplication() { return application; }
-//     public User getEmployer() { return employer; }
-//     public User getUser() { return user; }
+//     public JOB_SEEKER getEmployer() { return employer; }
+//     public JOB_SEEKER getJOB_SEEKER() { return JOB_SEEKER; }
 //     public LocalDateTime getScheduledTime() { return scheduledTime; }
 //     public String getStatus() { return status; }
 
 //     public void setId(Long id) { this.id = id; }
 //     public void setApplication(ApplyJob application) { this.application = application; }
-//     public void setEmployer(User employer) { this.employer = employer; }
-//     public void setUser(User user) { this.user = user; }
+//     public void setEmployer(JOB_SEEKER employer) { this.employer = employer; }
+//     public void setJOB_SEEKER(JOB_SEEKER JOB_SEEKER) { this.JOB_SEEKER = JOB_SEEKER; }
 //     public void setScheduledTime(LocalDateTime scheduledTime) { this.scheduledTime = scheduledTime; }
 //     public void setStatus(String status) { this.status = status; }
 // }

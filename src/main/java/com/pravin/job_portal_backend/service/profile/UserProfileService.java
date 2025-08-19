@@ -1,13 +1,18 @@
-package com.pravin.job_portal_backend.service.profile;
-//package com.pravin.job_portal_backend.service.interfaces;
-//
-//import com.pravin.job_portal_backend.dto.user_dtos.UserDetialsDto;
-//import com.pravin.job_portal_backend.dto.UpdateUserProfile;
-//import java.util.Optional;
-//
-//public interface UserProfileService {
-//    UserDetialsDto getUserProfile(Long userId);
-//    void updateUserProfile(Long userId, UpdateUserProfile request);
-//    String getUserNameWithId(Long userId);
-//    Optional<UserDetialsDto> findByUserName(String email);
-//}
+// package com.pravin.job_portal_backend.service.profile;
+
+// import java.util.Optional;
+
+// import com.pravin.job_portal_backend.dto.UpdateJOB_SEEKERProfile;
+// import
+// com.pravin.job_portal_backend.dto.JOB_SEEKER_dtos.JOB_SEEKERDetialsDto;
+
+// public interface JOB_SEEKERProfileService {
+// JOB_SEEKERDetialsDto getJOB_SEEKERProfile(Long JOB_SEEKERId);
+
+// void updateJOB_SEEKERProfile(Long JOB_SEEKERId, UpdateJOB_SEEKERProfile
+// request);
+
+// String getUSERWithId(Long JOB_SEEKERId);
+
+// Optional<JOB_SEEKERDetialsDto> findByUSER(String email);
+// }

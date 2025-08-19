@@ -21,7 +21,6 @@ public class JobServiceImpl implements JobService {
         this.jobsRepository = jobsRepository;
     }
 
-    @Override
     @Transactional
     public JobResponseDTO createJob(JobRequestDTO jobDto) {
         Job job = JobMapper.toEntity(jobDto);
@@ -135,4 +134,5 @@ public class JobServiceImpl implements JobService {
         job.setDeleted(false);
         jobsRepository.save(job);
     }
+
 }

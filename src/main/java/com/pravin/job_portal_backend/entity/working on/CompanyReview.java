@@ -15,8 +15,8 @@
 //   private Company company;
 
 //   @ManyToOne(fetch = FetchType.LAZY)
-//   @JoinColumn(name = "user_id", nullable = false)
-//   private User user;
+//   @JoinColumn(name = "JOB_SEEKER_id", nullable = false)
+//   private JOB_SEEKER JOB_SEEKER;
 
 //   @Column(nullable = false, length = 2000)
 //   private String content;
