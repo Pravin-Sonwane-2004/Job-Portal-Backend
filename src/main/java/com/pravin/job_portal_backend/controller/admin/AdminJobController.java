@@ -3,7 +3,6 @@ package com.pravin.job_portal_backend.controller.admin;
 import com.pravin.job_portal_backend.dto.job_dtos.*;
 import com.pravin.job_portal_backend.service.job_service.JobService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

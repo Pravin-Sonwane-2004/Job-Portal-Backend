@@ -16,7 +16,7 @@ public class CompanyController {
 
     private final CompanyService companyService;
 
-    @PostMapping
+    @PostMapping("addcompany")
     public ResponseEntity<CompanyDTO> createCompany(@RequestBody CompanyDTO companyDTO) {
         return ResponseEntity.ok(companyService.createCompany(companyDTO));
     }

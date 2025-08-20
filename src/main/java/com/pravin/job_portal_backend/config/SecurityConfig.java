@@ -62,7 +62,9 @@ public class SecurityConfig {
             })
 
             // ✅ Public endpoints
-            .requestMatchers("/admin/first-admin-signup").permitAll()
+                    .requestMatchers("/admin/first-admin-signup").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/companies/**").permitAll()
+
             .requestMatchers("/user/jobs/paginated").permitAll()
                     .requestMatchers("/public/**").permitAll()
                     .requestMatchers("/auth/**").permitAll()

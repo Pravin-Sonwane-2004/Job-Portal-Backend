@@ -21,7 +21,7 @@ public class JobController {
     private final JobService jobService;
 
     // === Create Job (Admin only) ===
-    @PostMapping
+    @PostMapping("/add")
     // @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<JobResponseDTO> createJob(@Valid @RequestBody JobRequestDTO jobDto) {
         JobResponseDTO created = jobService.createJob(jobDto);
