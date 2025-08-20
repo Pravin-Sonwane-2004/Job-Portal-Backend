@@ -73,7 +73,7 @@ public final class JobMapper {
                 .location(job.getLocation())
                 .minSalary(job.getMinSalary())
                 .maxSalary(job.getMaxSalary())
-                .currency(job.getCurrency())
+                .currency(((JobResponseDTO) job).getCurrency())
                 .jobType(job.getJobType())
                 .experienceLevel(job.getExperienceLevel())
                 .status(job.getStatus())

@@ -1,41 +1,27 @@
 package com.pravin.job_portal_backend.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Recruiter {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // One recruiter <-> One user (login account)
     @OneToOne
+    @JoinColumn(name = "user_id", unique = true) // FK column in recruiter table
     private User user;
 
+    // Many recruiters -> One company
     @ManyToOne
+    @JoinColumn(name = "company_id") // FK column in recruiter table
     private Company company;
-
-    // getters and setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Company getCompany() {
-        return company;
-    }
-
-    public void setCompany(Company company) {
-        this.company = company;
-    }
 }

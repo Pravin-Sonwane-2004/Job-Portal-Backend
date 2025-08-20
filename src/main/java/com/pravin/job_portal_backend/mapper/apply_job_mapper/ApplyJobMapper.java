@@ -1,45 +1,49 @@
 package com.pravin.job_portal_backend.mapper.apply_job_mapper;
 
-import com.pravin.job_portal_backend.dto.apply_job_dtos.ApplyJobDto;
+
+import org.springframework.stereotype.Component;
+
 import com.pravin.job_portal_backend.dto.apply_job_dtos.ApplyJobResponseDTO;
+import com.pravin.job_portal_backend.dto.job_application_dtos.ApplyJobRequestDTO;
+import com.pravin.job_portal_backend.dto.job_application_dtos.ApplyJobSummaryDTO;
 import com.pravin.job_portal_backend.entity.ApplyJob;
 
+@Component
 public class ApplyJobMapper {
 
-    public static ApplyJobDto toDto(ApplyJob entity) {
-        if (entity == null)
+    public ApplyJob toEntity(ApplyJobRequestDTO dto) {
+        if (dto == null)
             return null;
 
-        return ApplyJobDto.builder()
-                .applicationId(entity.getId())
-                .userId(entity.getUser().getId())
-                .jobId(entity.getJob().getId())
-                .status(entity.getStatus())
-                .resumeLink(entity.getResumeLink())
-                .coverLetter(entity.getCoverLetter())
-                .appliedFromIp(entity.getAppliedFromIp())
-                .source(entity.getSource())
-                .userAgent(entity.getUserAgent())
-                .appliedAt(entity.getAppliedAt())
-                .updatedAt(entity.getUpdatedAt())
+        return ApplyJob.builder()
+                .coverLetter(dto.getCoverLetter())
                 .build();
     }
 
-    public static ApplyJobResponseDTO toResponseDto(ApplyJob entity) {
+    public ApplyJobResponseDTO toResponseDTO(ApplyJob entity) {
         if (entity == null)
             return null;
 
         return ApplyJobResponseDTO.builder()
-                .applicationId(entity.getId())
-                .jobTitle(entity.getJob().getTitle())
-                .company(entity.getJob().getCompany())
-                .userEmail(entity.getUser().getEmail())
-                .appliedAt(entity.getAppliedAt())
-                .status(entity.getStatus())
-                .resumeLink(entity.getResumeLink())
+                .id(entity.getId())
+                .job(entity.getJob()        )
+                .userId(entity.getUser().getId())
                 .coverLetter(entity.getCoverLetter())
-                .jobLocation(entity.getJob().getLocation())
-                .jobSalary(entity.getJob().getMaxSalary())
+                .status(entity.getStatus())
+                .appliedAt(entity.getAppliedAt())
+                .build();
+    }
+
+    public ApplyJobSummaryDTO toSummaryDTO(ApplyJob entity) {
+        if (entity == null)
+            return null;
+
+        return ApplyJobSummaryDTO.builder()
+                .id(entity.getId())
+                .jobId(entity.getJob().getId())
+                .jobTitle(entity.getJob().getTitle())
+                .companyName(entity.getJob().getCompany())
+                .status(entity.getStatus())
                 .build();
     }
 }

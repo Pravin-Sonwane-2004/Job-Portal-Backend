@@ -4,11 +4,16 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+import com.pravin.job_portal_backend.entity.ApplyJob.ApplyJobBuilder;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builderpublic Object id(Long id) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'id'");
+  }
 public class ApplyJobResponseDTO {
     private Long applicationId;
     private String jobTitle;
@@ -20,4 +25,8 @@ public class ApplyJobResponseDTO {
     private String coverLetter;
     private String jobLocation;
     private Double jobSalary;
+    public static ApplyJobBuilder builder() {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'builder'");
+    }
 }

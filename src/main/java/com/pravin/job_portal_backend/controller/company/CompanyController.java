@@ -1,68 +1,44 @@
 package com.pravin.job_portal_backend.controller.company;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.pravin.job_portal_backend.dto.company_dtos.CompanyDTO;
-import com.pravin.job_portal_backend.service.company.CompanyServiceImpl;
+import com.pravin.job_portal_backend.service.company.CompanyService;
 
-import jakarta.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/companies")
-@Validated
+@RequiredArgsConstructor
 public class CompanyController {
 
-    @Autowired
-    private CompanyServiceImpl companyService;
+    private final CompanyService companyService;
 
-    /**
-     * Get company by ID.
-     */
+    @PostMapping
+    public ResponseEntity<CompanyDTO> createCompany(@RequestBody CompanyDTO companyDTO) {
+        return ResponseEntity.ok(companyService.createCompany(companyDTO));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CompanyDTO> updateCompany(@PathVariable Long id, @RequestBody CompanyDTO companyDTO) {
+        return ResponseEntity.ok(companyService.updateCompany(id, companyDTO));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<CompanyDTO> getCompanyById(@PathVariable Long id) {
-        CompanyDTO company = companyService.getCompanyById(id);
-        return ResponseEntity.ok(company);
+        return ResponseEntity.ok(companyService.getCompanyById(id));
     }
 
-    /**
-     * Get all companies with pagination.
-    //  */
-    // @GetMapping
-    // public ResponseEntity<Page<CompanyDTO>> getAllCompanies(Pageable pageable) {
-    //     Page<CompanyDTO> companies = companyService.getAllCompanies(pageable);
-    //     return ResponseEntity.ok(companies);
-    // }
-
-    /**
-     * Create a new company.
-     */
-    @PostMapping
-    public ResponseEntity<CompanyDTO> createCompany(@Valid @RequestBody CompanyDTO companyDTO) {
-        CompanyDTO created = companyService.createCompany(companyDTO);
-        return ResponseEntity.status(201).body(created);
+    @GetMapping
+    public ResponseEntity<List<CompanyDTO>> getAllCompanies() {
+        return ResponseEntity.ok(companyService.getAllCompanies());
     }
 
-    /**
-     * Update an existing company.
-     */
-    @PutMapping("/{id}")
-    public ResponseEntity<CompanyDTO> updateCompany(@PathVariable Long id, @Valid @RequestBody CompanyDTO companyDTO) {
-        CompanyDTO updated = companyService.updateCompany(id, companyDTO);
-        return ResponseEntity.ok(updated);
-    }
-
-    /**
-     * Delete a company by ID.
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCompany(@PathVariable Long id) {
         companyService.deleteCompany(id);
         return ResponseEntity.noContent().build();
     }
 }
-
-// Suggestion: Add @ControllerAdvice for global exception handling for
-// consistent error responses.

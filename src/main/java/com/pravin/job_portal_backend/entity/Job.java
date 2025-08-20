@@ -20,7 +20,7 @@ import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
+Job
 @Setter
 @Builder
 @ToString(exclude = { "applications", "postedBy" })

@@ -2,16 +2,14 @@ package com.pravin.job_portal_backend.service.company;
 
 import java.util.List;
 
-import org.springframework.data.domain.Pageable;
-
 import com.pravin.job_portal_backend.dto.company_dtos.CompanyDTO;
 
 public interface CompanyService {
+    CompanyDTO createCompany(CompanyDTO companyDTO);
+
     CompanyDTO getCompanyById(Long id);
 
-    List<CompanyDTO> getAllCompanies(Pageable pageable);
-
-    CompanyDTO createCompany(CompanyDTO companyDTO);
+    List<CompanyDTO> getAllCompanies();
 
     CompanyDTO updateCompany(Long id, CompanyDTO companyDTO);
 
