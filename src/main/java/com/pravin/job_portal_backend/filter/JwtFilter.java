@@ -22,7 +22,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
-    @Qualifier("LoadUserByEmail")
+    @Qualifier("LoadUserByEmail")  //this will load by email
     private LoadUserByEmail LoadUserByEmail;
 
     @Autowired
