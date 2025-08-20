@@ -1,53 +1,45 @@
 package com.pravin.job_portal_backend.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-public class SavedJob {
+@Table(name = "saved_job", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_user_job_saved", columnNames = { "user_id", "job_id" })
+})
+public class SavedJob implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    // === Primary Key ===
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
-    @ManyToOne
-    private User jobSeeker;
-
-    @ManyToOne
+    // === Job Reference ===
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "job_id", nullable = false, foreignKey = @ForeignKey(name = "fk_saved_job_job"))
     private Job job;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    // === User Reference ===
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_saved_job_user"))
     private User user;
 
-    // getters and setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getJobSeeker() {
-        return jobSeeker;
-    }
-
-    public void setJobSeeker(User jobSeeker) {
-        this.jobSeeker = jobSeeker;
-    }
-
-    public Job getJob() {
-        return job;
-    }
-
-    public void setJob(Job job) {
-        this.job = job;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
+    // === Timestamp ===
+    @Column(name = "saved_at", nullable = false, updatable = false)
+    @org.hibernate.annotations.CreationTimestamp
+    private LocalDateTime savedAt;
 }

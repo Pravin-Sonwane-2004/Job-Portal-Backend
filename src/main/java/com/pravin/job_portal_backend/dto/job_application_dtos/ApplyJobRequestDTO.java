@@ -9,6 +9,6 @@ import lombok.*;
 @Builder
 public class ApplyJobRequestDTO {
     private Long jobId;
-    private Long userId; // Candidate applying
-    private String coverLetter; // Optional
+    private Long userId; // Optional if you get from JWT auth
+    private String resumeUrl; // If resumes are uploaded
 }

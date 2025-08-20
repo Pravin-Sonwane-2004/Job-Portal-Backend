@@ -1,4 +1,4 @@
-package com.pravin.job_portal_backend.mapper.companys_mapper;
+package com.pravin.job_portal_backend.filter;
 
 
 import com.pravin.job_portal_backend.dto.company_dtos.CompanyDTO;

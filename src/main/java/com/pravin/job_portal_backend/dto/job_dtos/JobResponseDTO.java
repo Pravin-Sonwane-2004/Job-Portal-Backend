@@ -8,20 +8,18 @@ import lombok.*;
 import java.time.LocalDate;
 import java.util.List;
 
+// ✅ For sending back job info
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class JobResponseDTO {
-
     private Long id;
     private String title;
     private String location;
     private Double minSalary;
     private Double maxSalary;
-    private String currency;
-    private String company;
     private String description;
     private List<String> requirements;
     private JobType jobType;
@@ -31,4 +29,5 @@ public class JobResponseDTO {
     private LocalDate postedDate;
     private LocalDate lastDateToApply;
     private long postedDaysAgo;
+    private Long companyId;
 }

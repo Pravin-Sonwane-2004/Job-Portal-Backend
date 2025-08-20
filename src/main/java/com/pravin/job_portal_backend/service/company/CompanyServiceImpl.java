@@ -4,7 +4,7 @@ package com.pravin.job_portal_backend.service.company;
 import com.pravin.job_portal_backend.dto.company_dtos.CompanyDTO;
 import com.pravin.job_portal_backend.entity.Company;
 import com.pravin.job_portal_backend.exception.ResourceNotFoundException;
-import com.pravin.job_portal_backend.mapper.companys_mapper.CompanyMapper;
+import com.pravin.job_portal_backend.filter.CompanyMapper;
 import com.pravin.job_portal_backend.repository.CompanyRepository;
 import org.springframework.stereotype.Service;
 

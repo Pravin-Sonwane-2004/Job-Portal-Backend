@@ -121,9 +121,9 @@ public final class User {
     private Boolean isDeleted = false;
 
     /** Jobs applied by the user */
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<ApplyJob> appliedJobs = new ArrayList<>();
+    // @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    // @Builder.Default
+    // private List<ApplyJob> appliedJobs = new ArrayList<>();
 
     /** User's skills */
     @ElementCollection(fetch = FetchType.LAZY)

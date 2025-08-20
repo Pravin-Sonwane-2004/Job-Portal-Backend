@@ -32,4 +32,9 @@ public class Company {
     // One company -> Many recruiters
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Recruiter> recruiters;
+
+    public boolean isDeleted() {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'isDeleted'");
+    }
 }

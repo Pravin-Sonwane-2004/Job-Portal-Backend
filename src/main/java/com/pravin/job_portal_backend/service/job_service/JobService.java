@@ -1,49 +1,48 @@
 package com.pravin.job_portal_backend.service.job_service;
 
 import com.pravin.job_portal_backend.dto.job_dtos.*;
-
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface JobService {
 
-    // === Create ===
-    JobResponseDTO createJob(JobRequestDTO jobDto);
+    // === Core CRUD ===
+    JobResponseDTO createJob(JobRequestDTO dto);
 
-    // === Update ===
-    JobResponseDTO updateJob(Long jobId, JobRequestDTO jobDto);
+    JobResponseDTO updateJob(Long jobId, JobRequestDTO dto);
 
-    // === Delete (Hard Delete if admin, or soft delete flag) ===
-    void deleteJob(Long jobId);
+    void deleteJob(Long jobId); // Hard delete
 
-    // === Get by ID ===
     JobResponseDTO getJobById(Long jobId);
 
-    // === List all (for JOB_SEEKER display, lightweight summaries) ===
-    List<JobSummaryDTO> getAllJobs();
+    // List<JobSummaryDTO> getAllJobs();
 
-    // === Search by keyword & location ===
-    List<JobSummaryDTO> searchJobs(String keyword, String location);
+    // // === Pagination & Filtering ===
+    // Page<JobSummaryDTO> getAllJobsPaginated(
+    //         int page,
+    //         int size,
+    //         String sortBy,
+    //         String sortDir,
+    //         String jobTitle,
+    //         String jobLocation,
+    //         Double minSalary,
+    //         Double maxSalary);
 
-    // === Paginated & Filtered Jobs ===
-    Page<JobSummaryDTO> getAllJobsPaginated(
-            int page,
-            int size,
-            String sortBy,
-            String sortDir,
-            String jobTitle,
-            String jobLocation,
-            Double minSalary,
-            Double maxSalary);
+    // === Queries ===
+    List<JobSummaryDTO> getJobsByCompany(Long companyId);
 
-    // === For Admin Panel (with extra details) ===
+    // List<JobSummaryDTO> getJobsByStatus(String status); // e.g. OPEN, CLOSED, DELETED
+
+    // List<JobSummaryDTO> searchJobs(String keyword, String location); // keyword + location
+
+    // === Admin View ===
     List<JobAdminDTO> getAllJobsForAdmin();
 
-    // === Job Lifecycle Management ===
-    void closeJob(Long jobId); // Mark job as closed
-
+    // === Job State Management ===
     void markJobAsDeleted(Long jobId); // Soft delete
 
-    void restoreJob(Long jobId); // Restore a deleted job
+    void restoreJob(Long jobId); // Restore soft-deleted job
+
+    void closeJob(Long jobId); // Mark job as closed
 }

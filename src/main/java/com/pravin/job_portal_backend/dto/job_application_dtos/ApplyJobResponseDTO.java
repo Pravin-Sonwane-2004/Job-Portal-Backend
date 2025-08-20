@@ -1,5 +1,6 @@
 package com.pravin.job_portal_backend.dto.job_application_dtos;
 
+import com.pravin.job_portal_backend.enums.ApplicationStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -10,10 +11,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class ApplyJobResponseDTO {
-    private Long id;
+    private Long applicationId;
     private Long jobId;
-    private Long userId;
-    private String coverLetter;
-    private String status; // e.g., "PENDING", "ACCEPTED", "REJECTED"
+    private ApplicationStatus status;
     private LocalDateTime appliedAt;
 }
