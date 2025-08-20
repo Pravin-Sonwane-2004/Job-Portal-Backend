@@ -28,8 +28,8 @@ import java.util.List;
 @Table(name = "job", indexes = {
         @Index(name = "idx_job_title", columnList = "title"),
         @Index(name = "idx_job_location", columnList = "location"),
-        @Index(name = "idx_job_category", columnList = "category"),
-        @Index(name = "idx_job_status", columnList = "status")
+        @Index(name = "idx_job_category", columnList = "category")
+        // @Index(name = "idx_job_status", columnList = "status")
 })
 public class Job implements Serializable {
 

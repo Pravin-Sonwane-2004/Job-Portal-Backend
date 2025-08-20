@@ -1,17 +1,18 @@
 package com.pravin.job_portal_backend.service.company;
 
+import com.pravin.job_portal_backend.dto.company_dtos.CompanyRequestDTO;
+import com.pravin.job_portal_backend.dto.company_dtos.CompanyResponseDTO;
+
 import java.util.List;
 
-import com.pravin.job_portal_backend.dto.company_dtos.CompanyDTO;
-
 public interface CompanyService {
-    CompanyDTO createCompany(CompanyDTO companyDTO);
+    CompanyResponseDTO createCompany(CompanyRequestDTO companyDTO);
 
-    CompanyDTO getCompanyById(Long id);
+    CompanyResponseDTO getCompanyById(Long id);
 
-    List<CompanyDTO> getAllCompanies();
+    List<CompanyResponseDTO> getAllCompanies();
 
-    CompanyDTO updateCompany(Long id, CompanyDTO companyDTO);
+    CompanyResponseDTO updateCompany(Long id, CompanyRequestDTO companyDTO);
 
     void deleteCompany(Long id);
 }

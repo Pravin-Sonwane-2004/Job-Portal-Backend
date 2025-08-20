@@ -70,7 +70,7 @@ public class SecurityConfig {
                     .requestMatchers("/auth/**").permitAll()
 
             .requestMatchers("/api/register/**").permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/companies/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/jobs**").permitAll()
 
             // ✅ Admin endpoints
             .requestMatchers("admin/admin/all-appliers").hasRole("ADMIN")

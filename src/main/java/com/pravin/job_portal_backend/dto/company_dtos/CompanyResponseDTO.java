@@ -1,6 +1,5 @@
 package com.pravin.job_portal_backend.dto.company_dtos;
 
-
 import lombok.*;
 
 @Getter
@@ -8,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CompanyDTO {
+public class CompanyResponseDTO {
     private Long id;
     private String name;
     private String description;

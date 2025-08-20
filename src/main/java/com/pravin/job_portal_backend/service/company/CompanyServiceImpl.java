@@ -1,10 +1,10 @@
 package com.pravin.job_portal_backend.service.company;
 
-
-import com.pravin.job_portal_backend.dto.company_dtos.CompanyDTO;
+import com.pravin.job_portal_backend.dto.company_dtos.CompanyRequestDTO;
+import com.pravin.job_portal_backend.dto.company_dtos.CompanyResponseDTO;
 import com.pravin.job_portal_backend.entity.Company;
 import com.pravin.job_portal_backend.exception.ResourceNotFoundException;
-import com.pravin.job_portal_backend.filter.CompanyMapper;
+import com.pravin.job_portal_backend.mapper.company_mapper.CompanyMapper;
 import com.pravin.job_portal_backend.repository.CompanyRepository;
 import org.springframework.stereotype.Service;
 
@@ -21,20 +21,19 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CompanyDTO getCompanyById(Long id) {
+    public CompanyResponseDTO getCompanyById(Long id) {
         Company company = companyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + id));
-        return CompanyMapper.toDTO(company);
+        return CompanyMapper.toResponseDto(company);
     }
 
     @Override
-    public List<CompanyDTO> getAllCompanies() {
+    public List<CompanyResponseDTO> getAllCompanies() {
         return companyRepository.findAll()
                 .stream()
-                .map(CompanyMapper::toDTO)
+                .map(CompanyMapper::toResponseDto)
                 .collect(Collectors.toList());
     }
-
 
     @Override
     public void deleteCompany(Long id) {
@@ -44,27 +43,21 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CompanyDTO createCompany(CompanyDTO companyDTO) {
-        Company company = CompanyMapper.toEntity(companyDTO); // Convert DTO → Entity
-        Company savedCompany = companyRepository.save(company); // Save in DB
-        return CompanyMapper.toDTO(savedCompany); // Convert Entity → DTO
+    public CompanyResponseDTO createCompany(CompanyRequestDTO companyDTO) {
+        Company company = CompanyMapper.toEntity(companyDTO); // DTO → Entity
+        Company savedCompany = companyRepository.save(company);
+        return CompanyMapper.toResponseDto(savedCompany); // Entity → ResponseDTO
     }
 
     @Override
-    public CompanyDTO updateCompany(Long id, CompanyDTO companyDTO) {
+    public CompanyResponseDTO updateCompany(Long id, CompanyRequestDTO companyDTO) {
         Company existingCompany = companyRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Company not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + id));
 
-        // Update fields (only if provided in DTO)
-        existingCompany.setName(companyDTO.getName());
-        existingCompany.setDescription(companyDTO.getDescription());
-        existingCompany.setWebsite(companyDTO.getWebsite());
-        existingCompany.setLocation(companyDTO.getLocation());
-        existingCompany.setIndustry(companyDTO.getIndustry());
-        existingCompany.setContactEmail(companyDTO.getContactEmail());
+        // Use mapper method instead of manual field setting
+        CompanyMapper.updateEntityFromDto(companyDTO, existingCompany);
 
         Company updatedCompany = companyRepository.save(existingCompany);
-        return CompanyMapper.toDTO(updatedCompany);
+        return CompanyMapper.toResponseDto(updatedCompany);
     }
-
 }

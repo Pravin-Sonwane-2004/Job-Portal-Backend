@@ -2,13 +2,12 @@ package com.pravin.job_portal_backend.service.job_service;
 
 import com.pravin.job_portal_backend.dto.job_dtos.*;
 import com.pravin.job_portal_backend.entity.Company;
-import com.pravin.job_portal_backend.enums.JobStatus;
 import com.pravin.job_portal_backend.entity.Job;
+import com.pravin.job_portal_backend.enums.JobStatus;
 import com.pravin.job_portal_backend.mapper.job_mapper.JobMapper;
 import com.pravin.job_portal_backend.repository.CompanyRepository;
 import com.pravin.job_portal_backend.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +22,7 @@ public class JobServiceImpl implements JobService {
     private final JobRepository jobRepository;
     private final CompanyRepository companyRepository;
 
+    // === Create Job ===
     @Override
     public JobResponseDTO createJob(JobRequestDTO dto) {
         Company company = companyRepository.findById(dto.getCompanyId())
@@ -34,6 +34,7 @@ public class JobServiceImpl implements JobService {
         return JobMapper.toResponse(saved);
     }
 
+    // === Update Job ===
     @Override
     public JobResponseDTO updateJob(Long jobId, JobRequestDTO dto) {
         Job job = jobRepository.findById(jobId)
@@ -46,11 +47,16 @@ public class JobServiceImpl implements JobService {
         return JobMapper.toResponse(jobRepository.save(job));
     }
 
+    // === Hard Delete ===
     @Override
     public void deleteJob(Long jobId) {
-        jobRepository.deleteById(jobId); // Hard delete
+        if (!jobRepository.existsById(jobId)) {
+            throw new RuntimeException("Job not found");
+        }
+        jobRepository.deleteById(jobId);
     }
 
+    // === Get Job by Id ===
     @Override
     public JobResponseDTO getJobById(Long jobId) {
         Job job = jobRepository.findById(jobId)
@@ -58,36 +64,16 @@ public class JobServiceImpl implements JobService {
         return JobMapper.toResponse(job);
     }
 
-    // @Override
-    // public List<JobSummaryDTO> getAllJobs() {
-    //     return jobRepository.findByStatus(JobStatus.ACTIVE).stream()
-    //             .map(JobMapper::toSummary)
-    //             .collect(Collectors.toList());
-    // }
+    // === Get All Jobs (User Facing) ===
+    @Override
+    public List<JobResponseDTO> getAllJobs() {
+        return jobRepository.findAll().stream()
+                .filter(job -> job.getJobStatus() == JobStatus.ACTIVE) // ✅ show only active jobs
+                .map(JobMapper::toResponse)
+                .collect(Collectors.toList());
+    }
 
-    // @Override
-    // public List<JobSummaryDTO> getJobsByStatus(String status) {
-    //     JobStatus jobStatus;
-    //     try {
-    //         jobStatus = JobStatus.valueOf(status.toUpperCase()); // convert string to enum
-    //     } catch (IllegalArgumentException e) {
-    //         throw new RuntimeException("Invalid job status: " + status);
-    //     }
-
-    //     return jobRepository.findByStatus(jobStatus).stream()
-    //             .map(JobMapper::toSummary)
-    //             .collect(Collectors.toList());
-    // }
-
-    // @Override
-    // public List<JobSummaryDTO> searchJobs(String keyword, String location) {
-    //     return jobRepository.searchJobs(keyword, location).stream()
-    //             .map(JobMapper::toSummary)
-    //             .collect(Collectors.toList());
-    // }
-
-
-
+    // === Get Jobs by Company ===
     @Override
     public List<JobSummaryDTO> getJobsByCompany(Long companyId) {
         return jobRepository.findByCompanyId(companyId).stream()
@@ -95,6 +81,7 @@ public class JobServiceImpl implements JobService {
                 .collect(Collectors.toList());
     }
 
+    // === Admin: Get All Jobs ===
     @Override
     public List<JobAdminDTO> getAllJobsForAdmin() {
         return jobRepository.findAll().stream()
@@ -107,7 +94,7 @@ public class JobServiceImpl implements JobService {
                 .collect(Collectors.toList());
     }
 
-    // === Soft delete ===
+    // === Soft Delete ===
     @Override
     public void markJobAsDeleted(Long jobId) {
         Job job = jobRepository.findById(jobId)
@@ -116,7 +103,7 @@ public class JobServiceImpl implements JobService {
         jobRepository.save(job);
     }
 
-    // === Restore soft-deleted job ===
+    // === Restore Job ===
     @Override
     public void restoreJob(Long jobId) {
         Job job = jobRepository.findById(jobId)
@@ -125,37 +112,12 @@ public class JobServiceImpl implements JobService {
         jobRepository.save(job);
     }
 
-    // === Close job ===
+    // === Close Job ===
     @Override
     public void closeJob(Long jobId) {
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new RuntimeException("Job not found"));
         job.setJobStatus(JobStatus.CLOSED);
         jobRepository.save(job);
-
     }
-
-
-    // @Override
-    // public Page<JobSummaryDTO> getAllJobsPaginated(
-    //         int page, int size, String sortBy, String sortDir,
-    //         String jobTitle, String jobLocation,
-    //         Double minSalary, Double maxSalary) {
-
-    //     Pageable pageable = PageRequest.of(
-    //             page,
-    //             size,
-    //             sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending());
-
-    //     // Pass nulls if not provided
-    //     Page<Job> jobs = jobRepository.filterJobs(
-    //             (jobTitle == null || jobTitle.isBlank()) ? null : jobTitle,
-    //             (jobLocation == null || jobLocation.isBlank()) ? null : jobLocation,
-    //             minSalary,
-    //             maxSalary,
-    //             pageable);
-
-    //     return jobs.map(JobMapper::toSummary);
-    // }
-
 }

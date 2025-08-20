@@ -1,10 +1,8 @@
 package com.pravin.job_portal_backend.entity;
 
 import java.util.List;
-
 import jakarta.persistence.*;
 import lombok.*;
-
 
 @Entity
 @Getter
@@ -25,16 +23,15 @@ public class Company {
     private String industry;
     private String contactEmail;
 
+    @Version
+    private Long version; // ✅ added for optimistic locking
+
     // One company -> Many jobs
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "company", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = false)
     private List<Job> jobs;
 
     // One company -> Many recruiters
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "company", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = false)
     private List<Recruiter> recruiters;
 
-    public boolean isDeleted() {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'isDeleted'");
-    }
 }

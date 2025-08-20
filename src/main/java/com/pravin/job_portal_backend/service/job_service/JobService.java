@@ -1,8 +1,6 @@
 package com.pravin.job_portal_backend.service.job_service;
 
 import com.pravin.job_portal_backend.dto.job_dtos.*;
-import org.springframework.data.domain.Page;
-
 import java.util.List;
 
 public interface JobService {
@@ -16,25 +14,10 @@ public interface JobService {
 
     JobResponseDTO getJobById(Long jobId);
 
-    // List<JobSummaryDTO> getAllJobs();
-
-    // // === Pagination & Filtering ===
-    // Page<JobSummaryDTO> getAllJobsPaginated(
-    //         int page,
-    //         int size,
-    //         String sortBy,
-    //         String sortDir,
-    //         String jobTitle,
-    //         String jobLocation,
-    //         Double minSalary,
-    //         Double maxSalary);
+    List<JobResponseDTO> getAllJobs(); // 🔥 Changed to ResponseDTO
 
     // === Queries ===
     List<JobSummaryDTO> getJobsByCompany(Long companyId);
-
-    // List<JobSummaryDTO> getJobsByStatus(String status); // e.g. OPEN, CLOSED, DELETED
-
-    // List<JobSummaryDTO> searchJobs(String keyword, String location); // keyword + location
 
     // === Admin View ===
     List<JobAdminDTO> getAllJobsForAdmin();
