@@ -7,6 +7,7 @@ import com.pravin.job_portal_backend.mapper.user_mapper.UserAuthMapper;
 import com.pravin.job_portal_backend.service.admin.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,10 +17,10 @@ public class AdminController {
 
     private final AdminService adminService;
 
-
     /**
      * Get user by ID
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user/{id}")
     public ResponseEntity<UserRegistrationDTO> getUserById(@PathVariable Long id) {
         User user = adminService.getUserById(id);
@@ -27,9 +28,9 @@ public class AdminController {
     }
 
     /**
-     * 
      * Get user by Email
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user/email/{email}")
     public ResponseEntity<UserRegistrationDTO> getUserByEmail(@PathVariable String email) {
         User user = adminService.getUserByEmail(email);
@@ -39,6 +40,7 @@ public class AdminController {
     /**
      * Update user role
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/user/{id}/role")
     public ResponseEntity<UserRegistrationDTO> updateUserRole(
             @PathVariable Long id,
@@ -50,6 +52,7 @@ public class AdminController {
     /**
      * Block / Unblock User
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/user/{id}/block")
     public ResponseEntity<UserRegistrationDTO> toggleBlockUser(
             @PathVariable Long id,

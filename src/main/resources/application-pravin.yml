@@ -3,7 +3,7 @@ spring:
     name: jobs-backend
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/jobapp
+    url: jdbc:postgresql://localhost:5432/job-db
     USERname: postgres
     password: pravin
     driver-class-name: org.postgresql.Driver

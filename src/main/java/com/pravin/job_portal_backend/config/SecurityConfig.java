@@ -7,14 +7,18 @@ import java.util.Optional;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,184 +28,120 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.core.env.Environment;
 
 import com.pravin.job_portal_backend.filter.JwtFilter;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity // enables @PreAuthorize with hierarchy
 public class SecurityConfig {
 
-  private final JwtFilter jwtFilter;
-  private final UserDetailsService userDetailsService;
-  private final Environment environment;
+    private final JwtFilter jwtFilter;
+    private final UserDetailsService userDetailsService;
+    private final Environment environment;
 
-  public SecurityConfig(JwtFilter jwtFilter, UserDetailsService userDetailsService, Environment environment) {
-    this.jwtFilter = jwtFilter;
-    this.userDetailsService = userDetailsService;
-    this.environment = environment;
-  }
+    public SecurityConfig(JwtFilter jwtFilter, UserDetailsService userDetailsService, Environment environment) {
+        this.jwtFilter = jwtFilter;
+        this.userDetailsService = userDetailsService;
+        this.environment = environment;
+    }
+
+    // ✅ Role hierarchy: ADMIN > RECRUITER > USER
+    @Bean
+    RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl hierarchy = new RoleHierarchyImpl();
+        hierarchy.setHierarchy("ROLE_ADMIN > ROLE_RECRUITER \n ROLE_RECRUITER > ROLE_USER");
+        return hierarchy;
+    }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .cors(withDefaults())
-        .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(auth -> auth
+        http
+                .cors(withDefaults())
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
 
-            // ✅ Public: Swagger only for non-prod
-            .requestMatchers(
-                "/v3/api-docs/**",
-                "/swagger-ui/**",
-                "/swagger-ui.html",
-                "/swagger-resources/**",
-                "/webjars/**")
-            .access((authentication, context) -> {
-              boolean isProd = environment.acceptsProfiles(Profiles.of("prod"));
-              return new org.springframework.security.authorization.AuthorizationDecision(!isProd);
-            })
+                        // Swagger (only enabled for non-prod)
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-resources/**",
+                                "/webjars/**")
+                        .access((authentication, context) -> {
+                            boolean isProd = environment.acceptsProfiles(Profiles.of("prod"));
+                            return new org.springframework.security.authorization.AuthorizationDecision(!isProd);
+                        })
 
-            // ✅ Public endpoints
-                    .requestMatchers("/admin/first-admin-signup").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/companies/**").permitAll()
+                        // ✅ Public endpoints
+                        .requestMatchers("/auth/**", "/public/**", "/api/register/**").permitAll()
+                        .requestMatchers("/admin/first-admin-signup").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/jobs/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/companies/**").permitAll()
 
-            .requestMatchers("/user/jobs/paginated").permitAll()
-                    .requestMatchers("/public/**").permitAll()
-                    .requestMatchers("/auth/**").permitAll()
+                        // ✅ Admin endpoints
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/companies/**").hasRole("ADMIN")
 
-            .requestMatchers("/api/register/**").permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/jobs**").permitAll()
+                        // ✅ Recruiter endpoints
+                        .requestMatchers("/recruiter/**").hasRole("RECRUITER")
 
-            // ✅ Admin endpoints
-            .requestMatchers("admin/admin/all-appliers").hasRole("ADMIN")
-            .requestMatchers("/admin/users").hasRole("ADMIN")
-            .requestMatchers("/admin/user/{username}").hasRole("ADMIN")
-            .requestMatchers("/admin/jobs/**").hasRole("ADMIN")
-            .requestMatchers("/admin/applications/**").hasRole("ADMIN")
-            .requestMatchers("/admin/**").hasRole("ADMIN")
+                        // ✅ User endpoints
+                        .requestMatchers("/user/**").hasRole("USER")
+                        .requestMatchers("/apply/**").hasRole("USER")
+                        .requestMatchers("/api/saved-jobs/**").hasRole("USER")
+                        .requestMatchers("/api/job-alerts/**").hasRole("USER")
+                        .requestMatchers("/api/resumes/**").hasRole("USER")
+                        .requestMatchers("/api/company-reviews/**").hasRole("USER")
 
-            // ✅ Recruiter endpoints
-            .requestMatchers("/recruiter/**").hasRole("RECRUITER")
+                        // ✅ Shared (USER + ADMIN automatically handled by hierarchy)
+                        .requestMatchers("/email/**").hasRole("USER")
+                        .requestMatchers("/role-profile/**").hasRole("USER")
+                        .requestMatchers("/api/messages/**").hasRole("USER")
+                        .requestMatchers("/api/interviews/**").hasRole("USER")
 
-            // ✅ User endpoints
-            .requestMatchers("/user/jobs").hasRole("USER")
-            .requestMatchers("/user/jobs/{id}").hasRole("USER")
-            .requestMatchers("/user/jobs/sorted").hasRole("USER")
-            .requestMatchers("/user/profile").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/user/**").hasRole("USER")
+                        // ✅ Any other request requires authentication
+                        .anyRequest().authenticated())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-            // ✅ Job applications
-            .requestMatchers("/apply/applications/apply").hasRole("USER")
-            .requestMatchers("/apply/applications/my-applied-dto").hasRole("USER")
-            .requestMatchers("/apply/applications/my-applied-entities").hasRole("USER")
-            .requestMatchers("/apply/applications/cancel").hasRole("USER")
-            .requestMatchers("/apply/applications/admin/all").hasRole("ADMIN")
-            .requestMatchers("/apply/applications/**").hasRole("USER")
-
-            // ✅ Saved Jobs
-            .requestMatchers("/api/saved-jobs/user/{userId}").hasRole("USER")
-            .requestMatchers("/api/saved-jobs/save").hasRole("USER")
-            .requestMatchers("/api/saved-jobs/unsave").hasRole("USER")
-            .requestMatchers("/api/saved-jobs/**").hasRole("USER")
-
-            // ✅ User Management
-            .requestMatchers("/api/users/{id}").hasRole("ADMIN")
-            .requestMatchers("/api/users/**").hasRole("ADMIN")
-
-            // ✅ Email
-            .requestMatchers("/email/send").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/email/**").hasAnyRole("USER", "ADMIN")
-
-            // ✅ Role Profile (all endpoints)
-            .requestMatchers("/role-profile/update-profile").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/role-profile/get-profile").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/role-profile/users-name").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/role-profile/full-name").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/role-profile/**").hasAnyRole("USER", "ADMIN")
-
-            // ✅ Job Alerts
-            .requestMatchers("/api/job-alerts/user/{userId}").hasRole("USER")
-            .requestMatchers("/api/job-alerts/create").hasRole("USER")
-            .requestMatchers("/api/job-alerts/delete/{alertId}").hasRole("USER")
-            .requestMatchers("/api/job-alerts/**").hasRole("USER")
-
-            // ✅ Resumes
-            .requestMatchers("/api/resumes/user/{userId}").hasRole("USER")
-            .requestMatchers("/api/resumes/upload").hasRole("USER")
-            .requestMatchers("/api/resumes/delete/{resumeId}").hasRole("USER")
-            .requestMatchers("/api/resumes/**").hasRole("USER")
-
-            // ✅ Messages
-            .requestMatchers("/api/messages/sent/{userId}").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/messages/received/{userId}").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/messages/conversation").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/messages/send").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/messages/delete/{messageId}").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/messages/**").hasAnyRole("USER", "ADMIN")
-
-            // ✅ Companies (view: all, create/update/delete: admin)
-            .requestMatchers(HttpMethod.GET, "/api/companies/**").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/companies/**").hasRole("ADMIN")
-            .requestMatchers(HttpMethod.DELETE, "/api/companies/**").hasRole("ADMIN")
-            .requestMatchers("/api/companies/**").hasRole("ADMIN")
-
-            // ✅ Company Reviews
-            .requestMatchers("/api/company-reviews/company/{companyId}").hasRole("USER")
-            .requestMatchers("/api/company-reviews/add").hasRole("USER")
-            .requestMatchers("/api/company-reviews/delete/{reviewId}").hasRole("USER")
-            .requestMatchers("/api/company-reviews/**").hasRole("USER")
-
-            // ✅ Interviews
-            .requestMatchers("/api/interviews/user/{userId}").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/interviews/employer/{employerId}").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/interviews/application/{applicationId}").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/interviews/schedule").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/interviews/update-status/{interviewId}").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/interviews/delete/{interviewId}").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/interviews/**").hasAnyRole("USER", "ADMIN")
-
-            // ✅ All other requests require authentication
-            .anyRequest().authenticated())
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authenticationProvider(authenticationProvider())
-        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
-    return http.build();
-  }
+        return http.build();
+    }
 
     @Bean
     AuthenticationProvider authenticationProvider() {
-    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-    provider.setUserDetailsService(userDetailsService);
-    provider.setPasswordEncoder(passwordEncoder());
-    return provider;
-  }
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
 
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-    return config.getAuthenticationManager();
-  }
+        return config.getAuthenticationManager();
+    }
 
     @Bean
     PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration configuration = new CorsConfiguration();
+        CorsConfiguration configuration = new CorsConfiguration();
 
-    // ✅ Use environment variable for prod URL, fallback to localhost
-    String frontendUrl = Optional.ofNullable(System.getenv("FRONTEND_URL"))
-        .orElse("http://localhost:3000");
+        // ✅ Use environment variable for prod URL, fallback to localhost
+        String frontendUrl = Optional.ofNullable(System.getenv("FRONTEND_URL"))
+                .orElse("http://localhost:3000");
 
-    configuration.setAllowedOrigins(List.of(frontendUrl));
-    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    configuration.setAllowedHeaders(List.of("*"));
-    configuration.setAllowCredentials(true);
+        configuration.setAllowedOrigins(List.of(frontendUrl));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
 
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration);
-    return source;
-  }
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }

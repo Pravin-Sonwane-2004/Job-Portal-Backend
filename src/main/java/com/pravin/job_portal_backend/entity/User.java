@@ -15,8 +15,7 @@ import lombok.*;
  * Entity representing a user in the job portal system.
  * Includes authentication, profile, and status information.
  */
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

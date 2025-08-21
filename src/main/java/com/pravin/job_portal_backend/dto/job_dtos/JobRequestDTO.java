@@ -9,8 +9,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 // ✅ For creating/updating job
-@Getter
-@Setter
+@Data
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

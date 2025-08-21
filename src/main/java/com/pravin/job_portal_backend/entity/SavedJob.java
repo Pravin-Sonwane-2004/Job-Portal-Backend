@@ -9,8 +9,7 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@Data
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity

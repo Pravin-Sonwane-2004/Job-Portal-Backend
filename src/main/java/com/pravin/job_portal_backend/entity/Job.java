@@ -19,8 +19,7 @@ import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@Data
 @Builder
 @ToString(exclude = { "applications", "postedBy", "company" })
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)

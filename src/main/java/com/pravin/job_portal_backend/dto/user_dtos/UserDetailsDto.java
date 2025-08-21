@@ -11,8 +11,8 @@ import java.util.List;
 /**
  * DTO for User entity, excluding sensitive fields like password and reset token.
  */
-@Getter
-@Setter
+@Data
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

@@ -9,6 +9,7 @@ import com.pravin.job_portal_backend.repository.UserRepository;
 import com.pravin.job_portal_backend.service.email.EmailService;
 import com.pravin.job_portal_backend.utilis.JwtUtil;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,6 +20,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserAuthServiceImpl implements UserAuthService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserAuthServiceImpl.class);
@@ -28,50 +30,41 @@ public class UserAuthServiceImpl implements UserAuthService {
     private final EmailService emailService;
     private final JwtUtil jwtUtil;
 
-    public UserAuthServiceImpl(UserRepository repository,
-            PasswordEncoder passwordEncoder,
-            JwtUtil jwtUtil,
-            EmailService emailService) {
-        this.repository = repository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
-        this.emailService = emailService;
-    }
-
     /**
-     * Register a new user and send welcome email
+     * Register a new USER or RECRUITER.
+     * ADMIN cannot be self-registered.
      */
     @Override
     @Transactional
     public Optional<UserRegistrationDTO> register(UserRegistrationDTO registrationDto) {
         User user = UserAuthMapper.toRegistrationEntity(registrationDto);
 
-        // Check if email already exists
+        // Email already exists?
         if (repository.findByEmail(user.getEmail()).isPresent()) {
             logger.warn("Attempt to register with existing email: {}", user.getEmail());
             throw new IllegalArgumentException("Email already registered.");
         }
 
-        // Prevent ADMIN role during registration
+        // Prevent ADMIN registration
         if (user.getRole() == Role.ADMIN) {
-            logger.error("Unauthorized attempt to register with ADMIN role: {}", user.getEmail());
-            throw new IllegalArgumentException("Cannot register with ADMIN role.");
+            logger.error("Unauthorized attempt to self-register with ADMIN role: {}", user.getEmail());
+            throw new IllegalArgumentException("Cannot self-register as ADMIN.");
         }
+
+        // Assign default role if null
+        assignRole(user);
 
         // Encode password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        // Assign default role if not set or invalid
-        assignRole(user);
-
         // Save user
         User savedUser = repository.saveAndFlush(user);
-        logger.info("User {} saved with ID: {}", savedUser.getEmail(), savedUser.getId());
+        logger.info("User {} registered with role {} and ID {}",
+                savedUser.getEmail(), savedUser.getRole(), savedUser.getId());
 
-        // Send welcome email (does not break registration if fails)
+        // Send welcome email (non-blocking)
         try {
             emailService.sendRegistrationWelcomeEmail(savedUser.getEmail());
-            logger.info("Welcome email sent to {}", savedUser.getEmail());
         } catch (Exception e) {
             logger.error("Failed to send welcome email to {}", savedUser.getEmail(), e);
         }
@@ -80,7 +73,7 @@ public class UserAuthServiceImpl implements UserAuthService {
     }
 
     /**
-     * Login and generate JWT token
+     * Login for USER, RECRUITER, ADMIN
      */
     @Override
     public String loginAndGenerateToken(UserLoginDTO toLoginDto) {
@@ -91,11 +84,11 @@ public class UserAuthServiceImpl implements UserAuthService {
             throw new IllegalArgumentException("Invalid email or password");
         }
 
-        // Convert enum Role -> String for GrantedAuthority
-        String roleName = "ROLE_" + user.getRole().name(); // e.g. ROLE_USER, ROLE_ADMIN
+        // Convert role to authority
+        String roleName = "ROLE_" + user.getRole().name();
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(roleName);
 
-        // Generate token with email, userId, and role
+        // Generate JWT
         return jwtUtil.generateToken(
                 user.getEmail(),
                 user.getId(),
@@ -103,12 +96,16 @@ public class UserAuthServiceImpl implements UserAuthService {
     }
 
     /**
-     * Assign default role
+     * Ensure correct role assignment on registration.
      */
     private void assignRole(User user) {
-        if (user.getRole() == null || user.getRole() == Role.ADMIN) {
-            user.setRole(Role.USER); // enforce default role
-            logger.warn("Attempt to assign ADMIN role during registration. Defaulting to USER.");
+        if (user.getRole() == null) {
+            user.setRole(Role.USER); // default role
+            logger.info("No role provided. Defaulting to USER.");
+        } else if (user.getRole() != Role.USER && user.getRole() != Role.RECRUITER) {
+            // if somehow a wrong role is passed (like ADMIN or null)
+            user.setRole(Role.USER);
+            logger.warn("Invalid role attempt. Defaulting to USER.");
         }
     }
 }

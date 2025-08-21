@@ -22,8 +22,8 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
-    @Qualifier("LoadUserByEmail")  //this will load by email
-    private LoadUserByEmail LoadUserByEmail;
+    @Qualifier("LoadUserByEmail") // ✅ loads user details by email
+    private LoadUserByEmail loadUserByEmail;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -43,7 +43,9 @@ public class JwtFilter extends OncePerRequestFilter {
             username = jwtUtil.extractUsername(jwt);
         }
 
-        if (username != null && jwtUtil.validateToken(jwt)) {
+        if (username != null && jwtUtil.validateToken(jwt)
+                && SecurityContextHolder.getContext().getAuthentication() == null) {
+
             var roles = jwtUtil.extractRoles(jwt);
             var authorities = roles.stream()
                     .map(org.springframework.security.core.authority.SimpleGrantedAuthority::new)

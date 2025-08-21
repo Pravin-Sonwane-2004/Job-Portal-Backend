@@ -9,8 +9,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 // ✅ For sending back job info
-@Getter
-@Setter
+@Data
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

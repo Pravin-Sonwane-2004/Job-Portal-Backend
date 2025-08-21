@@ -2,8 +2,7 @@ package com.pravin.job_portal_backend.dto.company_dtos;
 
 import lombok.*;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
