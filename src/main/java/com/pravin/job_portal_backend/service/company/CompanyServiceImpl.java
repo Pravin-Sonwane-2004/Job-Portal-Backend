@@ -28,7 +28,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     private final CompanyRepository companyRepo;
     private final RecruiterRepository recruiterRepo;
-    private final UserRepository userRepo;
+    // private final UserRepository userRepo;
 
     @Override
     public CompanyResponseDTO createCompanyAsRecruiter(Long recruiterId, CompanyCreateDTO dto) {

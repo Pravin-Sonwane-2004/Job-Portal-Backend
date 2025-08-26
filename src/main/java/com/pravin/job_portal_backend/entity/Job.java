@@ -146,14 +146,4 @@ public class Job implements Serializable {
             this.lastDateToApply = LocalDate.now().plusDays(30);
         }
     }
-
-    public void setActive(boolean b) {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'setActive'");
-    }
-
-    public Double getSalary() {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'getSalary'");
-    }
 }

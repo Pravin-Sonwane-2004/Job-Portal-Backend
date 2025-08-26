@@ -53,22 +53,6 @@ public class AdminJobController {
         return ResponseEntity.ok(jobs);
     }
 
-    // === Paginated & filtered jobs ===
-    // @GetMapping("/paginated")
-    // public ResponseEntity<Page<JobSummaryDTO>> getJobsPaginated(
-    //         @RequestParam(defaultValue = "0") int page,
-    //         @RequestParam(defaultValue = "10") int size,
-    //         @RequestParam(defaultValue = "postedDate") String sortBy,
-    //         @RequestParam(defaultValue = "desc") String sortDir,
-    //         @RequestParam(required = false) String jobTitle,
-    //         @RequestParam(required = false) String jobLocation,
-    //         @RequestParam(required = false) Double minSalary,
-    //         @RequestParam(required = false) Double maxSalary) {
-    //     Page<JobSummaryDTO> jobs = jobService.getAllJobsPaginated(
-    //             page, size, sortBy, sortDir, jobTitle, jobLocation, minSalary, maxSalary);
-    //     return ResponseEntity.ok(jobs);
-    // }
-
     // === Close Job ===
     @PutMapping("/{jobId}/close")
     public ResponseEntity<Void> closeJob(@PathVariable Long jobId) {
@@ -90,12 +74,4 @@ public class AdminJobController {
         return ResponseEntity.noContent().build();
     }
 
-    // // // === Search Jobs ===
-    // @GetMapping("/search")
-    // public ResponseEntity<List<JobSummaryDTO>> searchJobs(
-    //         @RequestParam(required = false) String keyword,
-    //         @RequestParam(required = false) String location) {
-    //     List<JobSummaryDTO> jobs = jobService.searchJobs(keyword, location);
-    //     return ResponseEntity.ok(jobs);
-    // }
 }

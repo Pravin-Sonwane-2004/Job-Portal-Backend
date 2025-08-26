@@ -27,9 +27,9 @@ public class DataInitializer {
                 admin.setRole(Role.ADMIN);
 
                 userRepository.save(admin);
-                System.out.println("✅ Default admin created: " + adminEmail);
+                System.out.println("Default admin created: " + adminEmail);
             } else {
-                System.out.println("ℹ️ Admin already exists: " + adminEmail);
+                System.out.println("Admin already exists: " + adminEmail);
             }
         };
     }

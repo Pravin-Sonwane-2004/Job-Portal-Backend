@@ -66,10 +66,10 @@ public class EmailServiceImpl implements EmailService {
             helper.setText(htmlBody, true);
 
             mailSender.send(mimeMessage);
-            logger.info("✅ Registration welcome email sent to {}", recipient);
+            logger.info("Registration welcome email sent to {}", recipient);
 
         } catch (MessagingException | MailException e) {
-            logger.error("❌ Failed to send registration welcome email to {}", recipient, e);
+            logger.error("Failed to send registration welcome email to {}", recipient, e);
             throw new EmailSendFailedException("Unable to send registration welcome email to " + recipient, e);
         }
     }
@@ -79,7 +79,7 @@ public class EmailServiceImpl implements EmailService {
      */
     @Override
     @Async
-    public void sendPasswordResetEmail(@NonNull String recipient, @NonNull String resetLink) {
+    public void sendPasswordResetEmail(String recipient, String resetLink) {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);

@@ -1,13 +1,19 @@
 package com.pravin.job_portal_backend.repository;
 
-import java.util.List;
-
+import com.pravin.job_portal_backend.entity.Job;
+import com.pravin.job_portal_backend.entity.JobApplication;
+import com.pravin.job_portal_backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.pravin.job_portal_backend.entity.*;
+import java.util.List;
+import java.util.Optional;
 
 public interface JobApplicationRepository extends JpaRepository<JobApplication, Long> {
-    // List<JobApplication> findByJobSeeker(User user);
+    boolean existsByUserAndJob(User user, Job job);
 
-    List<JobApplication> findByJob(Job job);
+    List<JobApplication> findByUserId(Long userId);
+
+    List<JobApplication> findByJobId(Long jobId);
+
+    Optional<JobApplication> findByUserIdAndJobId(Long userId, Long jobId);
 }

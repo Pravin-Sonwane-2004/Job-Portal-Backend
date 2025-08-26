@@ -74,8 +74,7 @@ public class SecurityConfig {
                         })
 
                         // ✅ Public endpoints
-                        .requestMatchers("/auth/**", "/public/**", "/api/register/**").permitAll()
-                        .requestMatchers("/admin/first-admin-signup").permitAll()
+                        .requestMatchers("/auth/**", "/public/**", "/api/auth/register/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/jobs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/companies/**").permitAll()
 
