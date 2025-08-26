@@ -1,51 +1,87 @@
 package com.pravin.job_portal_backend.controller.company;
 
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import com.pravin.job_portal_backend.dto.company_dtos.CompanyRequestDTO;
-import com.pravin.job_portal_backend.dto.company_dtos.CompanyResponseDTO;
+import com.pravin.job_portal_backend.dto.company_dtos.*;
 import com.pravin.job_portal_backend.service.company.CompanyService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/companies")
 @RequiredArgsConstructor
+@RequestMapping("/api/companies")
 public class CompanyController {
 
     private final CompanyService companyService;
 
-    // CREATE company
-    @PostMapping
-    public ResponseEntity<CompanyResponseDTO> createCompany(@RequestBody CompanyRequestDTO companyDTO) {
-        return ResponseEntity.ok(companyService.createCompany(companyDTO));
+    @PostMapping("/propose/{recruiterId}")
+    @PreAuthorize("hasRole('RECRUITER')")
+    public CompanyResponseDTO proposeCompany(@PathVariable Long recruiterId, @RequestBody CompanyCreateDTO dto) {
+        return companyService.createCompanyAsRecruiter(recruiterId, dto);
     }
 
-    // UPDATE company
-    @PutMapping("/{id}")
-    public ResponseEntity<CompanyResponseDTO> updateCompany(@PathVariable Long id,
-            @RequestBody CompanyRequestDTO companyDTO) {
-        return ResponseEntity.ok(companyService.updateCompany(id, companyDTO));
+    @PatchMapping("/{companyId}/approve")
+    @PreAuthorize("hasRole('ADMIN')")
+    public CompanyResponseDTO approve(@PathVariable Long companyId, @RequestParam Long adminUserId) {
+        return companyService.approveCompany(companyId, adminUserId);
     }
 
-    // GET company by ID
+    @PatchMapping("/{companyId}/reject")
+    @PreAuthorize("hasRole('ADMIN')")
+    public CompanyResponseDTO reject(@PathVariable Long companyId,
+            @RequestParam Long adminUserId,
+            @RequestParam(required = false) String reason) {
+        return companyService.rejectCompany(companyId, adminUserId, reason);
+    }
+
+    @PatchMapping("/{companyId}")
+    @PreAuthorize("hasAnyRole('ADMIN','RECRUITER')")
+    public CompanyResponseDTO update(@PathVariable Long companyId,
+            @RequestParam Long actorUserId,
+            @RequestBody CompanyUpdateDTO dto) {
+        return companyService.updateCompany(companyId, actorUserId, dto);
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<CompanyResponseDTO> getCompanyById(@PathVariable Long id) {
-        return ResponseEntity.ok(companyService.getCompanyById(id));
+    public CompanyResponseDTO getOne(@PathVariable Long id) {
+        return companyService.getCompany(id);
     }
 
-    // GET all companies
+    @GetMapping("/pending")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<CompanyResponseDTO> pending() {
+        return companyService.listPending();
+    }
+
+    @GetMapping("/approved")
+    public List<CompanyResponseDTO> approved() {
+        return companyService.listApproved();
+    }
+
+    @GetMapping("/recruiter/{recruiterId}")
+    @PreAuthorize("hasAnyRole('ADMIN','RECRUITER')")
+    public List<CompanyResponseDTO> byRecruiter(@PathVariable Long recruiterId) {
+        return companyService.listByRecruiter(recruiterId);
+    }
+
+    @DeleteMapping("/{companyId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public void delete(@PathVariable Long companyId, @RequestParam Long adminUserId) {
+        companyService.deleteCompany(companyId, adminUserId);
+    }
+
+    @GetMapping("/search")
+    public List<CompanyResponseDTO> search(@RequestParam String keyword) {
+        return companyService.searchCompanies(keyword);
+    }
+
     @GetMapping
-    public ResponseEntity<List<CompanyResponseDTO>> getAllCompanies() {
-        return ResponseEntity.ok(companyService.getAllCompanies());
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<CompanyResponseDTO> all() {
+        return companyService.listAll();
     }
 
-    // DELETE company
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCompany(@PathVariable Long id) {
-        companyService.deleteCompany(id);
-        return ResponseEntity.noContent().build();
-    }
 }

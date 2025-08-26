@@ -1,6 +1,9 @@
 package com.pravin.job_portal_backend.entity;
 
 import java.util.List;
+
+import com.pravin.job_portal_backend.enums.CompanyStatus;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,6 +31,9 @@ public class Company {
     // One company -> Many jobs
     @OneToMany(mappedBy = "company", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = false)
     private List<Job> jobs;
+
+    @Enumerated(EnumType.STRING)
+    private CompanyStatus status = CompanyStatus.PENDING;
 
     // One company -> Many recruiters
     @OneToMany(mappedBy = "company", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = false)

@@ -6,8 +6,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CompanyRequestDTO {
-    private String name;
+public class CompanyUpdateDTO {
     private String description;
     private String website;
     private String location;
