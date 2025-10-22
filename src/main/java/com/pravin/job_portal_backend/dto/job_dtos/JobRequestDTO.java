@@ -1,7 +1,6 @@
 package com.pravin.job_portal_backend.dto.job_dtos;
 
 import com.pravin.job_portal_backend.enums.ExperienceLevel;
-import com.pravin.job_portal_backend.enums.JobStatus;
 import com.pravin.job_portal_backend.enums.JobType;
 import lombok.*;
 

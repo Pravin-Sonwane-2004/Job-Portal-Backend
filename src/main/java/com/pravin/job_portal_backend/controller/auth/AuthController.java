@@ -1,5 +1,6 @@
 package com.pravin.job_portal_backend.controller.auth;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody UserLoginDTO loginDto) {
-        return ResponseEntity.ok(userAuthService.loginAndGenerateToken(loginDto));
+    public ResponseEntity<Map<String, String>> login(@Valid @RequestBody UserLoginDTO loginDto) {
+        String token = userAuthService.loginAndGenerateToken(loginDto);
+        return ResponseEntity.ok(Map.of("token", token));
     }
+
 }

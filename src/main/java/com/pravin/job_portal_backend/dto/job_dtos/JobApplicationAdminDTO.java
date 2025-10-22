@@ -1,6 +1,5 @@
 package com.pravin.job_portal_backend.dto.job_dtos;
 
-import com.pravin.job_portal_backend.entity.Company;
 import com.pravin.job_portal_backend.enums.ApplicationStatus;
 import lombok.*;
 

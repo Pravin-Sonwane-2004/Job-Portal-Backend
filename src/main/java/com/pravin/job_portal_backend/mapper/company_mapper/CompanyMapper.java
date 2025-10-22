@@ -2,7 +2,6 @@ package com.pravin.job_portal_backend.mapper.company_mapper;
 
 
 
-import com.pravin.job_portal_backend.dto.*;
 import com.pravin.job_portal_backend.dto.company_dtos.*;
 import com.pravin.job_portal_backend.entity.Company;
 
