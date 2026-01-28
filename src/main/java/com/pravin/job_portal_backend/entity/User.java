@@ -29,7 +29,7 @@ import java.util.List;
     @Index(name = "idx_user_role", columnList = "role")
 })
 @ToString(exclude = { "appliedJobs", "skills" })
-public final class User {
+public class User {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,7 +51,7 @@ public final class User {
   private Role role;
 
   @Enumerated(EnumType.STRING)
-@Column(name = "experience_level", nullable = false)
+@Column(name = "experience_level", nullable = true)
   private ExperienceLevel experienceLevel;
 
   @Enumerated(EnumType.STRING)

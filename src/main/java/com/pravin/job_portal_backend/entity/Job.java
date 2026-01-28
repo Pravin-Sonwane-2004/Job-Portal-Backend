@@ -61,12 +61,12 @@ public class Job implements Serializable {
   // Company name
   @NotBlank
   @Size(max = 255)
-  @Column(name = "company", nullable = false, length = 255)
+  @Column(name = "company", nullable = true, length = 255)
   private String company;
 
   // Job description
   @Lob
-  @Column(name = "description", nullable = false, columnDefinition = "TEXT")
+  @Column(name = "description", nullable = true, columnDefinition = "TEXT")
   private String description;
 
   // Requirements list (skills/experience expected)
@@ -77,17 +77,17 @@ public class Job implements Serializable {
 
   // Job Type Enum
   @Enumerated(EnumType.STRING)
-  @Column(name = "job_type", nullable = false)
+  @Column(name = "job_type", nullable = true)
   private JobType jobType;
 
   // Experience Level Enum
   @Enumerated(EnumType.STRING)
-  @Column(name = "experience_level", nullable = false)
+  @Column(name = "experience_level", nullable = true)
   private ExperienceLevel experienceLevel;
 
   // Job Status Enum
   @Enumerated(EnumType.STRING)
-  @Column(name = "status", nullable = false)
+  @Column(name = "status", nullable = true)
   private JobStatus status = JobStatus.OPEN;
 
   // Job category
@@ -100,7 +100,7 @@ public class Job implements Serializable {
   private User postedBy;
 
   // Auto-generated creation time
-  @Column(name = "posted_date", nullable = false, updatable = false)
+  @Column(name = "posted_date", nullable = true, updatable = false)
   @org.hibernate.annotations.CreationTimestamp
   private LocalDate postedDate;
 
