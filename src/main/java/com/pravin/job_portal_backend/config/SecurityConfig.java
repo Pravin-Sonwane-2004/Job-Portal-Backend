@@ -55,11 +55,7 @@ public class SecurityConfig {
                 "/swagger-ui/**",
                 "/swagger-ui.html",
                 "/swagger-resources/**",
-                "/webjars/**")
-            .access((authentication, context) -> {
-              boolean isProd = environment.acceptsProfiles(Profiles.of("prod"));
-              return new org.springframework.security.authorization.AuthorizationDecision(!isProd);
-            })
+                "/webjars/**").permitAll()
 
             // ✅ Public endpoints
             .requestMatchers("/admin/first-admin-signup").permitAll()
@@ -161,8 +157,7 @@ public class SecurityConfig {
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authenticationProvider(authenticationProvider())
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
-    return http.build();
+        return http.build();
   }
 
     @Bean
