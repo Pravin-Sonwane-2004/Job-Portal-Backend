@@ -57,6 +57,21 @@ public final class ApplyJob {
   @Column(name = "cover_letter", columnDefinition = "TEXT")
   private String coverLetter;
 
+  @Column(name = "phone_number", length = 30)
+  private String phoneNumber;
+
+  @Column(name = "linkedin_url", length = 500)
+  private String linkedinUrl;
+
+  @Column(name = "portfolio_url", length = 500)
+  private String portfolioUrl;
+
+  @Column(name = "expected_salary", length = 100)
+  private String expectedSalary;
+
+  @Column(name = "notice_period", length = 100)
+  private String noticePeriod;
+
   @Column(name = "applied_from_ip", length = 45)
   private String appliedFromIp;
 

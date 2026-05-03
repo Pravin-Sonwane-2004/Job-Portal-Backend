@@ -13,6 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.pravin.job_portal_backend.utilis.JwtUtil;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +37,11 @@ public class JwtFilter extends OncePerRequestFilter {
     String jwt = null;
     if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
       jwt = authorizationHeader.substring(7);
-      username = jwtUtil.extractUsername(jwt);
+      try {
+        username = jwtUtil.extractUsername(jwt);
+      } catch (JwtException | IllegalArgumentException ex) {
+        logger.debug("Ignoring invalid JWT: " + ex.getMessage());
+      }
     }
     if (username != null) {
       if (jwtUtil.validateToken(jwt)) {

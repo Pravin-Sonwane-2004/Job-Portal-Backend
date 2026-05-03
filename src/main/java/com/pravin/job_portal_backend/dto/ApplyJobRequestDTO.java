@@ -19,6 +19,11 @@ public class ApplyJobRequestDTO {
 
   private String resumeLink; // URL to uploaded resume
   private String coverLetter; // Optional text or attachment reference
+  private String phoneNumber;
+  private String linkedinUrl;
+  private String portfolioUrl;
+  private String expectedSalary;
+  private String noticePeriod;
   private String appliedFromIp; // IP address for auditing or security
 
   private String status; // e.g., APPLIED, UNDER_REVIEW, etc. (optional default = APPLIED)

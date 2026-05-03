@@ -54,6 +54,11 @@
                   .recruiterRemarks(applyJob.getRecruiterRemarks())
                   .resumeLink(applyJob.getResumeLink())
                   .coverLetter(applyJob.getCoverLetter())
+                  .phoneNumber(applyJob.getPhoneNumber())
+                  .linkedinUrl(applyJob.getLinkedinUrl())
+                  .portfolioUrl(applyJob.getPortfolioUrl())
+                  .expectedSalary(applyJob.getExpectedSalary())
+                  .noticePeriod(applyJob.getNoticePeriod())
                   .appliedFromIp(applyJob.getAppliedFromIp())
                   .source(applyJob.getSource())
                   .userAgent(applyJob.getUserAgent())
@@ -72,6 +77,11 @@
           applyJob.setRecruiterRemarks(dto.getRecruiterRemarks());
           applyJob.setResumeLink(dto.getResumeLink());
           applyJob.setCoverLetter(dto.getCoverLetter());
+          applyJob.setPhoneNumber(dto.getPhoneNumber());
+          applyJob.setLinkedinUrl(dto.getLinkedinUrl());
+          applyJob.setPortfolioUrl(dto.getPortfolioUrl());
+          applyJob.setExpectedSalary(dto.getExpectedSalary());
+          applyJob.setNoticePeriod(dto.getNoticePeriod());
           applyJob.setAppliedFromIp(dto.getAppliedFromIp());
           applyJob.setSource(dto.getSource());
           applyJob.setUserAgent(dto.getUserAgent());

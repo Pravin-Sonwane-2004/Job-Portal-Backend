@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface ResumeRepository extends JpaRepository<Resume, Long> {
     List<Resume> findByUser(User user);
+    long countByUser(User user);
 }

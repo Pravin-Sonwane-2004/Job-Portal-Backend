@@ -4,6 +4,7 @@ import lombok.Data;
 import java.util.List;
 
 import com.pravin.job_portal_backend.enums.Role;
+import com.pravin.job_portal_backend.enums.ExperienceLevel;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
@@ -24,6 +25,8 @@ public class UpdateUserProfile {
     private List<String> skills;
     private String avatarUrl;
     private String designation;
+    private String jobRole;
+    private ExperienceLevel experienceLevel;
     private Boolean verified;
     private Role role;
     // private String jobRole;

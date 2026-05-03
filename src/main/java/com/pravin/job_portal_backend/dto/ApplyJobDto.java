@@ -23,6 +23,11 @@ public class ApplyJobDto {
 
   private String resumeLink;
   private String coverLetter;
+  private String phoneNumber;
+  private String linkedinUrl;
+  private String portfolioUrl;
+  private String expectedSalary;
+  private String noticePeriod;
 
   private String appliedFromIp;
   private String source;

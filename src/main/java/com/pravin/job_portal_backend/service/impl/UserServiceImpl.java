@@ -64,6 +64,8 @@ public class UserServiceImpl implements UserService {
         if (updateDTO.getSkills() != null) user.setSkills(updateDTO.getSkills());
         if (updateDTO.getAvatarUrl() != null) user.setAvatarUrl(updateDTO.getAvatarUrl());
         if (updateDTO.getDesignation() != null) user.setDesignation(updateDTO.getDesignation());
+        if (updateDTO.getJobRole() != null) user.setJobRole(updateDTO.getJobRole());
+        if (updateDTO.getExperienceLevel() != null) user.setExperienceLevel(updateDTO.getExperienceLevel());
         if (updateDTO.getVerified() != null) user.setVerified(updateDTO.getVerified());
         if (updateDTO.getRole() != null) user.setRole(updateDTO.getRole());
 

@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pravin.job_portal_backend.dto.ApplicationProfileDtoAdmin;
 import com.pravin.job_portal_backend.dto.ApplyJobDto;
+import com.pravin.job_portal_backend.dto.ApplyJobRequestDTO;
 import com.pravin.job_portal_backend.dto.ApplyJobResponseDTO;
 import com.pravin.job_portal_backend.entity.ApplyJob;
 import com.pravin.job_portal_backend.entity.Job;
@@ -35,6 +36,12 @@ public class JobApplyServiceImpl implements JobApplyService {
 
     @Override
     public String applyForJob(Long userId, Long jobId) {
+        return applyForJob(userId, jobId, null);
+    }
+
+    @Override
+    @Transactional
+    public String applyForJob(Long userId, Long jobId, ApplyJobRequestDTO request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         Job job = jobRepository.findById(jobId)
@@ -50,6 +57,20 @@ public class JobApplyServiceImpl implements JobApplyService {
                 .appliedAt(LocalDateTime.now())
                 .status("APPLIED")
                 .build();
+        if (request != null) {
+            application.setResumeLink(request.getResumeLink());
+            application.setCoverLetter(request.getCoverLetter());
+            application.setPhoneNumber(request.getPhoneNumber());
+            application.setLinkedinUrl(request.getLinkedinUrl());
+            application.setPortfolioUrl(request.getPortfolioUrl());
+            application.setExpectedSalary(request.getExpectedSalary());
+            application.setNoticePeriod(request.getNoticePeriod());
+            application.setAppliedFromIp(request.getAppliedFromIp());
+            application.setSource(request.getSource() != null ? request.getSource() : "Web");
+            application.setUserAgent(request.getUserAgent());
+        } else {
+            application.setSource("Web");
+        }
 
         jobApplicationRepository.save(application);
 
@@ -65,10 +86,29 @@ public class JobApplyServiceImpl implements JobApplyService {
 
     @Override
     @Transactional
+    public void deleteUserApplicationById(String userEmail, Long applicationId) {
+        ApplyJob application = jobApplicationRepository.findById(applicationId)
+                .orElseThrow(() -> new RuntimeException("Application not found"));
+        assertUserOwnsApplication(userEmail, application);
+        jobApplicationRepository.delete(application);
+    }
+
+    @Override
+    @Transactional
     public void updateApplicationById(Long applicationId, Map<String, Object> updates) {
         ApplyJob application = jobApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new RuntimeException("Application not found"));
         applyApplicationUpdates(application, updates);
+        jobApplicationRepository.save(application);
+    }
+
+    @Override
+    @Transactional
+    public void updateUserApplicationById(String userEmail, Long applicationId, Map<String, Object> updates) {
+        ApplyJob application = jobApplicationRepository.findById(applicationId)
+                .orElseThrow(() -> new RuntimeException("Application not found"));
+        assertUserOwnsApplication(userEmail, application);
+        applyUserEditableApplicationUpdates(application, updates);
         jobApplicationRepository.save(application);
     }
 
@@ -90,6 +130,20 @@ public class JobApplyServiceImpl implements JobApplyService {
             Object value = updates.get("recruiterRemarks");
             application.setRecruiterRemarks(value != null ? String.valueOf(value) : null);
         }
+    }
+
+    private void applyUserEditableApplicationUpdates(ApplyJob application, Map<String, Object> updates) {
+        if (updates.containsKey("resumeLink")) application.setResumeLink(stringValue(updates.get("resumeLink")));
+        if (updates.containsKey("coverLetter")) application.setCoverLetter(stringValue(updates.get("coverLetter")));
+        if (updates.containsKey("phoneNumber")) application.setPhoneNumber(stringValue(updates.get("phoneNumber")));
+        if (updates.containsKey("linkedinUrl")) application.setLinkedinUrl(stringValue(updates.get("linkedinUrl")));
+        if (updates.containsKey("portfolioUrl")) application.setPortfolioUrl(stringValue(updates.get("portfolioUrl")));
+        if (updates.containsKey("expectedSalary")) application.setExpectedSalary(stringValue(updates.get("expectedSalary")));
+        if (updates.containsKey("noticePeriod")) application.setNoticePeriod(stringValue(updates.get("noticePeriod")));
+    }
+
+    private String stringValue(Object value) {
+        return value != null ? String.valueOf(value) : null;
     }
 
     @Override
@@ -212,6 +266,13 @@ public class JobApplyServiceImpl implements JobApplyService {
         }
     }
 
+    private void assertUserOwnsApplication(String userEmail, ApplyJob application) {
+        User user = application.getUser();
+        if (user == null || !userEmail.equalsIgnoreCase(user.getEmail())) {
+            throw new AccessDeniedException("You can only manage your own applications.");
+        }
+    }
+
     @Override
     public List<ApplyJobResponseDTO> getAppliedJobByUserDTO(Long userId) {
         User user = userRepository.findById(userId)
@@ -233,6 +294,11 @@ public class JobApplyServiceImpl implements JobApplyService {
                             app.getRecruiterRemarks(),
                             app.getResumeLink(),
                             app.getCoverLetter(),
+                            app.getPhoneNumber(),
+                            app.getLinkedinUrl(),
+                            app.getPortfolioUrl(),
+                            app.getExpectedSalary(),
+                            app.getNoticePeriod(),
                             app.getAppliedFromIp(),
                             app.getSource(),
                             app.getUserAgent());

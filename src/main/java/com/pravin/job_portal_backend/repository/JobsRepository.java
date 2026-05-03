@@ -9,4 +9,7 @@ import java.util.List;
 
 public interface JobsRepository extends JpaRepository<Job, Long> {
   List<Job> findByPostedBy(User postedBy);
+  long countByPostedBy(User postedBy);
+  List<Job> findByCompanyIgnoreCase(String company);
+  long countByCompanyIgnoreCase(String company);
 }

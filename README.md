@@ -1,182 +1,230 @@
-# Job Portal Backend Project
+# Job Portal Backend
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![GitHub stars](https://img.shields.io/github/stars/Pravin-Sonwane-2004/Job-Portal-Backend.svg?style=social)](https://github.com/Pravin-Sonwane-2004/Job-Portal-Backend/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/Pravin-Sonwane-2004/Job-Portal-Backend.svg?style=social)](https://github.com/Pravin-Sonwane-2004/Job-Portal-Backend/network/members)
-[![GitHub watchers](https://img.shields.io/github/watchers/Pravin-Sonwane-2004/Job-Portal-Backend.svg?style=social)](https://github.com/Pravin-Sonwane-2004/Job-Portal-Backend/watchers)
-[![GitHub issues](https://img.shields.io/github/issues/Pravin-Sonwane-2004/Job-Portal-Backend.svg)](https://github.com/Pravin-Sonwane-2004/Job-Portal-Backend/issues)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/Pravin-Sonwane-2004/Job-Portal-Backend.svg)](https://github.com/Pravin-Sonwane-2004/Job-Portal-Backend/pulls)
+Spring Boot REST API for a full-stack Job Portal. The backend supports candidates, recruiters, company accounts, company employees, and admins. It handles authentication, job discovery, job posting, applications, saved jobs, resumes, profile management, company portals, interviews, messaging, job alerts, email sending, and role-based dashboards.
 
----
+## Interview Pitch
 
-## Table of Contents
+This backend is built as a layered Spring Boot application. Controllers expose REST endpoints, services contain business logic, repositories handle persistence through Spring Data JPA, DTOs keep API payloads separate from database entities, and Spring Security protects routes with JWT authentication.
 
-* [About The Project](#about-the-project)
-    * [Built With](#built-with)
-* [Getting Started](#getting-started)
-    * [Prerequisites](#prerequisites)
-    * [Installation](#installation)
-* [Usage](#usage)
-* [Roadmap](#roadmap)
-* [Contributing](#contributing)
-* [License](#license)
-* [Contact](#contact)
-* [Acknowledgements](#acknowledgements)
+In interviews, explain it as:
 
----
+> "I built a job portal backend with Spring Boot, Spring Security, JWT, JPA, and MySQL. The system has candidate, recruiter, and admin flows. Candidates can register, log in, browse jobs, save jobs, apply, manage resumes, and update profiles. Recruiters can create jobs, view applications for their jobs, update application status, and search talent. Admins can manage users, jobs, and applications. I used role-based authorization, DTO mapping, a global exception handler, Swagger documentation, and a frontend-friendly CORS/proxy setup."
 
-## About The Project
+## Tech Stack
 
-This repository contains the backend application for a Job Portal. It's designed to provide the core functionalities necessary for a job board, including user management (for job seekers and recruiters), job posting, job searching, application management, and more. This project aims to offer a robust and scalable foundation for a modern job discovery and application platform.
+| Area | Technology |
+| --- | --- |
+| Language | Java 25 |
+| Framework | Spring Boot 3.5.4 |
+| API | Spring Web REST |
+| Security | Spring Security, JWT |
+| Database | MySQL with Spring Data JPA/Hibernate |
+| Validation | Spring Boot Validation |
+| Email | Spring Mail / SMTP |
+| API Docs | Springdoc OpenAPI / Swagger UI |
+| Build | Maven Wrapper |
+| Deployment Support | Dockerfiles, Docker Compose |
 
-### Key Features (Assumed)
+## Main Features
 
-* **User Management:** Handling registration, login, and profiles for job seekers and recruiters.
-* **Job Posting:** Functionality for recruiters to post new job listings.
-* **Job Search & Filtering:** API endpoints for job seekers to search and filter available jobs.
-* **Application Management:** Allowing job seekers to apply for jobs and recruiters to manage applications.
-* **RESTful API:** Exposing well-defined API endpoints for interaction with a frontend application.
+- JWT login with stateless Spring Security.
+- Role-based access for `USER`, `RECRUITER`, and `ADMIN`.
+- Candidate job browsing, filtering, sorting, saving, applying, and resume management.
+- Recruiter job ownership, applicant tracking, status updates, and talent search.
+- Company signup, company profile management, employee accounts, and company-owned jobs.
+- Admin user management, job management, and application overview.
+- Forgot-password flow using expiring reset tokens and email reset links.
+- Role-aware profile insights for candidate, recruiter, and admin dashboards.
+- Companies, company reviews, interviews, messages, and job alerts promoted from drafts into active APIs.
+- DTO and mapper layer to avoid exposing entities directly.
+- Global exception handling with consistent JSON error responses.
+- Configurable CORS for local and deployed frontends.
+- Swagger UI enabled outside the `prod` Spring profile.
+- Configurable JWT secret and expiration through environment variables.
 
-### Built With
+## Project Structure
 
-* [Spring Boot](https://spring.io/projects/spring-boot)
-* [Java](https://www.java.com/)
-* [Spring Data JPA](https://spring.io/projects/spring-data-jpa)
-* [Maven](https://maven.apache.org/) (for dependency management)
-* [MySQL](https://www.mysql.com/) (or other relational database for data persistence)
-* *(Optional: Add [Spring Security](https://spring.io/projects/spring-security) for authentication and authorization)*
-
----
-
-## Getting Started
-
-To get a local copy of this Job Portal Backend Project up and running, follow these simple steps.
-
-### Prerequisites
-
-Ensure you have the following installed:
-
-* Java Development Kit (JDK) 17 or higher
-* Apache Maven (or use the included Maven wrapper)
-* A relational database server (e.g., MySQL) running and accessible.
-
-### Installation
-
-1.  **Clone the repo:**
-    ```bash
-    git clone [https://github.com/Pravin-Sonwane-2004/Job-Portal-Backend.git](https://github.com/Pravin-Sonwane-2004/Job-Portal-Backend.git)
-    ```
-2.  **Navigate to the project directory:**
-    ```bash
-    cd Job-Portal-Backend
-    ```
-3.  **Configure Database:**
-    * Create a database schema (e.g., `jobportal_db`).
-    * Update the `src/main/resources/application.properties` (or `application.yml`) file with your database connection details. For example, if using MySQL:
-        ```properties
-        # application.properties example for MySQL
-        spring.datasource.url=jdbc:mysql://localhost:3306/jobportal_db?useSSL=false&serverTimezone=UTC
-        spring.datasource.username=your_db_username
-        spring.datasource.password=your_db_password
-        spring.jpa.hibernate.ddl-auto=update # Use "create" or "create-drop" for initial setup, then switch to "update"
-        spring.jpa.show-sql=true
-        spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
-        ```
-    * Ensure your database server is running and accessible.
-
-4.  **Build the project:**
-    ```bash
-    ./mvnw clean install
-    # On Windows, use:
-    # mvnw clean install
-    ```
-
----
-
-## Usage
-
-This application provides the backend API for a Job Portal. It exposes RESTful endpoints that a separate frontend application would consume to allow users to interact with the job portal functionalities.
-
-To run the application:
-
-```bash
-./mvnw spring-boot:run
-# On Windows, use:
-# mvnw spring-boot:run
+```text
+src/main/java/com/pravin/job_portal_backend
+|-- config/          Spring Security and CORS configuration
+|-- controller/      REST endpoints grouped by feature and role
+|-- dto/             Request and response objects used by the API
+|-- entity/          JPA entities mapped to database tables
+|-- enums/           Role, status, job type, and experience enums
+|-- exception/       Global and custom exception handling
+|-- filter/          JWT request filter
+|-- mapper/          Entity-to-DTO conversion helpers
+|-- repository/      Spring Data JPA repositories
+|-- service/         Service interfaces and implementations
+|-- utilis/          JWT helper utilities
 ```
 
-Once running, the application will be accessible via its configured port (typically 8080). You can interact with its API endpoints using tools like Postman or by integrating it with a frontend.
+Some `working on` packages contain planned modules such as companies, reviews, messages, job alerts, and interviews. They are a good roadmap topic, but the core production flow is the user/job/application/resume/security flow.
 
-Example API Endpoints (conceptual):
-* `POST /api/auth/register` - Register a new user (job seeker/recruiter)
-* `POST /api/auth/login` - Authenticate a user
-* `POST /api/jobs` - Post a new job (for recruiters)
-* `GET /api/jobs` - Get all job listings
-* `GET /api/jobs/{id}` - Get details of a specific job
-* `POST /api/jobs/{id}/apply` - Apply for a job (for job seekers)
+## Architecture Flow
 
----
+1. A user signs up or logs in through `/public/signup` or `/public/login`.
+2. On successful login, the backend returns a JWT containing the username, user id, and roles.
+3. The frontend sends the token in the `Authorization: Bearer <token>` header.
+4. `JwtFilter` validates the token on every protected request and sets Spring Security authentication.
+5. `SecurityConfig` checks the requested endpoint against role rules.
+6. Controllers call services, services call repositories, and DTOs are returned to the frontend.
 
-## Roadmap
+## Environment Variables
 
-See the [open issues](https://github.com/Pravin-Sonwane-2004/Job-Portal-Backend/issues) for a full list of proposed features (and known issues).
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `SPRING_PROFILES_ACTIVE` | No | Defaults to `pravin` |
+| `PORT` | No | Defaults to `8080` |
+| `SPRING_DATASOURCE_USERNAME` | Yes | Database username |
+| `SPRING_DATASOURCE_PASSWORD` | Yes | Database password |
+| `SMTP_USERNAME` | Yes, for email | Gmail/SMTP username |
+| `SMTP_PASSWORD` | Yes, for email | Gmail/SMTP app password |
+| `JWT_SECRET` | Recommended | JWT signing secret, at least 32 characters |
+| `JWT_EXPIRATION_MS` | No | Defaults to `3600000` milliseconds |
+| `PASSWORD_RESET_EXPIRY_MINUTES` | No | Defaults to `30` minutes |
+| `FRONTEND_URL` | No | One allowed frontend origin |
+| `FRONTEND_URLS` | No | Comma-separated allowed frontend origins |
 
-* [ ] Implement robust authentication and authorization mechanisms (e.g., JWT).
-* [ ] Add advanced job search capabilities (full-text search, location-based).
-* [ ] Develop recruiter dashboards for managing job posts and applications.
-* [ ] Create job seeker dashboards for tracking applications and saved jobs.
-* [ ] Integrate email notifications for job alerts and application status.
-* [ ] Implement resume upload and parsing functionality.
-* [ ] Enhance error handling and validation.
-* [ ] Dockerize the application for easier deployment.
-* [ ] Write comprehensive unit and integration tests.
+Local defaults are defined in `src/main/resources/application.yml` and `application-pravin.yml`.
 
----
+## Local Setup
 
-## Contributing
+1. Create a MySQL database:
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+```sql
+CREATE DATABASE jobapp;
+```
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+2. Set environment variables:
 
-1.  Fork the Project
-2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4.  Push to the Branch (`git push origin feature/AmazingFeature`)
-5.  Open a Pull Request
+```powershell
+$env:SPRING_DATASOURCE_USERNAME="root"
+$env:SPRING_DATASOURCE_PASSWORD="your_password"
+$env:SMTP_USERNAME="your_email@gmail.com"
+$env:SMTP_PASSWORD="your_app_password"
+$env:JWT_SECRET="replace-this-with-a-long-secret-key"
+```
 
----
+3. Run the backend:
 
-## License
+```powershell
+.\mvnw.cmd spring-boot:run
+```
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+The API runs at:
 
----
+```text
+http://localhost:8080
+```
 
-## Contact
+Swagger UI, when not using the `prod` profile:
 
-<p align="center">
-  <a href="mailto:pravinson@gmail.com">
-    <img src="https://img.shields.io/badge/Email-pravinson@gmail.com-red?style=for-the-badge&logo=gmail" alt="Email Badge"/>
-  </a>
-  <a href="https://github.com/Pravin-Sonwane-2004/Job-Portal-Backend">
-    <img src="https://img.shields.io/badge/GitHub-Pravin--Sonwane--2004-blue?style=for-the-badge&logo=github" alt="GitHub Badge"/>
-  </a>
-  <a href="https://www.youtube.com/@ProgrammingWithPravin">
-    <img src="https://img.shields.io/badge/YouTube-ProgrammingWithPravin-red?style=for-the-badge&logo=youtube" alt="YouTube Badge"/>
-  </a>
-  <a href="https://www.linkedin.com/in/pravin-sonwane-079a621ba/">
-    <img src="https://img.shields.io/badge/LinkedIn-PravinSonwane-blue?style=for-the-badge&logo=linkedin" alt="LinkedIn Badge"/>
-  </a>
-</p>
+```text
+http://localhost:8080/swagger-ui.html
+```
 
----
+## Useful Commands
 
-## Acknowledgements
+```powershell
+.\mvnw.cmd test
+.\mvnw.cmd clean package
+.\mvnw.cmd spring-boot:run
+```
 
-* [Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/current/reference/html/index.html)
-* [Spring Data JPA Documentation](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/)
-* [ChooseAnOpenSourceLicense](https://choosealicense.com/)
-* [Img Shields](https://shields.io/)
-* [GitHub Pages](https://pages.github.com)
+## Important API Endpoints
+
+| Feature | Method and Path | Access |
+| --- | --- | --- |
+| Health check | `GET /public/health-check` | Public |
+| Signup | `POST /public/signup` | Public |
+| Company signup | `POST /public/company/signup` | Public |
+| Login | `POST /public/login` | Public |
+| Forgot password | `POST /public/password/forgot` | Public |
+| Reset password | `POST /public/password/reset` | Public |
+| Public jobs | `GET /public/jobs/paginated` | Public |
+| Candidate jobs | `GET /user/jobs` | USER, ADMIN |
+| Job details | `GET /user/jobs/{id}` | USER, ADMIN |
+| Apply to job | `POST /apply/applications/apply?jobId={id}` | USER |
+| My applications | `GET /apply/applications/my-applied-dto` | USER |
+| Cancel application | `DELETE /apply/applications/cancel?jobId={id}` | USER |
+| Saved jobs | `GET /api/saved-jobs/user/{userId}` | USER |
+| Save job | `POST /api/saved-jobs/save?userId={id}&jobId={id}` | USER |
+| Upload resume | `POST /api/resumes/upload` | USER |
+| Profile | `GET /role-profile/get-profile` | USER, RECRUITER, ADMIN |
+| Update profile | `PUT /role-profile/update-profile` | USER, RECRUITER, ADMIN |
+| Profile insights | `GET /api/profile-insights/me` | USER, RECRUITER, ADMIN |
+| Recruiter jobs | `GET /recruiter/jobs` | RECRUITER |
+| Recruiter create job | `POST /recruiter/jobs` | RECRUITER |
+| Recruiter applications | `GET /recruiter/applications` | RECRUITER |
+| Recruiter talent search | `GET /recruiter/talent` | RECRUITER |
+| Company dashboard | `GET /company-portal/dashboard` | COMPANY_ADMIN, COMPANY_EMPLOYEE |
+| Company profile | `GET /company-portal/company` | COMPANY_ADMIN, COMPANY_EMPLOYEE |
+| Company employees | `GET /company-portal/employees` | COMPANY_ADMIN |
+| Company jobs | `GET /company-portal/jobs` | COMPANY_ADMIN, COMPANY_EMPLOYEE |
+| Create company job | `POST /company-portal/jobs` | COMPANY_ADMIN, COMPANY_EMPLOYEE |
+| Companies | `GET /api/companies` | Public |
+| Company reviews | `GET /api/company-reviews/company/{companyId}` | Public |
+| Job alerts | `GET /api/job-alerts/me` | USER |
+| Messages | `GET /api/messages/inbox` | Authenticated roles |
+| Interviews | `GET /api/interviews/me` | Authenticated roles |
+| Admin users | `GET /admin/users` | ADMIN |
+| Admin create job | `POST /admin/jobs` | ADMIN |
+| Admin applications | `GET /admin/applications` | ADMIN |
+| Send email | `POST /email/send` | Authenticated roles |
+
+## Security Design
+
+- Passwords are verified through Spring Security authentication.
+- Tokens are signed with HMAC using `JWT_SECRET`.
+- JWT expiry defaults to one hour and can be changed with `JWT_EXPIRATION_MS`.
+- The app is stateless: no server-side session is required.
+- CORS allows local frontend ports and optional deployed frontend origins.
+- Swagger endpoints are blocked when the `prod` profile is active.
+
+## Database Notes
+
+The main entities are:
+
+- `User`
+- `Job`
+- `ApplyJob`
+- `SavedJob`
+- `Resume`
+- `EmailRequest`
+
+The current local profile uses:
+
+```yaml
+spring.jpa.hibernate.ddl-auto: create
+```
+
+That recreates tables during startup. For persistent local work or deployment, change it to:
+
+```yaml
+spring.jpa.hibernate.ddl-auto: update
+```
+
+For production, prefer migrations such as Flyway or Liquibase.
+
+## How To Explain The Backend In Interviews
+
+Focus on these points:
+
+- "I separated responsibilities into controller, service, repository, DTO, mapper, and entity layers."
+- "I used JWT because the frontend is a separate SPA and the backend should stay stateless."
+- "I modelled three real product roles: candidate, recruiter, and admin."
+- "I protected endpoints with role-based authorization in `SecurityConfig`."
+- "I kept recruiter actions scoped to the authenticated recruiter's own jobs."
+- "I used DTOs so the API contract is independent from database internals."
+- "I added global exception handling so errors follow a consistent response shape."
+- "I used Swagger UI so the API can be tested and explained quickly."
+
+## Future Enhancements
+
+- Add integration tests for auth, job application, and recruiter workflows.
+- Replace `ddl-auto` with database migrations.
+- Add refresh tokens.
+- Move planned modules out of `working on` folders into normal package names when they are ready.
+- Add file upload storage for real resume files instead of path-based upload.
+- Add pagination to recruiter/admin application lists.

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.pravin.job_portal_backend.dto.ApplyJobDto;
+import com.pravin.job_portal_backend.dto.ApplyJobRequestDTO;
 import com.pravin.job_portal_backend.dto.ApplyJobResponseDTO;
 import com.pravin.job_portal_backend.entity.User;
 import com.pravin.job_portal_backend.repository.UserRepository;
@@ -36,27 +38,36 @@ public class JobApplyController {
   // ✅ 1. Apply to a job
   @PostMapping("/apply")
   @PreAuthorize("hasRole('USER')")
-  public ResponseEntity<String> applyToJob(Authentication authentication, @RequestParam Long jobId) {
+  public ResponseEntity<String> applyToJob(Authentication authentication, @RequestParam Long jobId,
+      @RequestBody(required = false) ApplyJobRequestDTO request) {
     String email = authentication.getName();
     User user = userRepository.findByEmail(email)
         .orElseThrow(() -> new RuntimeException("User not found"));
-    String response = jobApplicationService.applyForJob(user.getId(), jobId);
+    String response = jobApplicationService.applyForJob(user.getId(), jobId, request);
     return ResponseEntity.ok(response);
   }
 
   // Delete application by application ID
   @DeleteMapping("/{applicationId}")
   @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-  public ResponseEntity<?> deleteApplicationById(@PathVariable Long applicationId) {
+  public ResponseEntity<?> deleteApplicationById(Authentication authentication, @PathVariable Long applicationId) {
+    if (hasRole(authentication, "ROLE_ADMIN")) {
       jobApplicationService.deleteApplicationById(applicationId);
+    } else {
+      jobApplicationService.deleteUserApplicationById(authentication.getName(), applicationId);
+    }
       return ResponseEntity.ok("Application deleted successfully.");
   }
 
   // Update application by application ID
   @PutMapping("/{applicationId}")
   @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-  public ResponseEntity<?> updateApplicationById(@PathVariable Long applicationId, @RequestBody Map<String, Object> updates) {
+  public ResponseEntity<?> updateApplicationById(Authentication authentication, @PathVariable Long applicationId, @RequestBody Map<String, Object> updates) {
+    if (hasRole(authentication, "ROLE_ADMIN")) {
       jobApplicationService.updateApplicationById(applicationId, updates);
+    } else {
+      jobApplicationService.updateUserApplicationById(authentication.getName(), applicationId, updates);
+    }
       return ResponseEntity.ok("Application updated successfully.");
   }
 
@@ -101,5 +112,11 @@ public class JobApplyController {
         .orElseThrow(() -> new RuntimeException("User not found"));
     String result = jobApplicationService.cancelApplication(user.getId(), jobId);
     return ResponseEntity.ok(result);
+  }
+
+  private boolean hasRole(Authentication authentication, String role) {
+    return authentication != null && authentication.getAuthorities().stream()
+        .map(GrantedAuthority::getAuthority)
+        .anyMatch(role::equals);
   }
 }

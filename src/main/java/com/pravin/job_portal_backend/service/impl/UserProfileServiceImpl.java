@@ -118,6 +118,16 @@ public class UserProfileServiceImpl implements UserProfileService {
             isUpdated = true;
         }
 
+        if (request.getJobRole() != null) {
+            user.setJobRole(request.getJobRole());
+            isUpdated = true;
+        }
+
+        if (request.getExperienceLevel() != null) {
+            user.setExperienceLevel(request.getExperienceLevel());
+            isUpdated = true;
+        }
+
         if (request.getVerified() != null) {
             user.setVerified(request.getVerified());
             isUpdated = true;

@@ -22,7 +22,10 @@ public class UserMapper {
                 .linkedinUrl(user.getLinkedinUrl())
                 .jobRole(user.getJobRole())
                 .role(user.getRole() != null ? user.getRole().name() : null)
+                .experienceLevel(user.getExperienceLevel())
                 .skills(user.getSkills() != null ? user.getSkills().stream().collect(Collectors.toList()) : null)
+                .companyId(user.getCompany() != null ? user.getCompany().getId() : null)
+                .companyName(user.getCompany() != null ? user.getCompany().getName() : null)
                 .build();
     }
 
@@ -40,6 +43,7 @@ public class UserMapper {
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setLinkedinUrl(dto.getLinkedinUrl());
         user.setJobRole(dto.getJobRole());
+        user.setExperienceLevel(dto.getExperienceLevel());
         // Role and skills should be set in service if needed
         return user;
     }

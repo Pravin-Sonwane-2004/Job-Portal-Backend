@@ -74,6 +74,10 @@ public class SecurityConfig {
             .requestMatchers("/api/register/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/companies/**").permitAll()
 
+            // ✅ Company portal
+            .requestMatchers("/company-portal/employees/**").hasRole("COMPANY_ADMIN")
+            .requestMatchers("/company-portal/**").hasAnyRole("COMPANY_ADMIN", "COMPANY_EMPLOYEE")
+
             // ✅ Admin endpoints
             .requestMatchers("admin/admin/all-appliers").hasRole("ADMIN")
             .requestMatchers("/admin/users").hasRole("ADMIN")
@@ -97,6 +101,8 @@ public class SecurityConfig {
             .requestMatchers("/apply/applications/my-applied-dto").hasRole("USER")
             .requestMatchers("/apply/applications/my-applied-entities").hasRole("USER")
             .requestMatchers("/apply/applications/cancel").hasRole("USER")
+            .requestMatchers(HttpMethod.DELETE, "/apply/applications/{applicationId}").hasAnyRole("USER", "ADMIN")
+            .requestMatchers(HttpMethod.PUT, "/apply/applications/{applicationId}").hasAnyRole("USER", "ADMIN")
             .requestMatchers("/apply/applications/admin/all").hasRole("ADMIN")
             .requestMatchers("/apply/applications/**").hasRole("USER")
 
@@ -110,16 +116,19 @@ public class SecurityConfig {
             .requestMatchers("/api/users/{id}").hasRole("ADMIN")
             .requestMatchers("/api/users/**").hasRole("ADMIN")
 
+            // ✅ Role profile insights
+            .requestMatchers("/api/profile-insights/**").hasAnyRole("USER", "ADMIN", "RECRUITER")
+
             // ✅ Email
-            .requestMatchers("/email/send").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/email/**").hasAnyRole("USER", "ADMIN")
+            .requestMatchers("/email/send").hasAnyRole("USER", "ADMIN", "RECRUITER", "COMPANY_ADMIN", "COMPANY_EMPLOYEE")
+            .requestMatchers("/email/**").hasAnyRole("USER", "ADMIN", "RECRUITER", "COMPANY_ADMIN", "COMPANY_EMPLOYEE")
 
             // ✅ Role Profile (all endpoints)
-            .requestMatchers("/role-profile/update-profile").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/role-profile/get-profile").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/role-profile/users-name").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/role-profile/full-name").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/role-profile/**").hasAnyRole("USER", "ADMIN")
+            .requestMatchers("/role-profile/update-profile").hasAnyRole("USER", "ADMIN", "RECRUITER", "COMPANY_ADMIN", "COMPANY_EMPLOYEE")
+            .requestMatchers("/role-profile/get-profile").hasAnyRole("USER", "ADMIN", "RECRUITER", "COMPANY_ADMIN", "COMPANY_EMPLOYEE")
+            .requestMatchers("/role-profile/users-name").hasAnyRole("USER", "ADMIN", "RECRUITER", "COMPANY_ADMIN", "COMPANY_EMPLOYEE")
+            .requestMatchers("/role-profile/full-name").hasAnyRole("USER", "ADMIN", "RECRUITER", "COMPANY_ADMIN", "COMPANY_EMPLOYEE")
+            .requestMatchers("/role-profile/**").hasAnyRole("USER", "ADMIN", "RECRUITER", "COMPANY_ADMIN", "COMPANY_EMPLOYEE")
 
             // ✅ Job Alerts
             .requestMatchers("/api/job-alerts/user/{userId}").hasRole("USER")
@@ -134,12 +143,7 @@ public class SecurityConfig {
             .requestMatchers("/api/resumes/**").hasRole("USER")
 
             // ✅ Messages
-            .requestMatchers("/api/messages/sent/{userId}").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/messages/received/{userId}").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/messages/conversation").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/messages/send").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/messages/delete/{messageId}").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/messages/**").hasAnyRole("USER", "ADMIN")
+            .requestMatchers("/api/messages/**").hasAnyRole("USER", "ADMIN", "RECRUITER", "COMPANY_ADMIN", "COMPANY_EMPLOYEE")
 
             // ✅ Companies (view: all, create/update/delete: admin)
             .requestMatchers(HttpMethod.GET, "/api/companies/**").permitAll()
@@ -148,19 +152,12 @@ public class SecurityConfig {
             .requestMatchers("/api/companies/**").hasRole("ADMIN")
 
             // ✅ Company Reviews
-            .requestMatchers("/api/company-reviews/company/{companyId}").hasRole("USER")
-            .requestMatchers("/api/company-reviews/add").hasRole("USER")
-            .requestMatchers("/api/company-reviews/delete/{reviewId}").hasRole("USER")
-            .requestMatchers("/api/company-reviews/**").hasRole("USER")
+            .requestMatchers(HttpMethod.GET, "/api/company-reviews/**").permitAll()
+            .requestMatchers(HttpMethod.DELETE, "/api/company-reviews/**").hasAnyRole("ADMIN")
+            .requestMatchers("/api/company-reviews/**").hasAnyRole("USER", "ADMIN")
 
             // ✅ Interviews
-            .requestMatchers("/api/interviews/user/{userId}").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/interviews/employer/{employerId}").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/interviews/application/{applicationId}").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/interviews/schedule").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/interviews/update-status/{interviewId}").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/interviews/delete/{interviewId}").hasAnyRole("USER", "ADMIN")
-            .requestMatchers("/api/interviews/**").hasAnyRole("USER", "ADMIN")
+            .requestMatchers("/api/interviews/**").hasAnyRole("USER", "ADMIN", "RECRUITER", "COMPANY_ADMIN", "COMPANY_EMPLOYEE")
 
             // ✅ All other requests require authentication
             .anyRequest().authenticated())

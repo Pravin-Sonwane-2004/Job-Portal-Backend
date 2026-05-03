@@ -93,6 +93,10 @@ private UserStatus status = UserStatus.ACTIVE;
   @Column(name = "job_role")
   private String jobRole;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "company_id")
+  private Company company;
+
   @Column(name = "is_deleted", nullable = false)
   private Boolean isDeleted = false;
 
