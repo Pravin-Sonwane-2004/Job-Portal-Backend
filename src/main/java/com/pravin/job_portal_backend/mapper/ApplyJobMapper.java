@@ -49,6 +49,14 @@
                   .userId(user != null ? user.getId() : null)
                   .jobId(job != null ? job.getId() : null)
                   .appliedAt(applyJob.getAppliedAt())
+                  .updatedAt(applyJob.getUpdatedAt())
+                  .status(applyJob.getStatus())
+                  .recruiterRemarks(applyJob.getRecruiterRemarks())
+                  .resumeLink(applyJob.getResumeLink())
+                  .coverLetter(applyJob.getCoverLetter())
+                  .appliedFromIp(applyJob.getAppliedFromIp())
+                  .source(applyJob.getSource())
+                  .userAgent(applyJob.getUserAgent())
                   .user(userDto)
                   .job(jobDto)
                   .build();
@@ -60,6 +68,13 @@
           applyJob.setId(dto.getId());
           // User and Job should be set in service if needed
           applyJob.setAppliedAt(dto.getAppliedAt());
+          applyJob.setStatus(dto.getStatus());
+          applyJob.setRecruiterRemarks(dto.getRecruiterRemarks());
+          applyJob.setResumeLink(dto.getResumeLink());
+          applyJob.setCoverLetter(dto.getCoverLetter());
+          applyJob.setAppliedFromIp(dto.getAppliedFromIp());
+          applyJob.setSource(dto.getSource());
+          applyJob.setUserAgent(dto.getUserAgent());
           return applyJob;
       }
   }

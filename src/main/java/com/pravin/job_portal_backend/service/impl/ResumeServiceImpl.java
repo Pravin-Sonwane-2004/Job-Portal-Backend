@@ -70,14 +70,20 @@ public class ResumeServiceImpl implements com.pravin.job_portal_backend.service.
     }
 
     @Override
+    @Transactional
     public ResumeDto uploadResume(User user, String filePath) {
-        // Placeholder: return null or implement logic
-        return null;
+        Resume resume = new Resume();
+        resume.setUser(user);
+        resume.setFilePath(filePath);
+        Resume saved = resumeRepository.save(resume);
+        return ResumeMapper.toDto(saved);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ResumeDto> getResumesByUser(User user) {
-        // Placeholder: return empty list or implement logic
-        return java.util.Collections.emptyList();
+        return resumeRepository.findByUser(user).stream()
+                .map(ResumeMapper::toDto)
+                .collect(Collectors.toList());
     }
 }

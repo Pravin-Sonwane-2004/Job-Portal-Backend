@@ -2,8 +2,9 @@ package com.pravin.job_portal_backend.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +15,9 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -47,7 +50,10 @@ public class SecurityConfig {
     http
         .cors(withDefaults())
         .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(auth -> auth
+            .authorizeHttpRequests(auth -> auth
+
+            // ✅ Browser preflight requests must pass before auth checks
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
             // ✅ Public: Swagger only for non-prod
             .requestMatchers(
@@ -80,9 +86,9 @@ public class SecurityConfig {
             .requestMatchers("/recruiter/**").hasRole("RECRUITER")
 
             // ✅ User endpoints
-            .requestMatchers("/user/jobs").hasRole("USER")
-            .requestMatchers("/user/jobs/{id}").hasRole("USER")
-            .requestMatchers("/user/jobs/sorted").hasRole("USER")
+            .requestMatchers("/user/jobs").hasAnyRole("USER", "ADMIN")
+            .requestMatchers("/user/jobs/{id}").hasAnyRole("USER", "ADMIN")
+            .requestMatchers("/user/jobs/sorted").hasAnyRole("USER", "ADMIN")
             .requestMatchers("/user/profile").hasAnyRole("USER", "ADMIN")
             .requestMatchers("/user/**").hasRole("USER")
 
@@ -166,6 +172,13 @@ public class SecurityConfig {
   }
 
     @Bean
+    WebSecurityCustomizer webSecurityCustomizer() {
+    return (WebSecurity web) -> web.ignoring()
+        .requestMatchers(HttpMethod.OPTIONS, "/**")
+        .requestMatchers("/public/**", "/api/register/**");
+  }
+
+    @Bean
     AuthenticationProvider authenticationProvider() {
     DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
     provider.setUserDetailsService(userDetailsService);
@@ -187,13 +200,27 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    // ✅ Use environment variable for prod URL, fallback to localhost
-    String frontendUrl = Optional.ofNullable(System.getenv("FRONTEND_URL"))
-        .orElse("http://localhost:3000");
+    List<String> allowedOriginPatterns = new ArrayList<>(List.of(
+        "http://localhost:*",
+        "http://127.0.0.1:*"));
 
-    configuration.setAllowedOrigins(List.of(frontendUrl));
+    String frontendUrls = System.getenv("FRONTEND_URLS");
+    if (frontendUrls != null && !frontendUrls.isBlank()) {
+      allowedOriginPatterns.addAll(Arrays.stream(frontendUrls.split(","))
+          .map(String::trim)
+          .filter(value -> !value.isBlank())
+          .toList());
+    }
+
+    String frontendUrl = System.getenv("FRONTEND_URL");
+    if (frontendUrl != null && !frontendUrl.isBlank()) {
+      allowedOriginPatterns.add(frontendUrl.trim());
+    }
+
+    configuration.setAllowedOriginPatterns(allowedOriginPatterns);
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(List.of("*"));
+    configuration.setExposedHeaders(List.of("Authorization"));
     configuration.setAllowCredentials(true);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

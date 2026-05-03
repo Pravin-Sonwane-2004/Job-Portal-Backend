@@ -3,6 +3,8 @@ package com.pravin.job_portal_backend.dto;
 import lombok.Data;
 import java.util.List;
 
+import com.pravin.job_portal_backend.enums.Role;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 
@@ -23,6 +25,7 @@ public class UpdateUserProfile {
     private String avatarUrl;
     private String designation;
     private Boolean verified;
+    private Role role;
     // private String jobRole;
   // private List<ApplyJob> appliedJobs;
     // private String password;

@@ -13,8 +13,11 @@ public interface JobApplyService {
     List<ApplyJobResponseDTO> getAppliedJobByUserDTO(Long userId);
     String cancelApplication(Long userId, Long jobId);
     List<ApplyJobDto> getAllApplications();
+    List<ApplyJobDto> getApplicationsForRecruiter(String recruiterEmail);
     List<ApplyJobDto> getApplicationsForJob(Long jobId);
+    List<ApplyJobDto> getApplicationsForRecruiterJob(String recruiterEmail, Long jobId);
     List<ApplyJobDto> getApplicationsByUser(Long userId);
 void deleteApplicationById(Long applicationId);
     void updateApplicationById(Long applicationId, java.util.Map<String, Object> updates);
+    void updateRecruiterApplicationById(String recruiterEmail, Long applicationId, java.util.Map<String, Object> updates);
 }

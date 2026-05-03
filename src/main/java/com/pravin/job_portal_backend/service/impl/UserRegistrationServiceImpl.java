@@ -12,7 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 
@@ -26,7 +27,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 
     @Autowired
     @Lazy
-    private BCryptPasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public Optional<UserDto> saveUser(UserLoginDTO userDTO) {
@@ -46,7 +47,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
             user.setRole(Role.ADMIN);
             logger.info("First user registered. Assigned ADMIN role to user: {}", user.getEmail());
         } else {
-            if (user.getRole() == Role.ADMIN) {
+            if (user.getRole() == Role.ADMIN && !isAuthenticatedAdmin()) {
                 logger.warn("Unauthorized attempt to assign ADMIN role to user: {}", user.getEmail());
                 throw new UnauthorizedRoleAssignmentException("Cannot assign ADMIN role without authorization.");
             }
@@ -58,6 +59,12 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         logger.info("User {} saved with ID: {}", savedUser.getEmail(), savedUser.getId());
 
         return Optional.of(UserMapper.toDto(savedUser));
+    }
+
+    private boolean isAuthenticatedAdmin() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
     }
 
     @Override

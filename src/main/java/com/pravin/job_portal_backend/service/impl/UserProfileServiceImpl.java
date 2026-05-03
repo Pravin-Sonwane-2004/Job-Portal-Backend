@@ -66,7 +66,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         }
 
         if (request.getEmail() != null) {
-            if (!isAdmin) {
+            if (!isAdmin && !request.getEmail().equalsIgnoreCase(user.getEmail())) {
                 throw new AccessDeniedException("Only admin can update email.");
             }
 
@@ -99,7 +99,7 @@ public class UserProfileServiceImpl implements UserProfileService {
           isUpdated = true;
         }
         if (request.getGithubURL() != null) {
-          user.setLinkedinUrl(request.getLinkedinUrl());
+          user.setGithubURL(request.getGithubURL());
           isUpdated = true;
         }
 
@@ -120,6 +120,14 @@ public class UserProfileServiceImpl implements UserProfileService {
 
         if (request.getVerified() != null) {
             user.setVerified(request.getVerified());
+            isUpdated = true;
+        }
+
+        if (request.getRole() != null) {
+            if (!isAdmin) {
+                throw new AccessDeniedException("Only admin can update role.");
+            }
+            user.setRole(request.getRole());
             isUpdated = true;
         }
     }

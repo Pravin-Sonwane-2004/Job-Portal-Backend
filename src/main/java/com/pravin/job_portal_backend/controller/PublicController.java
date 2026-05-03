@@ -85,7 +85,11 @@ public class PublicController {
         "**Welcome aboard and best of luck in your journey!**\n\n" +
         "Best regards,  \nThe Job Portal Team";
       com.pravin.job_portal_backend.entity.EmailRequest email = new com.pravin.job_portal_backend.entity.EmailRequest(to, subject, body);
-      emailService.sendEmail(email);
+      try {
+        emailService.sendEmail(email);
+      } catch (Exception mailError) {
+        log.warn("Welcome email could not be sent to {}: {}", to, mailError.getMessage());
+      }
       return ResponseEntity.ok("User registered successfully with ID: " + createdUser.get().getId());
     } else {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Signup failed");
@@ -108,14 +112,7 @@ public class PublicController {
       UserDto user = userOptional.get(); // ✅ Now it's safe to call getId()
       String jwt = jwtUtil.generateToken(userDetails.getUsername(), user.getId(), userDetails.getAuthorities());
 
-      // Notification info
-      String mobileId = user.getPhoneNumber();
-      String time = java.time.LocalDateTime.now().toString();
-      var notification = new java.util.HashMap<String, Object>();
-      notification.put("message", "Login successful");
-      notification.put("time", time);
-      notification.put("mobileId", mobileId);
-      return ResponseEntity.ok(Map.of("token", jwt));
+      return ResponseEntity.ok(Map.of("token", jwt, "user", user));
 
     } catch (Exception e) {
       log.error("Login failed: ", e);

@@ -7,7 +7,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pravin.job_portal_backend.dto.ApplicationProfileDtoAdmin;
 import com.pravin.job_portal_backend.dto.ApplyJobDto;
@@ -46,6 +48,7 @@ public class JobApplyServiceImpl implements JobApplyService {
                 .user(user)
                 .job(job)
                 .appliedAt(LocalDateTime.now())
+                .status("APPLIED")
                 .build();
 
         jobApplicationRepository.save(application);
@@ -61,20 +64,32 @@ public class JobApplyServiceImpl implements JobApplyService {
     }
 
     @Override
+    @Transactional
     public void updateApplicationById(Long applicationId, Map<String, Object> updates) {
         ApplyJob application = jobApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new RuntimeException("Application not found"));
-        // Only allow updating specific fields (add more as needed)
+        applyApplicationUpdates(application, updates);
+        jobApplicationRepository.save(application);
+    }
+
+    @Override
+    @Transactional
+    public void updateRecruiterApplicationById(String recruiterEmail, Long applicationId, Map<String, Object> updates) {
+        ApplyJob application = jobApplicationRepository.findById(applicationId)
+                .orElseThrow(() -> new RuntimeException("Application not found"));
+        assertRecruiterOwnsApplication(recruiterEmail, application);
+        applyApplicationUpdates(application, updates);
+        jobApplicationRepository.save(application);
+    }
+
+    private void applyApplicationUpdates(ApplyJob application, Map<String, Object> updates) {
         if (updates.containsKey("status")) {
-            // application.setStatus((String) updates.get("status"));
-            // Uncomment above and implement if status field exists in ApplyJob entity
+            application.setStatus(String.valueOf(updates.get("status")));
         }
         if (updates.containsKey("recruiterRemarks")) {
-            // application.setRecruiterRemarks((String) updates.get("recruiterRemarks"));
-            // Uncomment above and implement if recruiterRemarks field exists in ApplyJob entity
+            Object value = updates.get("recruiterRemarks");
+            application.setRecruiterRemarks(value != null ? String.valueOf(value) : null);
         }
-        // Add more fields as needed
-        jobApplicationRepository.save(application);
     }
 
     @Override
@@ -147,12 +162,34 @@ public class JobApplyServiceImpl implements JobApplyService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<ApplyJobDto> getApplicationsForRecruiter(String recruiterEmail) {
+        User recruiter = userRepository.findByEmail(recruiterEmail)
+                .orElseThrow(() -> new RuntimeException("Recruiter not found"));
+        return jobApplicationRepository.findByJob_PostedBy(recruiter).stream()
+                .map(ApplyJobMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<ApplyJobDto> getApplicationsForJob(Long jobId) {
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new RuntimeException("Job not found"));
 
-        return jobApplicationRepository.findAll().stream()
-                .filter(app -> app.getJob().getId().equals(jobId))
+        return jobApplicationRepository.findByJob(job).stream()
+                .map(ApplyJobMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ApplyJobDto> getApplicationsForRecruiterJob(String recruiterEmail, Long jobId) {
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found"));
+        if (job.getPostedBy() == null || !recruiterEmail.equalsIgnoreCase(job.getPostedBy().getEmail())) {
+            throw new AccessDeniedException("You can only view applications for your own jobs.");
+        }
+        return jobApplicationRepository.findByJob(job).stream()
                 .map(ApplyJobMapper::toDto)
                 .collect(Collectors.toList());
     }
@@ -168,9 +205,38 @@ public class JobApplyServiceImpl implements JobApplyService {
                 .collect(Collectors.toList());
     }
 
+    private void assertRecruiterOwnsApplication(String recruiterEmail, ApplyJob application) {
+        Job job = application.getJob();
+        if (job == null || job.getPostedBy() == null || !recruiterEmail.equalsIgnoreCase(job.getPostedBy().getEmail())) {
+            throw new AccessDeniedException("You can only manage applications for your own jobs.");
+        }
+    }
+
     @Override
     public List<ApplyJobResponseDTO> getAppliedJobByUserDTO(Long userId) {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'getAppliedJobByUserDTO'");
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return jobApplicationRepository.findByUser(user).stream()
+                .map(app -> {
+                    Job job = app.getJob();
+                    return new ApplyJobResponseDTO(
+                            app.getId(),
+                            job != null ? job.getTitle() : null,
+                            job != null ? job.getCompany() : null,
+                            job != null ? job.getLocation() : null,
+                            job != null ? job.getSalary() : null,
+                            job != null ? job.getPostedDate() : null,
+                            user.getEmail(),
+                            app.getAppliedAt(),
+                            app.getUpdatedAt(),
+                            app.getStatus(),
+                            app.getRecruiterRemarks(),
+                            app.getResumeLink(),
+                            app.getCoverLetter(),
+                            app.getAppliedFromIp(),
+                            app.getSource(),
+                            app.getUserAgent());
+                })
+                .collect(Collectors.toList());
     }
 }

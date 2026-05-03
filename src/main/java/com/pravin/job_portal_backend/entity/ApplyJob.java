@@ -48,6 +48,9 @@ public final class ApplyJob {
   @Column(name = "status", length = 50, nullable = false)
   private String status; // e.g., APPLIED, UNDER_REVIEW, REJECTED, HIRED
 
+  @Column(name = "recruiter_remarks", length = 1000)
+  private String recruiterRemarks;
+
   @Column(name = "resume_link", length = 500)
   private String resumeLink;
 

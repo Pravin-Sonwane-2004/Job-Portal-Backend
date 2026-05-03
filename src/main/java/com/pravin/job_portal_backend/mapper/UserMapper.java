@@ -47,6 +47,7 @@ public class UserMapper {
     public static User toEntity(UserLoginDTO userDTO) {
         if (userDTO == null) return null;
         User user = new User();
+        user.setName(userDTO.getName());
         user.setEmail(userDTO.getEmail());
         user.setPassword(userDTO.getPassword());
         user.setRole(userDTO.getRole()); // If role is an enum, you may need to convert
