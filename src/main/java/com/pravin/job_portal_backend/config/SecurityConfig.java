@@ -35,8 +35,16 @@ import com.pravin.job_portal_backend.filter.JwtFilter;
 @EnableWebSecurity
 public class SecurityConfig {
 
+  // JwtFilter is our custom servlet filter. It reads the Bearer token from the
+  // Authorization header and puts Authentication into Spring SecurityContext.
   private final JwtFilter jwtFilter;
+
+  // UserDetailsService is a Spring Security interface. DaoAuthenticationProvider
+  // calls it during login to load the user record by username/email from DB.
   private final UserDetailsService userDetailsService;
+
+  // Environment is a Spring Core object used here to check active profiles,
+  // for example to disable Swagger access when the "prod" profile is active.
   private final Environment environment;
 
   public SecurityConfig(JwtFilter jwtFilter, UserDetailsService userDetailsService, Environment environment) {
@@ -45,17 +53,23 @@ public class SecurityConfig {
     this.environment = environment;
   }
 
-    @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  @Bean
+  SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    // SecurityFilterChain is the main Spring Security configuration bean.
+    // Every HTTP request passes through this chain before it reaches a controller.
     http
+        // Enables CORS using the CorsConfigurationSource bean below.
         .cors(withDefaults())
+        // CSRF protection is usually for browser session/cookie apps. This API
+        // uses stateless JWT tokens, so CSRF is disabled.
         .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
+        .authorizeHttpRequests(auth -> auth
 
-            // ✅ Browser preflight requests must pass before auth checks
+            // Browser preflight requests must pass before auth checks.
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-            // ✅ Public: Swagger only for non-prod
+            // Swagger is public only outside production. "access" lets us make
+            // a custom AuthorizationDecision instead of using only role checks.
             .requestMatchers(
                 "/v3/api-docs/**",
                 "/swagger-ui/**",
@@ -67,18 +81,19 @@ public class SecurityConfig {
               return new org.springframework.security.authorization.AuthorizationDecision(!isProd);
             })
 
-            // ✅ Public endpoints
+            // Public endpoints do not need a JWT token.
             .requestMatchers("/admin/first-admin-signup").permitAll()
             .requestMatchers("/user/jobs/paginated").permitAll()
             .requestMatchers("/public/**").permitAll()
             .requestMatchers("/api/register/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/companies/**").permitAll()
 
-            // ✅ Company portal
+            // hasRole("X") checks for an authority named "ROLE_X".
+            // Example: hasRole("COMPANY_ADMIN") requires ROLE_COMPANY_ADMIN.
             .requestMatchers("/company-portal/employees/**").hasRole("COMPANY_ADMIN")
             .requestMatchers("/company-portal/**").hasAnyRole("COMPANY_ADMIN", "COMPANY_EMPLOYEE")
 
-            // ✅ Admin endpoints
+            // Admin endpoints need ROLE_ADMIN.
             .requestMatchers("admin/admin/all-appliers").hasRole("ADMIN")
             .requestMatchers("/admin/users").hasRole("ADMIN")
             .requestMatchers("/admin/user/{username}").hasRole("ADMIN")
@@ -86,17 +101,18 @@ public class SecurityConfig {
             .requestMatchers("/admin/applications/**").hasRole("ADMIN")
             .requestMatchers("/admin/**").hasRole("ADMIN")
 
-            // ✅ Recruiter endpoints
+            // Recruiter endpoints need ROLE_RECRUITER.
             .requestMatchers("/recruiter/**").hasRole("RECRUITER")
 
-            // ✅ User endpoints
+            // User endpoints mostly need ROLE_USER. Some read endpoints also
+            // allow ROLE_ADMIN so admins can view user-side resources.
             .requestMatchers("/user/jobs").hasAnyRole("USER", "ADMIN")
             .requestMatchers("/user/jobs/{id}").hasAnyRole("USER", "ADMIN")
             .requestMatchers("/user/jobs/sorted").hasAnyRole("USER", "ADMIN")
             .requestMatchers("/user/profile").hasAnyRole("USER", "ADMIN")
             .requestMatchers("/user/**").hasRole("USER")
 
-            // ✅ Job applications
+            // Job application permissions.
             .requestMatchers("/apply/applications/apply").hasRole("USER")
             .requestMatchers("/apply/applications/my-applied-dto").hasRole("USER")
             .requestMatchers("/apply/applications/my-applied-entities").hasRole("USER")
@@ -106,95 +122,115 @@ public class SecurityConfig {
             .requestMatchers("/apply/applications/admin/all").hasRole("ADMIN")
             .requestMatchers("/apply/applications/**").hasRole("USER")
 
-            // ✅ Saved Jobs
+            // Saved job APIs are user-only because saved jobs belong to a user.
             .requestMatchers("/api/saved-jobs/user/{userId}").hasRole("USER")
             .requestMatchers("/api/saved-jobs/save").hasRole("USER")
             .requestMatchers("/api/saved-jobs/unsave").hasRole("USER")
             .requestMatchers("/api/saved-jobs/**").hasRole("USER")
 
-            // ✅ User Management
+            // User management APIs are admin-only.
             .requestMatchers("/api/users/{id}").hasRole("ADMIN")
             .requestMatchers("/api/users/**").hasRole("ADMIN")
 
-            // ✅ Role profile insights
+            // Role profile insight APIs are shared by authenticated user roles.
             .requestMatchers("/api/profile-insights/**").hasAnyRole("USER", "ADMIN", "RECRUITER")
 
-            // ✅ Email
+            // Email APIs are allowed for all authenticated application roles.
             .requestMatchers("/email/send").hasAnyRole("USER", "ADMIN", "RECRUITER", "COMPANY_ADMIN", "COMPANY_EMPLOYEE")
             .requestMatchers("/email/**").hasAnyRole("USER", "ADMIN", "RECRUITER", "COMPANY_ADMIN", "COMPANY_EMPLOYEE")
 
-            // ✅ Role Profile (all endpoints)
+            // Role profile APIs are allowed for all authenticated application roles.
             .requestMatchers("/role-profile/update-profile").hasAnyRole("USER", "ADMIN", "RECRUITER", "COMPANY_ADMIN", "COMPANY_EMPLOYEE")
             .requestMatchers("/role-profile/get-profile").hasAnyRole("USER", "ADMIN", "RECRUITER", "COMPANY_ADMIN", "COMPANY_EMPLOYEE")
             .requestMatchers("/role-profile/users-name").hasAnyRole("USER", "ADMIN", "RECRUITER", "COMPANY_ADMIN", "COMPANY_EMPLOYEE")
             .requestMatchers("/role-profile/full-name").hasAnyRole("USER", "ADMIN", "RECRUITER", "COMPANY_ADMIN", "COMPANY_EMPLOYEE")
             .requestMatchers("/role-profile/**").hasAnyRole("USER", "ADMIN", "RECRUITER", "COMPANY_ADMIN", "COMPANY_EMPLOYEE")
 
-            // ✅ Job Alerts
+            // Job alert APIs are user-only.
             .requestMatchers("/api/job-alerts/user/{userId}").hasRole("USER")
             .requestMatchers("/api/job-alerts/create").hasRole("USER")
             .requestMatchers("/api/job-alerts/delete/{alertId}").hasRole("USER")
             .requestMatchers("/api/job-alerts/**").hasRole("USER")
 
-            // ✅ Resumes
+            // Resume APIs are user-only.
             .requestMatchers("/api/resumes/user/{userId}").hasRole("USER")
             .requestMatchers("/api/resumes/upload").hasRole("USER")
             .requestMatchers("/api/resumes/delete/{resumeId}").hasRole("USER")
             .requestMatchers("/api/resumes/**").hasRole("USER")
 
-            // ✅ Messages
+            // Message APIs are allowed for all authenticated application roles.
             .requestMatchers("/api/messages/**").hasAnyRole("USER", "ADMIN", "RECRUITER", "COMPANY_ADMIN", "COMPANY_EMPLOYEE")
 
-            // ✅ Companies (view: all, create/update/delete: admin)
+            // Company data can be viewed publicly, but write/delete actions are admin-only.
             .requestMatchers(HttpMethod.GET, "/api/companies/**").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/companies/**").hasRole("ADMIN")
             .requestMatchers(HttpMethod.DELETE, "/api/companies/**").hasRole("ADMIN")
             .requestMatchers("/api/companies/**").hasRole("ADMIN")
 
-            // ✅ Company Reviews
+            // Company reviews can be read publicly; create/update needs USER or ADMIN;
+            // delete is admin-only.
             .requestMatchers(HttpMethod.GET, "/api/company-reviews/**").permitAll()
             .requestMatchers(HttpMethod.DELETE, "/api/company-reviews/**").hasAnyRole("ADMIN")
             .requestMatchers("/api/company-reviews/**").hasAnyRole("USER", "ADMIN")
 
-            // ✅ Interviews
+            // Interview APIs are shared by authenticated user roles.
             .requestMatchers("/api/interviews/**").hasAnyRole("USER", "ADMIN", "RECRUITER", "COMPANY_ADMIN", "COMPANY_EMPLOYEE")
 
-            // ✅ All other requests require authentication
+            // If no rule above matches, the request still needs a valid authenticated user.
             .anyRequest().authenticated())
+        // STATELESS means Spring Security will not create/use an HTTP session.
+        // Each request must prove itself again with the JWT token.
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        // Registers DaoAuthenticationProvider for username/password login checks.
         .authenticationProvider(authenticationProvider())
+        // Places JwtFilter before Spring's UsernamePasswordAuthenticationFilter.
+        // So JWT authentication is prepared before Spring checks authorization rules.
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }
 
-    @Bean
-    WebSecurityCustomizer webSecurityCustomizer() {
+  @Bean
+  WebSecurityCustomizer webSecurityCustomizer() {
+    // WebSecurityCustomizer completely skips Spring Security filters for these
+    // paths. Use this only for truly public/static endpoints.
     return (WebSecurity web) -> web.ignoring()
         .requestMatchers(HttpMethod.OPTIONS, "/**")
         .requestMatchers("/public/**", "/api/register/**");
   }
 
-    @Bean
-    AuthenticationProvider authenticationProvider() {
+  @Bean
+  AuthenticationProvider authenticationProvider() {
+    // AuthenticationProvider is a Spring Security strategy interface.
+    // DaoAuthenticationProvider is Spring's DB-backed implementation:
+    // 1. call userDetailsService.loadUserByUsername(email)
+    // 2. compare raw login password with encoded DB password
+    // 3. return authenticated user + authorities if both are valid
     DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
     provider.setUserDetailsService(userDetailsService);
     provider.setPasswordEncoder(passwordEncoder());
     return provider;
   }
 
-    @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+  @Bean
+  AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    // AuthenticationManager is the entry point used by login code.
+    // In PublicController, authenticationManager.authenticate(...) delegates to
+    // the AuthenticationProvider above.
     return config.getAuthenticationManager();
   }
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
+  @Bean
+  PasswordEncoder passwordEncoder() {
+    // PasswordEncoder is a Spring Security interface. BCryptPasswordEncoder
+    // hashes passwords for storage and verifies raw login passwords safely.
     return new BCryptPasswordEncoder();
   }
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+  @Bean
+  CorsConfigurationSource corsConfigurationSource() {
+    // CORS decides which frontend origins are allowed to call this backend
+    // from a browser. Non-browser clients like Postman are not blocked by CORS.
     CorsConfiguration configuration = new CorsConfiguration();
 
     List<String> allowedOriginPatterns = new ArrayList<>(List.of(
