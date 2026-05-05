@@ -112,7 +112,7 @@ public class PublicController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found.");
       }
 
-      UserDto user = userOptional.get(); // ✅ Now it's safe to call getId()
+      UserDto user = userOptional.get(); // Now it's safe to call getId()
       String jwt = jwtUtil.generateToken(userDetails.getUsername(), user.getId(), userDetails.getAuthorities());
 
       return ResponseEntity.ok(Map.of("token", jwt, "user", user));

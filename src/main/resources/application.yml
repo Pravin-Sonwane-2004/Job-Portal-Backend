@@ -10,6 +10,9 @@ server:
 
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:3000}
+  admin:
+    email: ${APP_ADMIN_EMAIL:pravinson222@gmail.com}
+    password: ${APP_ADMIN_PASSWORD:pravinson222@gmail.com}
   jwt:
     # Use JWT_SECRET in deployed environments. The fallback keeps local setup simple.
     secret: ${JWT_SECRET:TaK+HaV^uvCHEFsEVfypW#7g9^k*Z8$V}

@@ -17,6 +17,7 @@ import com.pravin.job_portal_backend.dto.CreateJobAlertRequest;
 import com.pravin.job_portal_backend.dto.JobAlertDto;
 import com.pravin.job_portal_backend.entity.JobAlert;
 import com.pravin.job_portal_backend.entity.User;
+import com.pravin.job_portal_backend.mapper.JobAlertMapper;
 import com.pravin.job_portal_backend.repository.JobAlertRepository;
 import com.pravin.job_portal_backend.repository.UserRepository;
 
@@ -37,7 +38,9 @@ public class JobAlertController {
   @GetMapping("/me")
   public ResponseEntity<List<JobAlertDto>> myAlerts(Authentication authentication) {
     User user = userFor(authentication);
-    return ResponseEntity.ok(jobAlertRepository.findByUserOrderByCreatedAtDesc(user).stream().map(this::toDto).toList());
+    return ResponseEntity.ok(jobAlertRepository.findByUserOrderByCreatedAtDesc(user).stream()
+        .map(JobAlertMapper::toDto)
+        .toList());
   }
 
   @PostMapping
@@ -50,7 +53,7 @@ public class JobAlertController {
         .location(request.location())
         .active(true)
         .build();
-    return ResponseEntity.status(HttpStatus.CREATED).body(toDto(jobAlertRepository.save(alert)));
+    return ResponseEntity.status(HttpStatus.CREATED).body(JobAlertMapper.toDto(jobAlertRepository.save(alert)));
   }
 
   @DeleteMapping("/{alertId}")
@@ -64,7 +67,4 @@ public class JobAlertController {
         .orElseThrow(() -> new IllegalArgumentException("User not found."));
   }
 
-  private JobAlertDto toDto(JobAlert alert) {
-    return new JobAlertDto(alert.getId(), alert.getKeywords(), alert.getLocation(), alert.isActive(), alert.getCreatedAt());
-  }
 }

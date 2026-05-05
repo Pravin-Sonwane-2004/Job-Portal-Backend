@@ -12,5 +12,7 @@ public interface UserService {
     UserDto updateUserProfile(Long userId, UpdateUserProfile updateDTO);
     UserDto getUserById(Long userId);
     List<UserDto> getAllUsers();
+    List<UserDto> searchTalent(String q, String skill, String location, String experienceLevel);
+    UserDto getTalentProfile(Long userId);
     void deleteUser(Long userId);
 }

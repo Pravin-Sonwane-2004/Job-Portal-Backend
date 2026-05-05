@@ -17,6 +17,7 @@ import com.pravin.job_portal_backend.entity.Job;
 import com.pravin.job_portal_backend.entity.User;
 import com.pravin.job_portal_backend.enums.Role;
 import com.pravin.job_portal_backend.enums.UserStatus;
+import com.pravin.job_portal_backend.mapper.CompanyMapper;
 import com.pravin.job_portal_backend.mapper.JobMapper;
 import com.pravin.job_portal_backend.mapper.UserMapper;
 import com.pravin.job_portal_backend.repository.CompanyRepository;
@@ -241,15 +242,8 @@ public class CompanyPortalServiceImpl implements CompanyPortalService {
   }
 
   private CompanyDto toDto(Company company) {
-    return new CompanyDto(
-        company.getId(),
-        company.getName(),
-        company.getDescription(),
-        company.getWebsite(),
-        company.getIndustry(),
-        company.getLocation(),
-        company.getLogoUrl(),
-        company.isVerified(),
+    return CompanyMapper.toDto(
+        company,
         userRepository.countByCompany(company),
         jobsRepository.countByCompanyIgnoreCase(company.getName()));
   }

@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Optional;
 
 @Service
@@ -30,6 +32,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
     private PasswordEncoder passwordEncoder;
 
     @Override
+    @Transactional
     public Optional<UserDto> saveUser(UserLoginDTO userDTO) {
         User user = UserMapper.toEntity(userDTO);
         user.setId(null); // Ensure new user
@@ -41,24 +44,29 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        long userCount = repository.count();
-
-        if (userCount == 0) {
-            user.setRole(Role.ADMIN);
-            logger.info("First user registered. Assigned ADMIN role to user: {}", user.getEmail());
-        } else {
-            if (user.getRole() == Role.ADMIN && !isAuthenticatedAdmin()) {
-                logger.warn("Unauthorized attempt to assign ADMIN role to user: {}", user.getEmail());
-                throw new UnauthorizedRoleAssignmentException("Cannot assign ADMIN role without authorization.");
-            }
-            user.setRole(Optional.ofNullable(user.getRole()).orElse(Role.USER));
-            logger.info("Default USER role assigned to user: {}", user.getEmail());
+        if (user.getRole() == Role.ADMIN) {
+            validateAdminCreation(user.getEmail());
         }
+
+        user.setRole(Optional.ofNullable(user.getRole()).orElse(Role.USER));
+        logger.info("Assigned {} role to user: {}", user.getRole(), user.getEmail());
 
         User savedUser = repository.saveAndFlush(user);
         logger.info("User {} saved with ID: {}", savedUser.getEmail(), savedUser.getId());
 
         return Optional.of(UserMapper.toDto(savedUser));
+    }
+
+    private void validateAdminCreation(String email) {
+        if (!isAuthenticatedAdmin()) {
+            logger.warn("Unauthorized attempt to assign ADMIN role to user: {}", email);
+            throw new UnauthorizedRoleAssignmentException("Only an authenticated admin can create another admin.");
+        }
+
+        if (repository.countByRole(Role.ADMIN) > 0) {
+            logger.warn("Attempt to create more than one ADMIN user: {}", email);
+            throw new IllegalArgumentException("Only one admin is allowed in the application.");
+        }
     }
 
     private boolean isAuthenticatedAdmin() {

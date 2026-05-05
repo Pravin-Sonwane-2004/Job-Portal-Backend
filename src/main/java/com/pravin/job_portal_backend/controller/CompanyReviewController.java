@@ -18,6 +18,7 @@ import com.pravin.job_portal_backend.dto.CreateCompanyReviewRequest;
 import com.pravin.job_portal_backend.entity.Company;
 import com.pravin.job_portal_backend.entity.CompanyReview;
 import com.pravin.job_portal_backend.entity.User;
+import com.pravin.job_portal_backend.mapper.CompanyReviewMapper;
 import com.pravin.job_portal_backend.repository.CompanyRepository;
 import com.pravin.job_portal_backend.repository.CompanyReviewRepository;
 import com.pravin.job_portal_backend.repository.UserRepository;
@@ -43,7 +44,9 @@ public class CompanyReviewController {
   public ResponseEntity<List<CompanyReviewDto>> getReviews(@PathVariable Long companyId) {
     Company company = companyRepository.findById(companyId)
         .orElseThrow(() -> new IllegalArgumentException("Company not found."));
-    return ResponseEntity.ok(reviewRepository.findByCompanyOrderByCreatedAtDesc(company).stream().map(this::toDto).toList());
+    return ResponseEntity.ok(reviewRepository.findByCompanyOrderByCreatedAtDesc(company).stream()
+        .map(CompanyReviewMapper::toDto)
+        .toList());
   }
 
   @PostMapping("/company/{companyId}")
@@ -59,7 +62,7 @@ public class CompanyReviewController {
         .content(request.content())
         .rating(request.rating())
         .build();
-    return ResponseEntity.status(HttpStatus.CREATED).body(toDto(reviewRepository.save(review)));
+    return ResponseEntity.status(HttpStatus.CREATED).body(CompanyReviewMapper.toDto(reviewRepository.save(review)));
   }
 
   @DeleteMapping("/{reviewId}")
@@ -68,15 +71,4 @@ public class CompanyReviewController {
     return ResponseEntity.noContent().build();
   }
 
-  private CompanyReviewDto toDto(CompanyReview review) {
-    return new CompanyReviewDto(
-        review.getId(),
-        review.getCompany().getId(),
-        review.getCompany().getName(),
-        review.getUser().getId(),
-        review.getUser().getName(),
-        review.getContent(),
-        review.getRating(),
-        review.getCreatedAt());
-  }
 }

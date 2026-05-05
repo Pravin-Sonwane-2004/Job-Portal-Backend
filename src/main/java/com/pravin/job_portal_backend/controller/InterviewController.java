@@ -19,6 +19,7 @@ import com.pravin.job_portal_backend.dto.ScheduleInterviewRequest;
 import com.pravin.job_portal_backend.entity.ApplyJob;
 import com.pravin.job_portal_backend.entity.Interview;
 import com.pravin.job_portal_backend.entity.User;
+import com.pravin.job_portal_backend.mapper.InterviewMapper;
 import com.pravin.job_portal_backend.repository.InterviewRepository;
 import com.pravin.job_portal_backend.repository.JobApply;
 import com.pravin.job_portal_backend.repository.UserRepository;
@@ -46,7 +47,7 @@ public class InterviewController {
     List<Interview> interviews = user.getRole().name().startsWith("COMPANY") || "RECRUITER".equals(user.getRole().name())
         ? interviewRepository.findByEmployerOrderByScheduledTimeDesc(user)
         : interviewRepository.findByCandidateOrderByScheduledTimeDesc(user);
-    return ResponseEntity.ok(interviews.stream().map(this::toDto).toList());
+    return ResponseEntity.ok(interviews.stream().map(InterviewMapper::toDto).toList());
   }
 
   @PostMapping
@@ -65,7 +66,7 @@ public class InterviewController {
         .notes(request.notes())
         .status("SCHEDULED")
         .build();
-    return ResponseEntity.status(HttpStatus.CREATED).body(toDto(interviewRepository.save(interview)));
+    return ResponseEntity.status(HttpStatus.CREATED).body(InterviewMapper.toDto(interviewRepository.save(interview)));
   }
 
   @PatchMapping("/{id}/status")
@@ -73,24 +74,11 @@ public class InterviewController {
     Interview interview = interviewRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("Interview not found."));
     interview.setStatus(request.getOrDefault("status", interview.getStatus()));
-    return ResponseEntity.ok(toDto(interviewRepository.save(interview)));
+    return ResponseEntity.ok(InterviewMapper.toDto(interviewRepository.save(interview)));
   }
 
   private User userFor(String email) {
     return userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found."));
   }
 
-  private InterviewDto toDto(Interview interview) {
-    return new InterviewDto(
-        interview.getId(),
-        interview.getApplication().getId(),
-        interview.getCandidate().getId(),
-        interview.getCandidate().getName(),
-        interview.getEmployer().getId(),
-        interview.getEmployer().getName(),
-        interview.getScheduledTime(),
-        interview.getStatus(),
-        interview.getMeetingLink(),
-        interview.getNotes());
-  }
 }

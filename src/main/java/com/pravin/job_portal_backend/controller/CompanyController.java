@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pravin.job_portal_backend.dto.CompanyDto;
 import com.pravin.job_portal_backend.entity.Company;
+import com.pravin.job_portal_backend.mapper.CompanyMapper;
 import com.pravin.job_portal_backend.repository.CompanyRepository;
 import com.pravin.job_portal_backend.repository.JobsRepository;
 import com.pravin.job_portal_backend.repository.UserRepository;
@@ -60,15 +61,8 @@ public class CompanyController {
    * company object.
    */
   private CompanyDto toDto(Company company) {
-    return new CompanyDto(
-        company.getId(),
-        company.getName(),
-        company.getDescription(),
-        company.getWebsite(),
-        company.getIndustry(),
-        company.getLocation(),
-        company.getLogoUrl(),
-        company.isVerified(),
+    return CompanyMapper.toDto(
+        company,
         userRepository.countByCompany(company),
         jobsRepository.countByCompanyIgnoreCase(company.getName()));
   }

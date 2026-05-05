@@ -16,6 +16,7 @@ import com.pravin.job_portal_backend.dto.MessageDto;
 import com.pravin.job_portal_backend.dto.SendMessageRequest;
 import com.pravin.job_portal_backend.entity.Message;
 import com.pravin.job_portal_backend.entity.User;
+import com.pravin.job_portal_backend.mapper.MessageMapper;
 import com.pravin.job_portal_backend.repository.MessageRepository;
 import com.pravin.job_portal_backend.repository.UserRepository;
 
@@ -36,13 +37,17 @@ public class MessageController {
   @GetMapping("/inbox")
   public ResponseEntity<List<MessageDto>> inbox(Authentication authentication) {
     User user = userFor(authentication.getName());
-    return ResponseEntity.ok(messageRepository.findByReceiverOrderBySentAtDesc(user).stream().map(this::toDto).toList());
+    return ResponseEntity.ok(messageRepository.findByReceiverOrderBySentAtDesc(user).stream()
+        .map(MessageMapper::toDto)
+        .toList());
   }
 
   @GetMapping("/sent")
   public ResponseEntity<List<MessageDto>> sent(Authentication authentication) {
     User user = userFor(authentication.getName());
-    return ResponseEntity.ok(messageRepository.findBySenderOrderBySentAtDesc(user).stream().map(this::toDto).toList());
+    return ResponseEntity.ok(messageRepository.findBySenderOrderBySentAtDesc(user).stream()
+        .map(MessageMapper::toDto)
+        .toList());
   }
 
   @GetMapping("/conversation")
@@ -51,7 +56,7 @@ public class MessageController {
     User other = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found."));
     return ResponseEntity.ok(messageRepository
         .findBySenderAndReceiverOrReceiverAndSenderOrderBySentAtAsc(current, other, current, other)
-        .stream().map(this::toDto).toList());
+        .stream().map(MessageMapper::toDto).toList());
   }
 
   @PostMapping
@@ -60,22 +65,11 @@ public class MessageController {
     User receiver = userRepository.findById(request.receiverId())
         .orElseThrow(() -> new IllegalArgumentException("Receiver not found."));
     Message message = Message.builder().sender(sender).receiver(receiver).content(request.content()).build();
-    return ResponseEntity.status(HttpStatus.CREATED).body(toDto(messageRepository.save(message)));
+    return ResponseEntity.status(HttpStatus.CREATED).body(MessageMapper.toDto(messageRepository.save(message)));
   }
 
   private User userFor(String email) {
     return userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found."));
   }
 
-  private MessageDto toDto(Message message) {
-    return new MessageDto(
-        message.getId(),
-        message.getSender().getId(),
-        message.getSender().getName(),
-        message.getReceiver().getId(),
-        message.getReceiver().getName(),
-        message.getContent(),
-        message.getSentAt(),
-        message.isRead());
-  }
 }

@@ -87,11 +87,51 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<UserDto> searchTalent(String q, String skill, String location, String experienceLevel) {
+        String query = lower(q);
+        String skillQuery = lower(skill);
+        String locationQuery = lower(location);
+        String experienceQuery = lower(experienceLevel);
+
+        return userRepository.findByRole(Role.USER).stream()
+                .filter(user -> query == null
+                        || contains(user.getName(), query)
+                        || contains(user.getEmail(), query)
+                        || contains(user.getDesignation(), query)
+                        || contains(user.getJobRole(), query))
+                .filter(user -> skillQuery == null || (user.getSkills() != null && user.getSkills().stream()
+                        .anyMatch(value -> contains(value, skillQuery))))
+                .filter(user -> locationQuery == null || contains(user.getLocation(), locationQuery))
+                .filter(user -> experienceQuery == null || (user.getExperienceLevel() != null
+                        && user.getExperienceLevel().name().toLowerCase().contains(experienceQuery)))
+                .map(UserMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserDto getTalentProfile(Long userId) {
+        return userRepository.findById(userId)
+                .filter(user -> Role.USER.equals(user.getRole()))
+                .map(UserMapper::toDto)
+                .orElse(null);
+    }
+
+    @Override
     @Transactional
     public void deleteUser(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new RuntimeException("User not found");
         }
         userRepository.deleteById(userId);
+    }
+
+    private String lower(String value) {
+        return value == null || value.isBlank() ? null : value.toLowerCase();
+    }
+
+    private boolean contains(String value, String query) {
+        return value != null && value.toLowerCase().contains(query);
     }
 }

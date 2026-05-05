@@ -15,6 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class CorsConfig {
     @Bean
+    //Run this component before almost everything else.
     @Order(Ordered.HIGHEST_PRECEDENCE)
     CorsFilter corsFilter() {
         CorsConfiguration configuration = new CorsConfiguration();
