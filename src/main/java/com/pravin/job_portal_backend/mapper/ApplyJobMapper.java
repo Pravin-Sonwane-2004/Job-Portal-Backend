@@ -5,7 +5,16 @@ import com.pravin.job_portal_backend.entity.ApplyJob;
 import com.pravin.job_portal_backend.entity.Job;
 import com.pravin.job_portal_backend.entity.User;
 
+/**
+ * Converts ApplyJob database entities into DTOs used by controllers.
+ *
+ * Mapping is kept out of services so business logic stays readable.
+ */
 public class ApplyJobMapper {
+    /**
+     * Entity -> DTO for API responses.
+     * Nested user/job objects are delegated to their own mappers.
+     */
     public static ApplyJobDto toDto(ApplyJob applyJob) {
         if (applyJob == null) return null;
 
@@ -35,24 +44,28 @@ public class ApplyJobMapper {
                 .build();
     }
 
-      public static ApplyJob toEntity(ApplyJobDto dto) {
-          if (dto == null) return null;
-          ApplyJob applyJob = new ApplyJob();
-          applyJob.setId(dto.getId());
-          // User and Job should be set in service if needed
-          applyJob.setAppliedAt(dto.getAppliedAt());
-          applyJob.setStatus(dto.getStatus());
-          applyJob.setRecruiterRemarks(dto.getRecruiterRemarks());
-          applyJob.setResumeLink(dto.getResumeLink());
-          applyJob.setCoverLetter(dto.getCoverLetter());
-          applyJob.setPhoneNumber(dto.getPhoneNumber());
-          applyJob.setLinkedinUrl(dto.getLinkedinUrl());
-          applyJob.setPortfolioUrl(dto.getPortfolioUrl());
-          applyJob.setExpectedSalary(dto.getExpectedSalary());
-          applyJob.setNoticePeriod(dto.getNoticePeriod());
-          applyJob.setAppliedFromIp(dto.getAppliedFromIp());
-          applyJob.setSource(dto.getSource());
-          applyJob.setUserAgent(dto.getUserAgent());
-          return applyJob;
-      }
-  }
+    /**
+     * DTO -> Entity for internal use.
+     * User and Job relationships are intentionally set in the service because
+     * they must be loaded and validated from the database first.
+     */
+    public static ApplyJob toEntity(ApplyJobDto dto) {
+        if (dto == null) return null;
+        ApplyJob applyJob = new ApplyJob();
+        applyJob.setId(dto.getId());
+        applyJob.setAppliedAt(dto.getAppliedAt());
+        applyJob.setStatus(dto.getStatus());
+        applyJob.setRecruiterRemarks(dto.getRecruiterRemarks());
+        applyJob.setResumeLink(dto.getResumeLink());
+        applyJob.setCoverLetter(dto.getCoverLetter());
+        applyJob.setPhoneNumber(dto.getPhoneNumber());
+        applyJob.setLinkedinUrl(dto.getLinkedinUrl());
+        applyJob.setPortfolioUrl(dto.getPortfolioUrl());
+        applyJob.setExpectedSalary(dto.getExpectedSalary());
+        applyJob.setNoticePeriod(dto.getNoticePeriod());
+        applyJob.setAppliedFromIp(dto.getAppliedFromIp());
+        applyJob.setSource(dto.getSource());
+        applyJob.setUserAgent(dto.getUserAgent());
+        return applyJob;
+    }
+}

@@ -13,6 +13,13 @@ import com.pravin.job_portal_backend.service.interfaces.JobService;
 
 import java.util.List;
 
+/**
+ * Public/user-facing job API.
+ *
+ * Flow:
+ * HTTP request -> controller reads request parameters -> JobService applies job
+ * listing/search rules -> controller returns JobDto responses.
+ */
 @RestController
 @RequestMapping("/user")
 public class JobController {
@@ -23,16 +30,25 @@ public class JobController {
     this.jobService = jobService;
   }
 
+  /**
+   * Simple listing endpoint used when the frontend needs all jobs.
+   */
   @GetMapping("/jobs")
   public ResponseEntity<List<JobDto>> getAllJobs() {
     return ResponseEntity.ok(jobService.getAllJobs());
   }
 
+  /**
+   * Fetches one job by id. The service throws an error if the job is missing.
+   */
   @GetMapping("/jobs/{id}")
   public ResponseEntity<JobDto> getJobById(@PathVariable Long id) {
     return ResponseEntity.ok(jobService.getJobById(id));
   }
 
+  /**
+   * Listing endpoint for pages that need pagination, sorting, and filters.
+   */
   @GetMapping("/jobs/sorted")
   public ResponseEntity<Page<JobDto>> getAllJobsSortedPaginated(
       @RequestParam(defaultValue = "0") int page,

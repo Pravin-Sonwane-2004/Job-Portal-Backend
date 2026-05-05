@@ -22,6 +22,15 @@ import com.pravin.job_portal_backend.repository.JobsRepository;
 import com.pravin.job_portal_backend.repository.UserRepository;
 import com.pravin.job_portal_backend.service.interfaces.JobApplyService;
 
+/**
+ * Business logic for job applications.
+ *
+ * Main responsibilities:
+ * 1. Load and validate users, jobs, and applications.
+ * 2. Prevent duplicate applications.
+ * 3. Enforce ownership rules for users and recruiters.
+ * 4. Convert saved entities into DTOs for the API layer.
+ */
 @Service
 public class JobApplyServiceImpl implements JobApplyService {
 
@@ -38,15 +47,18 @@ public class JobApplyServiceImpl implements JobApplyService {
 
     @Override
     public String applyForJob(Long userId, Long jobId) {
+        // Backward-compatible helper for callers that do not send extra details.
         return applyForJob(userId, jobId, null);
     }
 
     @Override
     @Transactional
     public String applyForJob(Long userId, Long jobId, ApplyJobRequestDTO request) {
+        // Load real database records instead of trusting ids from the request body.
         User user = getUser(userId);
         Job job = getJob(jobId);
 
+        // Business rule: one user can apply to the same job only once.
         if (jobApplicationRepository.existsByUserAndJob(user, job)) {
             return "Already applied to this job.";
         }
@@ -57,6 +69,7 @@ public class JobApplyServiceImpl implements JobApplyService {
 
     @Override
     public void deleteApplicationById(Long applicationId) {
+        // Admin path: no ownership check because admin is allowed to remove any application.
         jobApplicationRepository.delete(getApplication(applicationId));
     }
 
@@ -64,6 +77,7 @@ public class JobApplyServiceImpl implements JobApplyService {
     @Transactional
     public void deleteUserApplicationById(String userEmail, Long applicationId) {
         ApplyJob application = getApplication(applicationId);
+        // User path: ownership is checked before deleting.
         assertUserOwnsApplication(userEmail, application);
         jobApplicationRepository.delete(application);
     }
@@ -71,6 +85,7 @@ public class JobApplyServiceImpl implements JobApplyService {
     @Override
     @Transactional
     public void updateApplicationById(Long applicationId, Map<String, Object> updates) {
+        // Admin update path: status and recruiter remarks can be changed directly.
         ApplyJob application = getApplication(applicationId);
         applyApplicationUpdates(application, updates);
         jobApplicationRepository.save(application);
@@ -80,6 +95,7 @@ public class JobApplyServiceImpl implements JobApplyService {
     @Transactional
     public void updateUserApplicationById(String userEmail, Long applicationId, Map<String, Object> updates) {
         ApplyJob application = getApplication(applicationId);
+        // Users can edit their own application details, not recruiter/admin fields.
         assertUserOwnsApplication(userEmail, application);
         applyUserEditableApplicationUpdates(application, updates);
         jobApplicationRepository.save(application);
@@ -89,11 +105,15 @@ public class JobApplyServiceImpl implements JobApplyService {
     @Transactional
     public void updateRecruiterApplicationById(String recruiterEmail, Long applicationId, Map<String, Object> updates) {
         ApplyJob application = getApplication(applicationId);
+        // Recruiters can update applications only for jobs they posted.
         assertRecruiterOwnsApplication(recruiterEmail, application);
         applyApplicationUpdates(application, updates);
         jobApplicationRepository.save(application);
     }
 
+    /**
+     * Admin/recruiter editable fields.
+     */
     private void applyApplicationUpdates(ApplyJob application, Map<String, Object> updates) {
         if (updates.containsKey("status")) {
             application.setStatus(String.valueOf(updates.get("status")));
@@ -104,6 +124,10 @@ public class JobApplyServiceImpl implements JobApplyService {
         }
     }
 
+    /**
+     * Candidate editable fields. Status and recruiter remarks are not handled here
+     * because candidates should not control the hiring decision.
+     */
     private void applyUserEditableApplicationUpdates(ApplyJob application, Map<String, Object> updates) {
         if (updates.containsKey("resumeLink")) application.setResumeLink(stringValue(updates.get("resumeLink")));
         if (updates.containsKey("coverLetter")) application.setCoverLetter(stringValue(updates.get("coverLetter")));
@@ -120,6 +144,7 @@ public class JobApplyServiceImpl implements JobApplyService {
 
     @Override
     public CompletableFuture<List<ApplicationProfileDtoAdmin>> getAllApplicationsWithProfiles() {
+        // Builds an admin-friendly projection that combines application, job, and user data.
         List<ApplyJob> applications = jobApplicationRepository.findAll();
         List<ApplicationProfileDtoAdmin> result = applications.stream().map(app -> {
             Job job = app.getJob();
@@ -141,6 +166,7 @@ public class JobApplyServiceImpl implements JobApplyService {
         User user = getUser(userId);
         Job job = getJob(jobId);
 
+        // Cancel uses jobId because users usually cancel from a job card/details page.
         ApplyJob application = jobApplicationRepository.findByUser(user).stream()
                 .filter(app -> app.getJob().equals(job))
                 .findFirst()
@@ -152,6 +178,7 @@ public class JobApplyServiceImpl implements JobApplyService {
 
     @Override
     public List<ApplyJobDto> getAllApplications() {
+        // Admin list: returns every application in the system.
         return jobApplicationRepository.findAll().stream()
                 .map(ApplyJobMapper::toDto)
                 .toList();
@@ -160,6 +187,7 @@ public class JobApplyServiceImpl implements JobApplyService {
     @Override
     @Transactional(readOnly = true)
     public List<ApplyJobDto> getApplicationsForRecruiter(String recruiterEmail) {
+        // Recruiter dashboard list: only applications for jobs posted by this recruiter.
         User recruiter = userRepository.findByEmail(recruiterEmail)
                 .orElseThrow(() -> new RuntimeException("Recruiter not found"));
         return jobApplicationRepository.findByJob_PostedBy(recruiter).stream()
@@ -169,6 +197,7 @@ public class JobApplyServiceImpl implements JobApplyService {
 
     @Override
     public List<ApplyJobDto> getApplicationsForJob(Long jobId) {
+        // Admin/general lookup by job. Recruiter-specific access is checked in another method.
         Job job = getJob(jobId);
 
         return jobApplicationRepository.findByJob(job).stream()
@@ -180,6 +209,7 @@ public class JobApplyServiceImpl implements JobApplyService {
     @Transactional(readOnly = true)
     public List<ApplyJobDto> getApplicationsForRecruiterJob(String recruiterEmail, Long jobId) {
         Job job = getJob(jobId);
+        // Important security rule: a recruiter cannot view another recruiter's applicants.
         if (job.getPostedBy() == null || !recruiterEmail.equalsIgnoreCase(job.getPostedBy().getEmail())) {
             throw new AccessDeniedException("You can only view applications for your own jobs.");
         }
@@ -190,11 +220,13 @@ public class JobApplyServiceImpl implements JobApplyService {
 
     @Override
     public List<ApplyJobDto> getApplicationsByUser(Long userId) {
+        // User profile/dashboard list: all applications submitted by one candidate.
         return jobApplicationRepository.findByUser(getUser(userId)).stream()
                 .map(ApplyJobMapper::toDto)
                 .toList();
     }
 
+    /** Verifies recruiter ownership before viewing or changing an application. */
     private void assertRecruiterOwnsApplication(String recruiterEmail, ApplyJob application) {
         Job job = application.getJob();
         if (job == null || job.getPostedBy() == null || !recruiterEmail.equalsIgnoreCase(job.getPostedBy().getEmail())) {
@@ -202,6 +234,7 @@ public class JobApplyServiceImpl implements JobApplyService {
         }
     }
 
+    /** Verifies candidate ownership before editing or deleting an application. */
     private void assertUserOwnsApplication(String userEmail, ApplyJob application) {
         User user = application.getUser();
         if (user == null || !userEmail.equalsIgnoreCase(user.getEmail())) {
@@ -211,12 +244,14 @@ public class JobApplyServiceImpl implements JobApplyService {
 
     @Override
     public List<ApplyJobResponseDTO> getAppliedJobByUserDTO(Long userId) {
+        // Response DTO is shaped for the "My applied jobs" screen.
         User user = getUser(userId);
         return jobApplicationRepository.findByUser(user).stream()
                 .map(app -> toAppliedJobResponse(app, user))
                 .toList();
     }
 
+    /** Creates the initial application entity with default status/source values. */
     private ApplyJob createApplication(User user, Job job, ApplyJobRequestDTO request) {
         ApplyJob application = ApplyJob.builder()
                 .user(user)
@@ -229,6 +264,7 @@ public class JobApplyServiceImpl implements JobApplyService {
         return application;
     }
 
+    /** Copies optional candidate-supplied fields onto the new application. */
     private void applyRequestDetails(ApplyJob application, ApplyJobRequestDTO request) {
         if (request == null) {
             return;
@@ -245,6 +281,7 @@ public class JobApplyServiceImpl implements JobApplyService {
         application.setUserAgent(request.getUserAgent());
     }
 
+    /** Builds the compact response used by the user's applied-jobs page. */
     private ApplyJobResponseDTO toAppliedJobResponse(ApplyJob application, User user) {
         Job job = application.getJob();
         return new ApplyJobResponseDTO(
@@ -271,16 +308,19 @@ public class JobApplyServiceImpl implements JobApplyService {
                 application.getUserAgent());
     }
 
+    /** Shared helper for loading users with a clear error message. */
     private User getUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
+    /** Shared helper for loading jobs with a clear error message. */
     private Job getJob(Long jobId) {
         return jobRepository.findById(jobId)
                 .orElseThrow(() -> new RuntimeException("Job not found"));
     }
 
+    /** Shared helper for loading applications with a clear error message. */
     private ApplyJob getApplication(Long applicationId) {
         return jobApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new RuntimeException("Application not found"));
