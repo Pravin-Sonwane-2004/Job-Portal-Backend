@@ -3,7 +3,6 @@ package com.pravin.job_portal_backend.controller;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -29,25 +28,21 @@ import com.pravin.job_portal_backend.service.interfaces.JobApplyService;
 @RequestMapping("/apply/applications")
 public class JobApplyController {
 
-  @Autowired
-  private JobApplyService jobApplicationService;
+  private final JobApplyService jobApplicationService;
+  private final UserRepository userRepository;
 
-  @Autowired
-  private UserRepository userRepository;
+  public JobApplyController(JobApplyService jobApplicationService, UserRepository userRepository) {
+    this.jobApplicationService = jobApplicationService;
+    this.userRepository = userRepository;
+  }
 
-  // ✅ 1. Apply to a job
   @PostMapping("/apply")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<String> applyToJob(Authentication authentication, @RequestParam Long jobId,
       @RequestBody(required = false) ApplyJobRequestDTO request) {
-    String email = authentication.getName();
-    User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new RuntimeException("User not found"));
-    String response = jobApplicationService.applyForJob(user.getId(), jobId, request);
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(jobApplicationService.applyForJob(currentUserId(authentication), jobId, request));
   }
 
-  // Delete application by application ID
   @DeleteMapping("/{applicationId}")
   @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
   public ResponseEntity<?> deleteApplicationById(Authentication authentication, @PathVariable Long applicationId) {
@@ -56,62 +51,46 @@ public class JobApplyController {
     } else {
       jobApplicationService.deleteUserApplicationById(authentication.getName(), applicationId);
     }
-      return ResponseEntity.ok("Application deleted successfully.");
+    return ResponseEntity.ok("Application deleted successfully.");
   }
 
-  // Update application by application ID
   @PutMapping("/{applicationId}")
   @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-  public ResponseEntity<?> updateApplicationById(Authentication authentication, @PathVariable Long applicationId, @RequestBody Map<String, Object> updates) {
+  public ResponseEntity<?> updateApplicationById(Authentication authentication, @PathVariable Long applicationId,
+      @RequestBody Map<String, Object> updates) {
     if (hasRole(authentication, "ROLE_ADMIN")) {
       jobApplicationService.updateApplicationById(applicationId, updates);
     } else {
       jobApplicationService.updateUserApplicationById(authentication.getName(), applicationId, updates);
     }
-      return ResponseEntity.ok("Application updated successfully.");
+    return ResponseEntity.ok("Application updated successfully.");
   }
 
- 
-
-  // ✅ 2. Get applied jobs as JobDTO list
   @GetMapping("/my-applied-dto")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<List<ApplyJobResponseDTO>> getAppliedJobsDTO(Authentication authentication) {
-    String email = authentication.getName();
-    User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new RuntimeException("User not found"));
-    List<ApplyJobResponseDTO> appliedJobs = jobApplicationService.getAppliedJobByUserDTO(user.getId());
-    // Debug serialization block commented out to avoid LocalDateTime serialization error
-    // try {
-    //   ObjectMapper mapper = new ObjectMapper();
-    //   String json = mapper.writeValueAsString(appliedJobs);
-    //   System.out.println("[DEBUG] Controller JSON response: " + json);
-    // } catch (Exception e) {
-    //   System.out.println("[DEBUG] Controller JSON serialization error: " + e.getMessage());
-    // }
-    return ResponseEntity.ok(appliedJobs);
+    return ResponseEntity.ok(jobApplicationService.getAppliedJobByUserDTO(currentUserId(authentication)));
   }
 
-  // ✅ 3. Get applied job entities (raw job objects)
   @GetMapping("/my-applied-entities")
   @PreAuthorize("hasRole('USER')")
-  public ResponseEntity<?> getAppliedJobEntities(Authentication authentication) {
-    String email = authentication.getName();
-    User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new RuntimeException("User not found"));
-    List<ApplyJobDto> appliedJobs = jobApplicationService.getApplicationsByUser(user.getId());
-    return ResponseEntity.ok(appliedJobs);
+  public ResponseEntity<List<ApplyJobDto>> getAppliedJobEntities(Authentication authentication) {
+    return ResponseEntity.ok(jobApplicationService.getApplicationsByUser(currentUserId(authentication)));
   }
 
-  // ✅ 4. Cancel application
   @DeleteMapping("/cancel")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<?> cancelApplication(Authentication authentication, @RequestParam Long jobId) {
-    String email = authentication.getName();
-    User user = userRepository.findByEmail(email)
+    return ResponseEntity.ok(jobApplicationService.cancelApplication(currentUserId(authentication), jobId));
+  }
+
+  private Long currentUserId(Authentication authentication) {
+    return currentUser(authentication).getId();
+  }
+
+  private User currentUser(Authentication authentication) {
+    return userRepository.findByEmail(authentication.getName())
         .orElseThrow(() -> new RuntimeException("User not found"));
-    String result = jobApplicationService.cancelApplication(user.getId(), jobId);
-    return ResponseEntity.ok(result);
   }
 
   private boolean hasRole(Authentication authentication, String role) {

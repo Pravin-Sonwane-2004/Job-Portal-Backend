@@ -19,7 +19,7 @@ public interface JobApplyService {
     List<ApplyJobDto> getApplicationsForJob(Long jobId);
     List<ApplyJobDto> getApplicationsForRecruiterJob(String recruiterEmail, Long jobId);
     List<ApplyJobDto> getApplicationsByUser(Long userId);
-void deleteApplicationById(Long applicationId);
+    void deleteApplicationById(Long applicationId);
     void deleteUserApplicationById(String userEmail, Long applicationId);
     void updateApplicationById(Long applicationId, java.util.Map<String, Object> updates);
     void updateUserApplicationById(String userEmail, Long applicationId, java.util.Map<String, Object> updates);

@@ -4,9 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,12 +25,16 @@ import com.pravin.job_portal_backend.service.interfaces.JobApplyService;
 @Service
 public class JobApplyServiceImpl implements JobApplyService {
 
-    @Autowired
-    private JobApply jobApplicationRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private JobsRepository jobRepository;
+    private final JobApply jobApplicationRepository;
+    private final UserRepository userRepository;
+    private final JobsRepository jobRepository;
+
+    public JobApplyServiceImpl(JobApply jobApplicationRepository, UserRepository userRepository,
+            JobsRepository jobRepository) {
+        this.jobApplicationRepository = jobApplicationRepository;
+        this.userRepository = userRepository;
+        this.jobRepository = jobRepository;
+    }
 
     @Override
     public String applyForJob(Long userId, Long jobId) {
@@ -42,53 +44,26 @@ public class JobApplyServiceImpl implements JobApplyService {
     @Override
     @Transactional
     public String applyForJob(Long userId, Long jobId, ApplyJobRequestDTO request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found"));
+        User user = getUser(userId);
+        Job job = getJob(jobId);
 
         if (jobApplicationRepository.existsByUserAndJob(user, job)) {
             return "Already applied to this job.";
         }
 
-        ApplyJob application = ApplyJob.builder()
-                .user(user)
-                .job(job)
-                .appliedAt(LocalDateTime.now())
-                .status("APPLIED")
-                .build();
-        if (request != null) {
-            application.setResumeLink(request.getResumeLink());
-            application.setCoverLetter(request.getCoverLetter());
-            application.setPhoneNumber(request.getPhoneNumber());
-            application.setLinkedinUrl(request.getLinkedinUrl());
-            application.setPortfolioUrl(request.getPortfolioUrl());
-            application.setExpectedSalary(request.getExpectedSalary());
-            application.setNoticePeriod(request.getNoticePeriod());
-            application.setAppliedFromIp(request.getAppliedFromIp());
-            application.setSource(request.getSource() != null ? request.getSource() : "Web");
-            application.setUserAgent(request.getUserAgent());
-        } else {
-            application.setSource("Web");
-        }
-
-        jobApplicationRepository.save(application);
-
+        jobApplicationRepository.save(createApplication(user, job, request));
         return "Job application submitted successfully.";
     }
 
     @Override
     public void deleteApplicationById(Long applicationId) {
-        ApplyJob application = jobApplicationRepository.findById(applicationId)
-                .orElseThrow(() -> new RuntimeException("Application not found"));
-        jobApplicationRepository.delete(application);
+        jobApplicationRepository.delete(getApplication(applicationId));
     }
 
     @Override
     @Transactional
     public void deleteUserApplicationById(String userEmail, Long applicationId) {
-        ApplyJob application = jobApplicationRepository.findById(applicationId)
-                .orElseThrow(() -> new RuntimeException("Application not found"));
+        ApplyJob application = getApplication(applicationId);
         assertUserOwnsApplication(userEmail, application);
         jobApplicationRepository.delete(application);
     }
@@ -96,8 +71,7 @@ public class JobApplyServiceImpl implements JobApplyService {
     @Override
     @Transactional
     public void updateApplicationById(Long applicationId, Map<String, Object> updates) {
-        ApplyJob application = jobApplicationRepository.findById(applicationId)
-                .orElseThrow(() -> new RuntimeException("Application not found"));
+        ApplyJob application = getApplication(applicationId);
         applyApplicationUpdates(application, updates);
         jobApplicationRepository.save(application);
     }
@@ -105,8 +79,7 @@ public class JobApplyServiceImpl implements JobApplyService {
     @Override
     @Transactional
     public void updateUserApplicationById(String userEmail, Long applicationId, Map<String, Object> updates) {
-        ApplyJob application = jobApplicationRepository.findById(applicationId)
-                .orElseThrow(() -> new RuntimeException("Application not found"));
+        ApplyJob application = getApplication(applicationId);
         assertUserOwnsApplication(userEmail, application);
         applyUserEditableApplicationUpdates(application, updates);
         jobApplicationRepository.save(application);
@@ -115,8 +88,7 @@ public class JobApplyServiceImpl implements JobApplyService {
     @Override
     @Transactional
     public void updateRecruiterApplicationById(String recruiterEmail, Long applicationId, Map<String, Object> updates) {
-        ApplyJob application = jobApplicationRepository.findById(applicationId)
-                .orElseThrow(() -> new RuntimeException("Application not found"));
+        ApplyJob application = getApplication(applicationId);
         assertRecruiterOwnsApplication(recruiterEmail, application);
         applyApplicationUpdates(application, updates);
         jobApplicationRepository.save(application);
@@ -160,44 +132,14 @@ public class JobApplyServiceImpl implements JobApplyService {
                     .applicantEmail(user.getEmail())
                     .applicantProfile(user.getBio())
                     .build();
-        }).collect(Collectors.toList());
+        }).toList();
         return CompletableFuture.completedFuture(result);
     }
 
-    // @Override
-    // public List<ApplyJobResponseDTO> getAppliedJobByUserDTO(Long userId) {
-    //     User user = userRepository.findById(userId)
-    //             .orElseThrow(() -> new RuntimeException("User not found"));
-    //     // System.out.println("[DEBUG] Fetching applied jobs for user: " + user.getEmail() + " (ID: " + userId + ")");
-    //     List<ApplyJob> applications = jobApplicationRepository.findByUser(user);
-    //     // System.out.println("[DEBUG] Number of applications found: " + applications.size());
-        // List<ApplyJobResponseDTO> dtos = applications.stream()
-        //         // .map(app -> {
-        //         //     Job job = app.getJob();
-        //         //     return new ApplyJobResponseDTO(
-        //         //         app.getId(), // applicationId
-        //         //         job.getTitle(),
-        //         //         job.getCompany(),
-        //         //         user.getEmail(),
-        //         //         app.getAppliedAt(),
-        //         //         null, // status (if available)
-        //         //         null, // recruiterRemarks (if available)
-        //         //         job.getPostedDate(), // LocalDate
-        //         //         job.getLocation(),   // location
-        //         //         job.getSalary()      // salary
-        //         //     );
-        //         // })
-        //         .collect(Collectors.toList());
-        // // System.out.println("[DEBUG] DTOs to return: " + dtos);
-        // return dtos;
-    // }
-
     @Override
     public String cancelApplication(Long userId, Long jobId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found"));
+        User user = getUser(userId);
+        Job job = getJob(jobId);
 
         ApplyJob application = jobApplicationRepository.findByUser(user).stream()
                 .filter(app -> app.getJob().equals(job))
@@ -212,7 +154,7 @@ public class JobApplyServiceImpl implements JobApplyService {
     public List<ApplyJobDto> getAllApplications() {
         return jobApplicationRepository.findAll().stream()
                 .map(ApplyJobMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -222,41 +164,35 @@ public class JobApplyServiceImpl implements JobApplyService {
                 .orElseThrow(() -> new RuntimeException("Recruiter not found"));
         return jobApplicationRepository.findByJob_PostedBy(recruiter).stream()
                 .map(ApplyJobMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public List<ApplyJobDto> getApplicationsForJob(Long jobId) {
-        Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found"));
+        Job job = getJob(jobId);
 
         return jobApplicationRepository.findByJob(job).stream()
                 .map(ApplyJobMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ApplyJobDto> getApplicationsForRecruiterJob(String recruiterEmail, Long jobId) {
-        Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found"));
+        Job job = getJob(jobId);
         if (job.getPostedBy() == null || !recruiterEmail.equalsIgnoreCase(job.getPostedBy().getEmail())) {
             throw new AccessDeniedException("You can only view applications for your own jobs.");
         }
         return jobApplicationRepository.findByJob(job).stream()
                 .map(ApplyJobMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public List<ApplyJobDto> getApplicationsByUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        List<ApplyJob> apps = jobApplicationRepository.findByUser(user);
-        // System.out.println("[DEBUG] Applications found for user " + userId + ": " + apps.size());
-        return apps.stream()
+        return jobApplicationRepository.findByUser(getUser(userId)).stream()
                 .map(ApplyJobMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private void assertRecruiterOwnsApplication(String recruiterEmail, ApplyJob application) {
@@ -275,34 +211,78 @@ public class JobApplyServiceImpl implements JobApplyService {
 
     @Override
     public List<ApplyJobResponseDTO> getAppliedJobByUserDTO(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = getUser(userId);
         return jobApplicationRepository.findByUser(user).stream()
-                .map(app -> {
-                    Job job = app.getJob();
-                    return new ApplyJobResponseDTO(
-                            app.getId(),
-                            job != null ? job.getTitle() : null,
-                            job != null ? job.getCompany() : null,
-                            job != null ? job.getLocation() : null,
-                            job != null ? job.getSalary() : null,
-                            job != null ? job.getPostedDate() : null,
-                            user.getEmail(),
-                            app.getAppliedAt(),
-                            app.getUpdatedAt(),
-                            app.getStatus(),
-                            app.getRecruiterRemarks(),
-                            app.getResumeLink(),
-                            app.getCoverLetter(),
-                            app.getPhoneNumber(),
-                            app.getLinkedinUrl(),
-                            app.getPortfolioUrl(),
-                            app.getExpectedSalary(),
-                            app.getNoticePeriod(),
-                            app.getAppliedFromIp(),
-                            app.getSource(),
-                            app.getUserAgent());
-                })
-                .collect(Collectors.toList());
+                .map(app -> toAppliedJobResponse(app, user))
+                .toList();
+    }
+
+    private ApplyJob createApplication(User user, Job job, ApplyJobRequestDTO request) {
+        ApplyJob application = ApplyJob.builder()
+                .user(user)
+                .job(job)
+                .appliedAt(LocalDateTime.now())
+                .status("APPLIED")
+                .source("Web")
+                .build();
+        applyRequestDetails(application, request);
+        return application;
+    }
+
+    private void applyRequestDetails(ApplyJob application, ApplyJobRequestDTO request) {
+        if (request == null) {
+            return;
+        }
+        application.setResumeLink(request.getResumeLink());
+        application.setCoverLetter(request.getCoverLetter());
+        application.setPhoneNumber(request.getPhoneNumber());
+        application.setLinkedinUrl(request.getLinkedinUrl());
+        application.setPortfolioUrl(request.getPortfolioUrl());
+        application.setExpectedSalary(request.getExpectedSalary());
+        application.setNoticePeriod(request.getNoticePeriod());
+        application.setAppliedFromIp(request.getAppliedFromIp());
+        application.setSource(request.getSource() != null ? request.getSource() : "Web");
+        application.setUserAgent(request.getUserAgent());
+    }
+
+    private ApplyJobResponseDTO toAppliedJobResponse(ApplyJob application, User user) {
+        Job job = application.getJob();
+        return new ApplyJobResponseDTO(
+                application.getId(),
+                job != null ? job.getTitle() : null,
+                job != null ? job.getCompany() : null,
+                job != null ? job.getLocation() : null,
+                job != null ? job.getSalary() : null,
+                job != null ? job.getPostedDate() : null,
+                user.getEmail(),
+                application.getAppliedAt(),
+                application.getUpdatedAt(),
+                application.getStatus(),
+                application.getRecruiterRemarks(),
+                application.getResumeLink(),
+                application.getCoverLetter(),
+                application.getPhoneNumber(),
+                application.getLinkedinUrl(),
+                application.getPortfolioUrl(),
+                application.getExpectedSalary(),
+                application.getNoticePeriod(),
+                application.getAppliedFromIp(),
+                application.getSource(),
+                application.getUserAgent());
+    }
+
+    private User getUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    private Job getJob(Long jobId) {
+        return jobRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found"));
+    }
+
+    private ApplyJob getApplication(Long applicationId) {
+        return jobApplicationRepository.findById(applicationId)
+                .orElseThrow(() -> new RuntimeException("Application not found"));
     }
 }
