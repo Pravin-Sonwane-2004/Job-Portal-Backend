@@ -27,4 +27,8 @@ public interface CompanyPortalService {
   List<JobDto> jobs(String email);
 
   JobDto createJob(String email, JobDto request);
+
+  JobDto updateJob(String email, Long jobId, JobDto request);
+
+  void deleteJob(String email, Long jobId);
 }

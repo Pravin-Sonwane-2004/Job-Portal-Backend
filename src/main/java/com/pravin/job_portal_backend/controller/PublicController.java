@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pravin.job_portal_backend.dto.JobDto;
 import com.pravin.job_portal_backend.dto.UserDto;
 import com.pravin.job_portal_backend.dto.UserLoginDTO;
-import com.pravin.job_portal_backend.entity.Job;
 import com.pravin.job_portal_backend.service.interfaces.JobService;
 import com.pravin.job_portal_backend.service.interfaces.UserProfileService;
 import com.pravin.job_portal_backend.service.interfaces.UserRegistrationService;
@@ -132,12 +132,13 @@ public class PublicController {
       @RequestParam(required = false) Double maxSalary) {
 
     try {
-      List<String> allowedSortFields = List.of("postedDate", "jobSalary", "jobTitle", "jobLocation", "id");
+      List<String> allowedSortFields = List.of("postedDate", "salary", "jobSalary", "title", "jobTitle", "location",
+          "jobLocation", "id");
       if (!allowedSortFields.contains(sortBy)) {
         sortBy = "postedDate";
       }
 
-      Page<Job> pageResult = jobService.getAllJobsOfPagable(page, size, sortBy, sortDir, jobTitle, jobLocation,
+      Page<JobDto> pageResult = jobService.getAllJobsOfPagable(page, size, sortBy, sortDir, jobTitle, jobLocation,
           minSalary, maxSalary);
 
       Map<String, Object> response = new HashMap<>();

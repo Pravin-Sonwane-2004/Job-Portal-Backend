@@ -98,6 +98,12 @@ public class AdminController {
     return ResponseEntity.ok("User updated successfully.");
   }
 
+  @GetMapping("/jobs")
+  public ResponseEntity<List<JobDto>> getAllJobs() {
+    List<JobDto> jobs = jobService.getAllJobs();
+    return jobs == null || jobs.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(jobs);
+  }
+
   @PostMapping("/jobs")
   public ResponseEntity<?> createJob(org.springframework.security.core.Authentication authentication, @RequestBody JobDto jobDTO) {
     log.info("Received job creation request: {}", jobDTO);

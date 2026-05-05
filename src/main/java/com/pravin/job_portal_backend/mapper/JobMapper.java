@@ -2,6 +2,7 @@ package com.pravin.job_portal_backend.mapper;
 
 import com.pravin.job_portal_backend.dto.JobDto;
 import com.pravin.job_portal_backend.entity.Job;
+import com.pravin.job_portal_backend.enums.JobStatus;
 
 public class JobMapper {
 
@@ -44,7 +45,7 @@ public class JobMapper {
     job.setRequirements(dto.getRequirements());
     job.setJobType(dto.getJobType());
     job.setExperienceLevel(dto.getExperienceLevel());
-    job.setStatus(dto.getStatus());
+    job.setStatus(dto.getStatus() != null ? dto.getStatus() : JobStatus.OPEN);
     job.setCategory(dto.getCategory());
     job.setLastDateToApply(dto.getLastDateToApply());
     // Do not set postedDate and updatedAt manually; handled by @CreationTimestamp /

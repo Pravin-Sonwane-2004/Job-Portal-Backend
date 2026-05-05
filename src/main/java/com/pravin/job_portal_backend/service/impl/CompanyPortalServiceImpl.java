@@ -177,6 +177,26 @@ public class CompanyPortalServiceImpl implements CompanyPortalService {
     return JobMapper.toDto(jobsRepository.save(job));
   }
 
+  @Override
+  @Transactional
+  public JobDto updateJob(String email, Long jobId, JobDto request) {
+    User current = userFor(email);
+    Company company = requireCompanyUser(current);
+    Job job = companyJob(jobId, company);
+    applyJobUpdates(job, request);
+    job.setCompany(company.getName());
+    return JobMapper.toDto(jobsRepository.save(job));
+  }
+
+  @Override
+  @Transactional
+  public void deleteJob(String email, Long jobId) {
+    User current = userFor(email);
+    Company company = requireCompanyUser(current);
+    Job job = companyJob(jobId, company);
+    jobsRepository.delete(job);
+  }
+
   private User userFor(String email) {
     return userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found."));
   }
@@ -197,6 +217,27 @@ public class CompanyPortalServiceImpl implements CompanyPortalService {
     if (!Role.COMPANY_ADMIN.equals(user.getRole()) || user.getCompany() == null) {
       throw new IllegalArgumentException("Company admin access is required.");
     }
+  }
+
+  private Job companyJob(Long jobId, Company company) {
+    Job job = jobsRepository.findById(jobId).orElseThrow(() -> new IllegalArgumentException("Job not found."));
+    if (job.getCompany() == null || !job.getCompany().equalsIgnoreCase(company.getName())) {
+      throw new IllegalArgumentException("Job does not belong to your company.");
+    }
+    return job;
+  }
+
+  private void applyJobUpdates(Job job, JobDto request) {
+    if (request.getTitle() != null) job.setTitle(request.getTitle());
+    if (request.getLocation() != null) job.setLocation(request.getLocation());
+    if (request.getSalary() != null) job.setSalary(request.getSalary());
+    if (request.getDescription() != null) job.setDescription(request.getDescription());
+    if (request.getRequirements() != null) job.setRequirements(request.getRequirements());
+    if (request.getJobType() != null) job.setJobType(request.getJobType());
+    if (request.getExperienceLevel() != null) job.setExperienceLevel(request.getExperienceLevel());
+    if (request.getStatus() != null) job.setStatus(request.getStatus());
+    if (request.getCategory() != null) job.setCategory(request.getCategory());
+    if (request.getLastDateToApply() != null) job.setLastDateToApply(request.getLastDateToApply());
   }
 
   private CompanyDto toDto(Company company) {

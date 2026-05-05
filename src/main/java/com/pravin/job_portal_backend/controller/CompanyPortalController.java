@@ -80,4 +80,16 @@ public class CompanyPortalController {
   public ResponseEntity<JobDto> createJob(Authentication authentication, @RequestBody JobDto request) {
     return ResponseEntity.status(HttpStatus.CREATED).body(companyPortalService.createJob(authentication.getName(), request));
   }
+
+  @PutMapping("/company-portal/jobs/{jobId}")
+  public ResponseEntity<JobDto> updateJob(Authentication authentication, @PathVariable Long jobId,
+      @RequestBody JobDto request) {
+    return ResponseEntity.ok(companyPortalService.updateJob(authentication.getName(), jobId, request));
+  }
+
+  @DeleteMapping("/company-portal/jobs/{jobId}")
+  public ResponseEntity<Void> deleteJob(Authentication authentication, @PathVariable Long jobId) {
+    companyPortalService.deleteJob(authentication.getName(), jobId);
+    return ResponseEntity.noContent().build();
+  }
 }

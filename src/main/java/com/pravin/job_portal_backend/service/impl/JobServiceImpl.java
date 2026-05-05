@@ -1,9 +1,13 @@
 package com.pravin.job_portal_backend.service.impl;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -121,25 +125,24 @@ public class JobServiceImpl implements com.pravin.job_portal_backend.service.int
     }
 
     @Override
-    public Page<Job> getAllJobsOfPagable(int page, int size, String sortBy, String sortDir, String jobTitle,
+    @Transactional(readOnly = true)
+    public Page<JobDto> getAllJobsOfPagable(int page, int size, String sortBy, String sortDir, String jobTitle,
         String jobLocation, Double minSalary, Double maxSalary) {
-        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(
-            page, size,
-            "desc".equalsIgnoreCase(sortDir)
-                ? org.springframework.data.domain.Sort.by(sortBy).descending()
-                : org.springframework.data.domain.Sort.by(sortBy).ascending()
-        );
+        Sort sort = "desc".equalsIgnoreCase(sortDir)
+                ? Sort.by(resolveSortBy(sortBy)).descending()
+                : Sort.by(resolveSortBy(sortBy)).ascending();
+        PageRequest pageable = PageRequest.of(page, size, sort);
 
         // Basic filtering logic (for demonstration; for production, use custom queries)
         Page<Job> jobsPage = jobsRepository.findAll(pageable);
         if (jobTitle != null || jobLocation != null || minSalary != null || maxSalary != null) {
             List<Job> filtered = jobsPage.getContent().stream()
-                .filter(job -> (jobTitle == null || job.getTitle().toLowerCase().contains(jobTitle.toLowerCase())))
-                .filter(job -> (jobLocation == null || job.getLocation().toLowerCase().contains(jobLocation.toLowerCase())))
+                .filter(job -> (jobTitle == null || contains(job.getTitle(), jobTitle)))
+                .filter(job -> (jobLocation == null || contains(job.getLocation(), jobLocation)))
                 .filter(job -> {
                     if (minSalary == null) return true;
                     try {
-                        return job.getSalary() != null && Double.parseDouble(job.getSalary().toString()) >= minSalary;
+                        return job.getSalary() != null && Double.parseDouble(job.getSalary()) >= minSalary;
                     } catch (NumberFormatException e) {
                         return false;
                     }
@@ -147,15 +150,33 @@ public class JobServiceImpl implements com.pravin.job_portal_backend.service.int
                 .filter(job -> {
                     if (maxSalary == null) return true;
                     try {
-                        return job.getSalary() != null && Double.parseDouble(job.getSalary().toString()) <= maxSalary;
+                        return job.getSalary() != null && Double.parseDouble(job.getSalary()) <= maxSalary;
                     } catch (NumberFormatException e) {
                         return false;
                     }
                 })
                 .collect(Collectors.toList());
-            return new org.springframework.data.domain.PageImpl<>(filtered, pageable, filtered.size());
+            List<JobDto> dtoContent = filtered.stream().map(JobMapper::toDto).collect(Collectors.toList());
+            return new PageImpl<>(dtoContent, pageable, filtered.size());
         }
-        return jobsPage;
+        return jobsPage.map(JobMapper::toDto);
+    }
+
+    private String resolveSortBy(String sortBy) {
+        Map<String, String> aliases = Map.of(
+                "jobTitle", "title",
+                "jobLocation", "location",
+                "jobSalary", "salary",
+                "title", "title",
+                "location", "location",
+                "salary", "salary",
+                "postedDate", "postedDate",
+                "id", "id");
+        return aliases.getOrDefault(sortBy, "postedDate");
+    }
+
+    private boolean contains(String value, String query) {
+        return value != null && value.toLowerCase().contains(query.toLowerCase());
     }
 
     private Job getOwnedJob(Long jobId, String recruiterEmail) {

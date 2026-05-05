@@ -22,6 +22,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+//@Builder is a Lombok annotation that creates the Builder Design Pattern code automatically.
 @Builder
 @Entity
 @Table(name = "users", indexes = {
@@ -29,6 +30,7 @@ import java.util.List;
     @Index(name = "idx_user_role", columnList = "role")
 })
 @ToString(exclude = { "appliedJobs", "skills" })
+//This is a Lombok annotation that automatically generates the toString() method, but skips these fields:
 public class User {
 
   @Id
@@ -54,7 +56,6 @@ public class User {
 @Column(name = "experience_level", nullable = true)
   private ExperienceLevel experienceLevel;
 
-  @Enumerated(EnumType.STRING)
 @Column(name = "status", nullable = false)
 private UserStatus status = UserStatus.ACTIVE;
 

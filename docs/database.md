@@ -1,334 +1,498 @@
 # Job Portal Database Design
 
-This document describes the **structured SQL schema** for a Job Portal system. It is written in a clean, documentation-style format suitable for reports, reviews, or implementation reference.
-
----
-
-## 1. users Table
-
-**Purpose:** Stores all user accounts including job seekers, recruiters, and administrators.
-
-| Field Name       | Data Type                                       | Null | Key    | Default           | Extra          | Description                    |
-| ---------------- | ----------------------------------------------- | ---- | ------ | ----------------- | -------------- | ------------------------------ |
-| id               | BIGINT                                          | NO   | PK     | NULL              | AUTO_INCREMENT | Unique user identifier         |
-| name             | VARCHAR(255)                                    | YES  |        | NULL              |                | Full name of the user          |
-| email            | VARCHAR(255)                                    | NO   | UNIQUE | NULL              |                | Registered email address       |
-| password         | VARCHAR(255)                                    | NO   |        | NULL              |                | Encrypted password             |
-| phone_number     | VARCHAR(20)                                     | YES  |        | NULL              |                | Contact phone number           |
-| role             | ENUM('ADMIN','RECRUITER','USER')                | NO   | INDEX  | NULL              |                | Role of the user in the system |
-| experience_level | ENUM('INTERN','JUNIOR','MID','SENIOR','EXPERT') | YES  |        | NULL              |                | Professional experience level  |
-| designation      | VARCHAR(255)                                    | YES  |        | NULL              |                | Current designation or title   |
-| job_role         | VARCHAR(255)                                    | YES  |        | NULL              |                | Preferred job role             |
-| location         | VARCHAR(255)                                    | YES  |        | NULL              |                | Current location               |
-| bio              | VARCHAR(1024)                                   | YES  |        | NULL              |                | Short professional summary     |
-| avatar_url       | VARCHAR(512)                                    | YES  |        | NULL              |                | Profile image URL              |
-| github_url       | VARCHAR(512)                                    | YES  |        | NULL              |                | GitHub profile link            |
-| linkedin_url     | VARCHAR(512)                                    | YES  |        | NULL              |                | LinkedIn profile link          |
-| verified         | BIT(1)                                          | NO   |        | 0                 |                | Email verification status      |
-| status           | ENUM('ACTIVE','DEACTIVATED','SUSPENDED')        | NO   |        | 'ACTIVE'          |                | Account status                 |
-| is_deleted       | BIT(1)                                          | NO   |        | 0                 |                | Soft delete flag               |
-| created_at       | DATETIME(6)                                     | YES  |        | CURRENT_TIMESTAMP |                | Account creation time          |
-| updated_at       | DATETIME(6)                                     | YES  |        | CURRENT_TIMESTAMP | ON UPDATE      | Last update time               |
-
----------|----------|------|-----|---------|-------|------------|
-| id | BIGINT | NO | PK | NULL | AUTO_INCREMENT | Unique user identifier |
-| name | VARCHAR(255) | YES | | NULL | | Full name |
-| email | VARCHAR(255) | NO | UNIQUE | NULL | | Email address |
-| password | VARCHAR(255) | NO | | NULL | | Encrypted password |
-| phone_number | VARCHAR(20) | YES | | NULL | | Contact number |
-| role | ENUM('ADMIN','RECRUITER','USER') | NO | INDEX | NULL | | User role |
-| experience_level | ENUM('INTERN','JUNIOR','MID','SENIOR','EXPERT') | YES | | NULL | | Experience category |
-| designation | VARCHAR(255) | YES | | NULL | | Current job title |
-| job_role | VARCHAR(255) | YES | | NULL | | Preferred role |
-| location | VARCHAR(255) | YES | | NULL | | User location |
-| bio | VARCHAR(1024) | YES | | NULL | | Short profile summary |
-| avatar_url | VARCHAR(512) | YES | | NULL | | Profile image URL |
-| github_url | VARCHAR(512) | YES | | NULL | | GitHub profile |
-| linkedin_url | VARCHAR(512) | YES | | NULL | | LinkedIn profile |
-| verified | BIT(1) | NO | | 0 | | Email verification status |
-| status | ENUM('ACTIVE','DEACTIVATED','SUSPENDED') | NO | | 'ACTIVE' | | Account status |
-| is_deleted | BIT(1) | NO | | 0 | | Soft delete flag |
-| created_at | DATETIME(6) | YES | | CURRENT_TIMESTAMP | | Creation time |
-| updated_at | DATETIME(6) | YES | | CURRENT_TIMESTAMP | ON UPDATE | Last update time |
-
----
-
-## 2. resume Table
-
-**Purpose:** Stores resumes uploaded by users.
-
-| Field Name  | Data Type    | Null | Key | Default           | Extra          | Description                |
-| ----------- | ------------ | ---- | --- | ----------------- | -------------- | -------------------------- |
-| id          | BIGINT       | NO   | PK  | NULL              | AUTO_INCREMENT | Unique resume identifier   |
-| user_id     | BIGINT       | NO   | FK  | NULL              |                | References users(id)       |
-| file_path   | VARCHAR(512) | NO   |     | NULL              |                | Path or URL of resume file |
-| uploaded_at | DATETIME(6)  | NO   |     | CURRENT_TIMESTAMP |                | Resume upload time         |
-
----------|----------|------|-----|---------|-------|------------|
-| id | BIGINT | NO | PK | NULL | AUTO_INCREMENT | Resume ID |
-| user_id | BIGINT | NO | FK | NULL | | Reference to users(id) |
-| file_path | VARCHAR(512) | NO | | NULL | | Resume file path |
-| uploaded_at | DATETIME(6) | NO | | CURRENT_TIMESTAMP | | Upload timestamp |
-
----
-
-## 3. user_skills Table
-
-**Purpose:** Stores skills associated with users.
-
-| Field Name | Data Type    | Null | Key | Default | Extra | Description                 |
-| ---------- | ------------ | ---- | --- | ------- | ----- | --------------------------- |
-| user_id    | BIGINT       | NO   | FK  | NULL    |       | References users(id)        |
-| skill      | VARCHAR(100) | YES  |     | NULL    |       | Skill name provided by user |
-
----------|----------|------|-----|------------|
-| id | BIGINT | NO | PK | Skill record ID |
-| user_id | BIGINT | NO | FK | Linked user |
-| skill_name | VARCHAR(255) | NO | | Skill name |
-| proficiency | ENUM('BEGINNER','INTERMEDIATE','ADVANCED','EXPERT') | YES | | Skill level |
-
----
-
-## 4. job Table
-
-**Purpose:** Stores job postings created by recruiters or admins.
-
-| Field Name         | Data Type                                                         | Null | Key   | Default | Extra          | Description                             |
-| ------------------ | ----------------------------------------------------------------- | ---- | ----- | ------- | -------------- | --------------------------------------- |
-| id                 | BIGINT                                                            | NO   | PK    | NULL    | AUTO_INCREMENT | Unique job identifier                   |
-| title              | VARCHAR(255)                                                      | NO   | INDEX | NULL    |                | Job title                               |
-| description        | TEXT                                                              | YES  |       | NULL    |                | Detailed job description                |
-| company            | VARCHAR(255)                                                      | NO   |       | NULL    |                | Company name                            |
-| category           | VARCHAR(100)                                                      | YES  |       | NULL    |                | Job category / domain                   |
-| location           | VARCHAR(255)                                                      | NO   | INDEX | NULL    |                | Job location                            |
-| salary             | VARCHAR(100)                                                      | NO   |       | NULL    |                | Salary or compensation range            |
-| experience_level   | ENUM('INTERN','JUNIOR','MID','SENIOR','EXPERT')                   | YES  |       | NULL    |                | Required experience level               |
-| job_type           | ENUM('FULL_TIME','PART_TIME','CONTRACT','FREELANCE','INTERNSHIP') | YES  |       | NULL    |                | Type of employment                      |
-| status             | ENUM('OPEN','CLOSED','DRAFT')                                     | YES  |       | NULL    |                | Job posting status                      |
-| posted_by          | BIGINT                                                            | YES  | FK    | NULL    |                | References users(id) who posted the job |
-| posted_date        | DATE                                                              | YES  |       | NULL    |                | Job posting date                        |
-| last_date_to_apply | DATE                                                              | YES  |       | NULL    |                | Application deadline                    |
-| updated_at         | DATETIME(6)                                                       | YES  |       | NULL    |                | Last update timestamp                   |
+This document describes the current database model used by the Spring Boot Job Portal backend.
+
+The schema is based on the JPA entities in:
+
+```text
+src/main/java/com/pravin/job_portal_backend/entity
+```
+
+The exact generated SQL can vary slightly by database dialect and Hibernate naming strategy. The table and column names below follow the names configured in the entities and the default Spring/Hibernate snake-case naming style.
+
+## Main Tables
+
+| Table | Purpose |
+| --- | --- |
+| `users` | Stores all accounts: candidates, recruiters, company users, and admins |
+| `companies` | Stores company profiles used by the company portal |
+| `job` | Stores job postings |
+| `apply_job` | Stores candidate applications to jobs |
+| `saved_job` | Stores candidate saved/bookmarked jobs |
+| `resume` | Stores resume path/URL records |
+| `password_reset_tokens` | Stores forgot-password reset tokens |
+| `messages` | Stores user-to-user messages |
+| `interviews` | Stores scheduled interviews |
+| `job_alerts` | Stores candidate job alert preferences |
+| `company_reviews` | Stores user reviews for companies |
+| `user_skills` | Element collection table for user skills |
+| `job_requirements` | Element collection table for job requirements |
+
+`EmailRequest` is not a database table. It is a request object used for sending emails.
+
+## Enum Values
+
+### `Role`
+
+```text
+USER
+RECRUITER
+COMPANY_ADMIN
+COMPANY_EMPLOYEE
+ADMIN
+```
+
+### `UserStatus`
+
+```text
+ACTIVE
+DEACTIVATED
+SUSPENDED
+```
+
+### `ExperienceLevel`
+
+```text
+INTERN
+JUNIOR
+MID
+SENIOR
+EXPERT
+```
+
+### `JobType`
+
+```text
+FULL_TIME
+PART_TIME
+CONTRACT
+INTERNSHIP
+FREELANCE
+```
+
+### `JobStatus`
+
+```text
+OPEN
+CLOSED
+DRAFT
+```
+
+## `users`
+
+Purpose: Stores platform users. A user may be a candidate, recruiter, company admin, company employee, or admin.
+
+Entity: `User`
+
+| Column | Type | Nullable | Key/Index | Notes |
+| --- | --- | --- | --- | --- |
+| `id` | `BIGINT` | No | PK | Auto-generated user id |
+| `email` | `VARCHAR(255)` | No | Unique, indexed | Login username and contact email |
+| `password` | `VARCHAR(255)` | No |  | BCrypt-hashed password |
+| `role` | `VARCHAR(50)` | No | Indexed | One of `Role` enum values |
+| `experience_level` | `VARCHAR` | Yes |  | One of `ExperienceLevel` enum values |
+| `status` | `VARCHAR` | No |  | Defaults to `ACTIVE` in entity |
+| `name` | `VARCHAR(255)` | Yes |  | Display/full name |
+| `avatar_url` | `VARCHAR(512)` | Yes |  | Profile image URL |
+| `designation` | `VARCHAR(255)` | Yes |  | Current title/designation |
+| `verified` | `BOOLEAN` | No |  | Defaults to `false` |
+| `location` | `VARCHAR(255)` | Yes |  | User location |
+| `bio` | `VARCHAR(1024)` | Yes |  | Profile summary |
+| `phone_number` | `VARCHAR(20)` | Yes |  | Contact number |
+| `linkedin_url` | `VARCHAR(512)` | Yes |  | LinkedIn profile URL |
+| `github_url` | `VARCHAR(512)` | Yes |  | GitHub profile URL |
+| `job_role` | `VARCHAR(255)` | Yes |  | Target or current job role |
+| `company_id` | `BIGINT` | Yes | FK | References `companies.id` for company users |
+| `is_deleted` | `BOOLEAN` | No |  | Soft-delete flag, defaults to `false` |
+| `created_at` | `DATETIME` | Yes |  | Set in `@PrePersist` |
+| `updated_at` | `DATETIME` | Yes |  | Set in `@PrePersist` and `@PreUpdate` |
 
----------|----------|------|-----|------------|
-| id | BIGINT | NO | PK | Job ID |
-| recruiter_id | BIGINT | NO | FK | Posted by user |
-| title | VARCHAR(255) | NO | | Job title |
-| description | TEXT | NO | | Job details |
-| location | VARCHAR(255) | YES | | Job location |
-| experience_required | ENUM('INTERN','JUNIOR','MID','SENIOR','EXPERT') | YES | | Required experience |
-| job_type | ENUM('FULL_TIME','PART_TIME','CONTRACT','INTERNSHIP') | NO | | Job type |
-| salary_min | DECIMAL(10,2) | YES | | Minimum salary |
-| salary_max | DECIMAL(10,2) | YES | | Maximum salary |
-| status | ENUM('OPEN','CLOSED','ON_HOLD') | NO | | Job status |
-| created_at | DATETIME(6) | YES | | Created timestamp |
+Indexes:
 
----
+- `idx_user_email` on `email`
+- `idx_user_role` on `role`
+- Unique constraint on `email`
 
-## 5. job_requirements Table
+Relationships:
 
-**Purpose:** Stores individual requirements associated with a job posting.
+- `users.company_id` -> `companies.id`
+- One user can have many `apply_job` records.
+- One user can have many `saved_job` records.
+- One user can have many `resume` records.
+- One user can have many `user_skills` values.
 
-| Field Name  | Data Type    | Null | Key | Default | Extra | Description                      |
-| ----------- | ------------ | ---- | --- | ------- | ----- | -------------------------------- |
-| job_id      | BIGINT       | NO   | FK  | NULL    |       | References job(id)               |
-| requirement | VARCHAR(255) | YES  |     | NULL    |       | Job requirement or qualification |
+## `user_skills`
 
----------|----------|------|-----|------------|
-| id | BIGINT | NO | PK | Requirement ID |
-| job_id | BIGINT | NO | FK | Linked job |
-| requirement | VARCHAR(255) | NO | | Requirement detail |
+Purpose: Stores a user's skills as an element collection.
 
----
+Entity field: `User.skills`
 
-## 6. apply_job Table
+| Column | Type | Nullable | Key/Index | Notes |
+| --- | --- | --- | --- | --- |
+| `user_id` | `BIGINT` | No | FK | References `users.id` |
+| `skill` | `VARCHAR(100)` | Yes |  | Skill name |
 
-**Purpose:** Tracks job applications submitted by users.
+Relationship:
 
-| Field Name      | Data Type    | Null | Key | Default           | Extra          | Description                                 |
-| --------------- | ------------ | ---- | --- | ----------------- | -------------- | ------------------------------------------- |
-| id              | BIGINT       | NO   | PK  | NULL              | AUTO_INCREMENT | Unique application identifier               |
-| user_id         | BIGINT       | NO   | FK  | NULL              |                | References users(id)                        |
-| job_id          | BIGINT       | NO   | FK  | NULL              |                | References job(id)                          |
-| status          | VARCHAR(50)  | NO   |     | NULL              |                | Current application status                  |
-| applied_at      | DATETIME(6)  | NO   |     | CURRENT_TIMESTAMP |                | Application submission time                 |
-| updated_at      | DATETIME(6)  | YES  |     | NULL              |                | Last status update time                     |
-| source          | VARCHAR(100) | YES  |     | NULL              |                | Application source (portal, referral, etc.) |
-| resume_link     | VARCHAR(500) | YES  |     | NULL              |                | Resume used for application                 |
-| cover_letter    | TEXT         | YES  |     | NULL              |                | Cover letter content                        |
-| applied_from_ip | VARCHAR(45)  | YES  |     | NULL              |                | Applicant IP address                        |
-| user_agent      | VARCHAR(512) | YES  |     | NULL              |                | Browser or device information               |
+- `user_skills.user_id` -> `users.id`
 
----------|----------|------|-----|------------|
-| id | BIGINT | NO | PK | Application ID |
-| user_id | BIGINT | NO | FK | Applicant |
-| job_id | BIGINT | NO | FK | Applied job |
-| applied_at | DATETIME(6) | NO | | Application date |
-| status | ENUM('APPLIED','SHORTLISTED','REJECTED','HIRED') | NO | | Application status |
+Note: This table does not have its own entity id in the current model.
 
----
+## `companies`
 
-## 7. saved_job Table
+Purpose: Stores company profiles for company admins and company employees.
 
-**Purpose:** Stores jobs bookmarked or saved by users for later viewing.
+Entity: `Company`
 
-| Field Name | Data Type   | Null | Key | Default           | Extra          | Description                        |
-| ---------- | ----------- | ---- | --- | ----------------- | -------------- | ---------------------------------- |
-| id         | BIGINT      | NO   | PK  | NULL              | AUTO_INCREMENT | Unique saved job record identifier |
-| user_id    | BIGINT      | NO   | FK  | NULL              |                | References users(id)               |
-| job_id     | BIGINT      | NO   | FK  | NULL              |                | References job(id)                 |
-| saved_at   | DATETIME(6) | NO   |     | CURRENT_TIMESTAMP |                | Time when job was saved            |
-| updated_at | DATETIME(6) | YES  |     | NULL              |                | Last update timestamp              |
+| Column | Type | Nullable | Key/Index | Notes |
+| --- | --- | --- | --- | --- |
+| `id` | `BIGINT` | No | PK | Auto-generated company id |
+| `name` | `VARCHAR(255)` | No | Unique | Company name |
+| `description` | `VARCHAR(2000)` | Yes |  | Company description |
+| `website` | `VARCHAR(512)` | Yes |  | Company website |
+| `industry` | `VARCHAR(255)` | Yes |  | Company industry |
+| `location` | `VARCHAR(255)` | Yes |  | Company location |
+| `logo_url` | `VARCHAR(512)` | Yes |  | Company logo URL |
+| `verified` | `BOOLEAN` | No |  | Company verification flag |
+| `created_at` | `DATETIME` | Yes |  | Set in `@PrePersist` |
+| `updated_at` | `DATETIME` | Yes |  | Set in `@PrePersist` and `@PreUpdate` |
 
----------|----------|------|-----|------------|
-| id | BIGINT | NO | PK | Saved record ID |
-| user_id | BIGINT | NO | FK | User |
-| job_id | BIGINT | NO | FK | Saved job |
-| saved_at | DATETIME(6) | NO | | Bookmark time |
+Relationships:
 
----
+- One company can have many `users` as employees.
+- One company can have many `company_reviews`.
+- Company jobs are currently linked by the `job.company` name string, not by a `company_id` foreign key.
 
-### Notes
+## `company_reviews`
 
-* All foreign keys should enforce **ON DELETE CASCADE** where applicable.
-* Soft delete is handled via `is_deleted` flag in users.
-* Indexing recommended on `email`, `user_id`, `job_id` for performance.
+Purpose: Stores user reviews for companies.
 
----
+Entity: `CompanyReview`
 
-✅ This structure is **interview-ready**, **production-aligned**, and easy to convert into actual SQL DDL statements.
+| Column | Type | Nullable | Key/Index | Notes |
+| --- | --- | --- | --- | --- |
+| `id` | `BIGINT` | No | PK | Auto-generated review id |
+| `company_id` | `BIGINT` | No | FK | References `companies.id` |
+| `user_id` | `BIGINT` | No | FK | References `users.id` |
+| `content` | `VARCHAR(2000)` | No |  | Review text |
+| `rating` | `INT` | No |  | Numeric rating |
+| `created_at` | `DATETIME` | No |  | Set in `@PrePersist` |
 
+Relationships:
 
+- `company_reviews.company_id` -> `companies.id`
+- `company_reviews.user_id` -> `users.id`
 
+## `job`
 
+Purpose: Stores job postings created by admins, recruiters, company admins, or company employees.
 
+Entity: `Job`
 
+| Column | Type | Nullable | Key/Index | Notes |
+| --- | --- | --- | --- | --- |
+| `id` | `BIGINT` | No | PK | Auto-generated job id |
+| `title` | `VARCHAR(255)` | No | Indexed | Job title |
+| `location` | `VARCHAR(255)` | No | Indexed | Job location |
+| `salary` | `VARCHAR(100)` | No |  | Salary text/range |
+| `company` | `VARCHAR(255)` | Yes |  | Company name shown on job listing |
+| `description` | `TEXT` | Yes |  | Job description |
+| `job_type` | `VARCHAR` | Yes |  | One of `JobType` enum values |
+| `experience_level` | `VARCHAR` | Yes |  | One of `ExperienceLevel` enum values |
+| `status` | `VARCHAR` | Yes |  | Defaults to `OPEN` in entity/service |
+| `category` | `VARCHAR(100)` | Yes |  | Job category |
+| `posted_by` | `BIGINT` | Yes | FK | References `users.id` |
+| `posted_date` | `DATE` | Yes |  | Set by Hibernate `@CreationTimestamp` |
+| `last_date_to_apply` | `DATE` | Yes |  | Application deadline |
+| `updated_at` | `DATETIME` | Yes |  | Set by Hibernate `@UpdateTimestamp` |
 
-🔴 MUST-HAVE SUGGESTIONS (Very Important)
+Indexes:
 
-These don’t change your logic, they strengthen correctness & scalability.
+- `idx_job_title` on `title`
+- `idx_job_location` on `location`
 
-1️⃣ Add a “Constraints & Relationships” section in the doc
+Relationships:
 
-Even if you don’t enforce all in SQL, documentation must mention them.
+- `job.posted_by` -> `users.id`
+- One job can have many `apply_job` records.
+- One job can have many `saved_job` records.
+- One job can have many `job_requirements` values.
 
-Example:
+## `job_requirements`
 
-resume.user_id → users.id
+Purpose: Stores requirements for a job as an element collection.
 
-job.posted_by → users.id
+Entity field: `Job.requirements`
 
-apply_job.user_id → users.id
+| Column | Type | Nullable | Key/Index | Notes |
+| --- | --- | --- | --- | --- |
+| `job_id` | `BIGINT` | No | FK | References `job.id` |
+| `requirement` | `VARCHAR(255)` | Yes |  | Requirement text |
 
-apply_job.job_id → job.id
+Relationship:
 
-saved_job.user_id → users.id
+- `job_requirements.job_id` -> `job.id`
 
-saved_job.job_id → job.id
+Note: This table does not have its own entity id in the current model.
 
-➡️ Interviewers LOVE seeing this written clearly.
+## `apply_job`
 
-2️⃣ Mention Indexing Strategy (You already have MUL)
+Purpose: Stores candidate applications to jobs.
 
-Add a small section:
+Entity: `ApplyJob`
 
-users.email → UNIQUE INDEX
+| Column | Type | Nullable | Key/Index | Notes |
+| --- | --- | --- | --- | --- |
+| `id` | `BIGINT` | No | PK | Auto-generated application id |
+| `user_id` | `BIGINT` | No | FK, indexed | Applicant user id |
+| `job_id` | `BIGINT` | No | FK, indexed | Applied job id |
+| `applied_at` | `DATETIME` | No |  | Set by Hibernate `@CreationTimestamp` |
+| `updated_at` | `DATETIME` | Yes |  | Set by Hibernate `@UpdateTimestamp` |
+| `status` | `VARCHAR(50)` | No |  | Example values: `APPLIED`, `UNDER_REVIEW`, `REJECTED`, `HIRED` |
+| `recruiter_remarks` | `VARCHAR(1000)` | Yes |  | Recruiter/admin remarks |
+| `resume_link` | `VARCHAR(500)` | Yes |  | Resume URL/path submitted with application |
+| `cover_letter` | `TEXT` | Yes |  | Cover letter text |
+| `phone_number` | `VARCHAR(30)` | Yes |  | Applicant phone for this application |
+| `linkedin_url` | `VARCHAR(500)` | Yes |  | Applicant LinkedIn URL |
+| `portfolio_url` | `VARCHAR(500)` | Yes |  | Applicant portfolio URL |
+| `expected_salary` | `VARCHAR(100)` | Yes |  | Expected salary text |
+| `notice_period` | `VARCHAR(100)` | Yes |  | Notice period text |
+| `applied_from_ip` | `VARCHAR(45)` | Yes |  | IPv4/IPv6 address for audit/security |
+| `source` | `VARCHAR(100)` | Yes |  | Example: `Web`, `Mobile`, `Referral` |
+| `user_agent` | `VARCHAR(512)` | Yes |  | Browser/device user agent |
 
-job.title, job.location → SEARCH INDEX
+Indexes:
 
-apply_job.user_id, apply_job.job_id → PERFORMANCE
+- `idx_applyjob_user` on `user_id`
+- `idx_applyjob_job` on `job_id`
 
-saved_job(user_id, job_id) → COMPOSITE INDEX
+Relationships:
 
-This shows real backend thinking.
+- `apply_job.user_id` -> `users.id`
+- `apply_job.job_id` -> `job.id`
 
-3️⃣ Clarify Soft Delete Behavior
+Important note: duplicate application prevention is enforced by application logic, not by a database unique constraint in the current entity.
 
-You already use:
+## `saved_job`
 
-users.is_deleted
+Purpose: Stores jobs bookmarked by candidates.
 
-Document this clearly:
+Entity: `SavedJob`
 
-Deleted users are not physically removed. Data is preserved for audit and recovery.
+| Column | Type | Nullable | Key/Index | Notes |
+| --- | --- | --- | --- | --- |
+| `id` | `BIGINT` | No | PK | Auto-generated saved-job id |
+| `user_id` | `BIGINT` | No | FK, indexed | Candidate user id |
+| `job_id` | `BIGINT` | No | FK, indexed | Saved job id |
+| `saved_at` | `DATETIME` | No |  | Set by Hibernate `@CreationTimestamp` |
+| `updated_at` | `DATETIME` | Yes |  | Set by Hibernate `@UpdateTimestamp` |
 
-This is production-grade design.
+Indexes:
 
-🟡 GOOD-TO-HAVE SUGGESTIONS (Very Practical)
-4️⃣ Normalize Status Fields (Doc-level suggestion)
+- `idx_savedjob_user` on `user_id`
+- `idx_savedjob_job` on `job_id`
 
-You currently use:
+Relationships:
 
-status VARCHAR in apply_job
+- `saved_job.user_id` -> `users.id`
+- `saved_job.job_id` -> `job.id`
 
-ENUM elsewhere
+Important note: duplicate saved jobs are handled by application logic, not by a database unique constraint in the current entity.
 
-Suggestion in doc:
+## `resume`
 
-Status values are controlled at application level to allow future flexibility.
+Purpose: Stores resume path/URL records for candidates.
 
-No DB change needed — just explanation.
+Entity: `Resume`
 
-5️⃣ Add Audit Meaning to Timestamps
+| Column | Type | Nullable | Key/Index | Notes |
+| --- | --- | --- | --- | --- |
+| `id` | `BIGINT` | No | PK | Auto-generated resume id |
+| `user_id` | `BIGINT` | No | FK, indexed | Owner user id |
+| `file_path` | `VARCHAR(512)` | No |  | Path or URL for resume file |
+| `uploaded_at` | `DATETIME` | No |  | Set by Hibernate `@CreationTimestamp` |
 
-Explain intent:
+Indexes:
 
-created_at → record creation
+- `idx_resume_user` on `user_id`
 
-updated_at → last modification
+Relationship:
 
-applied_at, saved_at → user action timestamps
+- `resume.user_id` -> `users.id`
 
-This avoids confusion in reviews.
+## `password_reset_tokens`
 
-6️⃣ Add “Security Notes” Section
+Purpose: Stores reset tokens for the forgot-password flow.
 
-Very impressive for freshers:
+Entity: `PasswordResetToken`
 
-Passwords are hashed
+| Column | Type | Nullable | Key/Index | Notes |
+| --- | --- | --- | --- | --- |
+| `id` | `BIGINT` | No | PK | Auto-generated token id |
+| `token` | `VARCHAR(120)` | No | Unique | Secure random reset token |
+| `user_id` | `BIGINT` | No | FK | References `users.id` |
+| `expires_at` | `DATETIME` | No |  | Expiration time |
+| `used_at` | `DATETIME` | Yes |  | Set when token is used |
+| `created_at` | `DATETIME` | No |  | Set by service when token is created |
 
-IP & user_agent stored for fraud detection
+Relationships:
 
-Resume links stored as secured URLs
+- `password_reset_tokens.user_id` -> `users.id`
 
-Even seniors forget this.
+Security notes:
 
-🟢 OPTIONAL (Only if You Want to Level Up)
-7️⃣ Future Enhancement Notes (No DB change)
+- Tokens are single-use because `used_at` is checked.
+- Tokens expire using `expires_at`.
+- Existing tokens for a user are deleted before a new token is created.
 
-Add a small section like:
+## `messages`
 
-Multiple resumes per user
+Purpose: Stores messages between users.
 
-Job analytics (views, impressions)
+Entity: `Message`
 
-Application status history table
+| Column | Type | Nullable | Key/Index | Notes |
+| --- | --- | --- | --- | --- |
+| `id` | `BIGINT` | No | PK | Auto-generated message id |
+| `sender_id` | `BIGINT` | No | FK | References `users.id` |
+| `receiver_id` | `BIGINT` | No | FK | References `users.id` |
+| `content` | `VARCHAR(2000)` | No |  | Message body |
+| `sent_at` | `DATETIME` | No |  | Set in `@PrePersist` |
+| `is_read` | `BOOLEAN` | No |  | Read/unread state |
 
-Skill normalization table
+Relationships:
 
-This shows vision, not overengineering.
+- `messages.sender_id` -> `users.id`
+- `messages.receiver_id` -> `users.id`
 
-8️⃣ Minor Data Type Improvements (Optional)
+## `interviews`
 
-Only suggest, don’t change now:
+Purpose: Stores scheduled interviews for applications.
 
-salary VARCHAR → future salary_min, salary_max
+Entity: `Interview`
 
-skill → separate skills master table
+| Column | Type | Nullable | Key/Index | Notes |
+| --- | --- | --- | --- | --- |
+| `id` | `BIGINT` | No | PK | Auto-generated interview id |
+| `application_id` | `BIGINT` | No | FK | References `apply_job.id` |
+| `employer_id` | `BIGINT` | No | FK | Recruiter/company/admin user scheduling interview |
+| `candidate_id` | `BIGINT` | No | FK | Candidate user |
+| `scheduled_time` | `DATETIME` | No |  | Interview date/time |
+| `status` | `VARCHAR(40)` | No |  | Interview status controlled by application logic |
+| `meeting_link` | `VARCHAR(512)` | Yes |  | Online meeting URL |
+| `notes` | `VARCHAR(1000)` | Yes |  | Interview notes |
 
-🧠 My Honest Verdict
+Relationships:
 
-For a student / fresher / intern:
+- `interviews.application_id` -> `apply_job.id`
+- `interviews.employer_id` -> `users.id`
+- `interviews.candidate_id` -> `users.id`
 
-This DB design is already above average.
+## `job_alerts`
 
-With just:
+Purpose: Stores saved alert preferences for candidate job notifications.
 
-Constraints section
+Entity: `JobAlert`
 
-Indexing explanation
+| Column | Type | Nullable | Key/Index | Notes |
+| --- | --- | --- | --- | --- |
+| `id` | `BIGINT` | No | PK | Auto-generated alert id |
+| `user_id` | `BIGINT` | No | FK | References `users.id` |
+| `keywords` | `VARCHAR(500)` | No |  | Search keywords |
+| `location` | `VARCHAR(255)` | Yes |  | Optional preferred location |
+| `created_at` | `DATETIME` | No |  | Set in `@PrePersist` |
+| `active` | `BOOLEAN` | No |  | Defaults to `true` |
 
-Security notes
+Relationship:
 
-👉 It becomes interview-ready + production-credible.
-lot more things are remained to add ill add those
+- `job_alerts.user_id` -> `users.id`
+
+## Relationship Summary
+
+| Relationship | Meaning |
+| --- | --- |
+| `users.company_id` -> `companies.id` | Company admins/employees belong to a company |
+| `company_reviews.company_id` -> `companies.id` | Reviews belong to a company |
+| `company_reviews.user_id` -> `users.id` | Reviews are written by users |
+| `job.posted_by` -> `users.id` | Jobs can be posted by a user |
+| `job_requirements.job_id` -> `job.id` | Requirements belong to a job |
+| `user_skills.user_id` -> `users.id` | Skills belong to a user |
+| `apply_job.user_id` -> `users.id` | Applications belong to candidates |
+| `apply_job.job_id` -> `job.id` | Applications target jobs |
+| `saved_job.user_id` -> `users.id` | Saved jobs belong to candidates |
+| `saved_job.job_id` -> `job.id` | Saved records point to jobs |
+| `resume.user_id` -> `users.id` | Resumes belong to candidates |
+| `password_reset_tokens.user_id` -> `users.id` | Reset tokens belong to users |
+| `messages.sender_id` -> `users.id` | Message sender |
+| `messages.receiver_id` -> `users.id` | Message receiver |
+| `interviews.application_id` -> `apply_job.id` | Interview is tied to an application |
+| `interviews.employer_id` -> `users.id` | Interview employer/recruiter/company user |
+| `interviews.candidate_id` -> `users.id` | Interview candidate |
+| `job_alerts.user_id` -> `users.id` | Alert owner |
+
+## Indexing Strategy
+
+Indexes currently defined in entities:
+
+- `users.email`
+- `users.role`
+- `job.title`
+- `job.location`
+- `apply_job.user_id`
+- `apply_job.job_id`
+- `saved_job.user_id`
+- `saved_job.job_id`
+- `resume.user_id`
+
+Recommended future indexes:
+
+- `job.status`
+- `job.company`
+- `job.category`
+- `job.posted_date`
+- `companies.name`
+- `company_reviews.company_id`
+- `messages.receiver_id`
+- `interviews.candidate_id`
+- `interviews.employer_id`
+- Composite unique index on `apply_job(user_id, job_id)`
+- Composite unique index on `saved_job(user_id, job_id)`
+
+## Soft Delete Behavior
+
+The `users` table has an `is_deleted` flag. This allows user records to be marked as deleted without physically removing them from the database.
+
+Current note: not every service currently filters by `is_deleted`, so full soft-delete behavior should be implemented consistently before relying on it for production.
+
+## Timestamp Meaning
+
+| Column | Meaning |
+| --- | --- |
+| `created_at` | Record creation time |
+| `updated_at` | Last modification time |
+| `posted_date` | Job posting date |
+| `applied_at` | Candidate application time |
+| `saved_at` | Candidate saved/bookmarked time |
+| `uploaded_at` | Resume upload record time |
+| `sent_at` | Message send time |
+| `expires_at` | Password reset token expiry |
+| `used_at` | Password reset token usage time |
+
+## Security Notes
+
+- User passwords are stored as hashed values, not plain text.
+- Forgot-password tokens are stored server-side and marked used through `used_at`.
+- Application records can store `applied_from_ip` and `user_agent` for audit/security.
+- Resume records currently store a path or URL, not the actual file binary.
+- `EmailRequest` is not persisted; it is only used to send email.
+
+## Current Limitations And Future Improvements
+
+- Add real file storage metadata for resumes: original filename, content type, size, storage key.
+- Add database migrations with Flyway or Liquibase instead of relying on `ddl-auto`.
+- Add unique database constraints for duplicate applications and duplicate saved jobs.
+- Add `company_id` to `job` if jobs should be strongly linked to companies instead of only company name.
+- Add application status history table for audit and timeline display.
+- Normalize skills into a master `skills` table if filtering/search becomes more advanced.
+- Add job analytics tables for views, impressions, clicks, and applications.
+- Add notification table for in-app notifications.
