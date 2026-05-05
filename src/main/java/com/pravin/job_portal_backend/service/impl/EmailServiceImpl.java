@@ -1,12 +1,16 @@
 package com.pravin.job_portal_backend.service.impl;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.stereotype.Service;
 
+import com.pravin.job_portal_backend.config.AsyncConfig;
 import com.pravin.job_portal_backend.entity.EmailRequest;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 
 /**
  * Sends plain text emails through Spring's JavaMailSender.
@@ -41,5 +45,20 @@ public class EmailServiceImpl implements com.pravin.job_portal_backend.service.i
             message.setFrom(fromAddress);
         }
         mailSender.send(message);
+    }
+
+    /**
+     * Runs email sending on the configured async thread pool.
+     *
+     * Reference chain:
+     * EmailService interface -> EmailServiceImpl class -> AsyncConfig executor.
+     * The returned CompletableFuture lets callers decide whether to wait, log
+     * failures, or simply continue after scheduling the email.
+     */
+    @Override
+    @Async(AsyncConfig.APPLICATION_TASK_EXECUTOR)
+    public CompletableFuture<Boolean> sendEmailAsync(EmailRequest email) {
+        sendEmail(email);
+        return CompletableFuture.completedFuture(true);
     }
 }

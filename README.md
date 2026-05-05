@@ -68,6 +68,7 @@ The active API modules cover authentication, jobs, applications, profiles, saved
 | --- | --- |
 | `README.md` | Setup, architecture, and interview-ready overview |
 | `docs/API_REFERENCE.md` | Role-based endpoint reference and application payload |
+| `docs/ASYNC_AND_GC.md` | Spring async thread pool setup and JVM GC notes |
 | `docs/database.md` | Database table notes and schema explanation |
 
 ## Architecture Flow
