@@ -1,6 +1,6 @@
-# Job Portal Backend
+# SkillSync Backend
 
-Spring Boot REST API for a full-stack Job Portal. The backend supports candidates, recruiters, company accounts, company employees, and admins. It handles authentication, job discovery, job posting, applications, saved jobs, resumes, profile management, company portals, interviews, messaging, job alerts, email sending, and role-based dashboards.
+Spring Boot REST API for SkillSync. The backend supports candidates, recruiters, company accounts, company employees, and admins. It handles authentication, job discovery, job posting, applications, saved jobs, resumes, profile management, company portals, interviews, messaging, job alerts, email sending, and role-based dashboards.
 
 ## Interview Pitch
 
@@ -14,7 +14,7 @@ In interviews, explain it as:
 
 | Area | Technology |
 | --- | --- |
-| Language | Java 25 |
+| Language | Java 21 |
 | Framework | Spring Boot 3.5.4 |
 | API | Spring Web REST |
 | Security | Spring Security, JWT |

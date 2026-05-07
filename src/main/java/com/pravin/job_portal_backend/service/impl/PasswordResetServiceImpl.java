@@ -92,12 +92,12 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 
   private boolean sendResetEmail(User user, String resetLink) {
     String body = "Hello " + displayName(user) + ",\n\n"
-        + "We received a request to reset your Job Portal password.\n\n"
+        + "We received a request to reset your SkillSync password.\n\n"
         + "Reset your password here: " + resetLink + "\n\n"
         + "This link expires in " + tokenExpiryMinutes + " minutes. If you did not request this, ignore this email.";
 
     try {
-      emailService.sendEmail(new EmailRequest(user.getEmail(), "Reset your Job Portal password", body));
+      emailService.sendEmail(new EmailRequest(user.getEmail(), "Reset your SkillSync password", body));
       return true;
     } catch (Exception ex) {
       log.warn("Password reset email could not be sent to {}: {}", user.getEmail(), ex.getMessage());

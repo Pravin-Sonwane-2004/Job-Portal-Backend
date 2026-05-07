@@ -1,17 +1,18 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:latest
-    container_name: jobportal-postgres
+  mysql:
+    image: mysql:8.4
+    container_name: skillsync-mysql
     environment:
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: jobportal
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-skillsync}
+      MYSQL_USER: ${SPRING_DATASOURCE_USERNAME}
+      MYSQL_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
-      - "5432:5432"   # ✅ this is correct
+      - "3306:3306"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mysql_data:/var/lib/mysql
     networks:
       - app-network
 
@@ -19,39 +20,40 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.pravin
-    container_name: jobportal-backend
+    container_name: skillsync-backend
     ports:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: pravin
-      DB_URL: jdbc:postgresql://postgres:5432/jobportal
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-skillsync}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       SMTP_USERNAME: ${SMTP_USERNAME}
       SMTP_PASSWORD: ${SMTP_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
     volumes:
       - .:/app
       - ~/.m2:/root/.m2
     depends_on:
-      - postgres
+      - mysql
     networks:
       - app-network
 
   pgadmin:
-    image: dpage/pgadmin4
-    container_name: jobportal-pgadmin
+    image: phpmyadmin:5
+    container_name: skillsync-phpmyadmin
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PMA_HOST: mysql
     ports:
-      - "5050:80"   # ✅ pgAdmin listens on port 5050
+      - "5050:80"
     depends_on:
-      - postgres
+      - mysql
     networks:
       - app-network
 
 volumes:
-  postgres_data:
+  mysql_data:
 
 networks:
   app-network:

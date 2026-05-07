@@ -1,8 +1,6 @@
-target/*.original
-target/*.war
-*.md
+target
 .git
-.gitignore
-Dockerfile
-README*
-src/
+.vscode
+*.log
+Dockerfile*
+docker-compose.yml

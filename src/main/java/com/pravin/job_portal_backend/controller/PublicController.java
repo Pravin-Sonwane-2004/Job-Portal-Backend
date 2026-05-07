@@ -60,7 +60,7 @@ public class PublicController {
   @GetMapping("/health-check")
   public String healthCheck() {
     log.info("Health check endpoint called");
-    return "Ok";
+    return "SkillSync backend is healthy";
   }
 
   @PostMapping("/signup")
@@ -75,16 +75,16 @@ public class PublicController {
       if (name == null || name.trim().isEmpty()) {
         name = "user";
       }
-      String subject = "Welcome to Job Portal – Let’s Get Started!";
+      String subject = "Welcome to SkillSync - Let's Get Started!";
       String body = "Hello " + name + ",\n\n" +
-        "Thank you for registering with -Job Portal-  we're excited to have you on board!\n\n" +
+        "Thank you for registering with SkillSync. We're excited to have you on board!\n\n" +
         "You're now one step closer to exploring top job opportunities and building your professional future. Whether you're here to find your dream job or to connect with quality employers, our platform is built to help you succeed.\n\n" +
         "\uD83D\uDCA1 Want to boost your skills?  \n" +
         "Check out our YouTube channel Programming With Pravin for tutorials, tips, and real-world full-stack Java development projects that can help you stand out to employers.\n" +
         "Watch here: https://www.youtube.com/@ProgrammingWithPravin\n\n" +
         "If you have any questions or need assistance, we’re here to help.\n\n" +
         "**Welcome aboard and best of luck in your journey!**\n\n" +
-        "Best regards,  \nThe Job Portal Team";
+        "Best regards,  \nThe SkillSync Team";
       com.pravin.job_portal_backend.entity.EmailRequest email = new com.pravin.job_portal_backend.entity.EmailRequest(to, subject, body);
       // Welcome email is non-critical, so it uses EmailService.sendEmailAsync()
       // and the request can return without waiting for SMTP.

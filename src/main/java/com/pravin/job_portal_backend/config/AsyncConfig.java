@@ -50,7 +50,7 @@ public class AsyncConfig implements AsyncConfigurer {
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(maxPoolSize);
         executor.setQueueCapacity(queueCapacity);
-        executor.setThreadNamePrefix("job-portal-async-");
+        executor.setThreadNamePrefix("skillsync-async-");
         executor.setWaitForTasksToCompleteOnShutdown(true);
         executor.setAwaitTerminationSeconds(30);
         executor.initialize();
