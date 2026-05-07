@@ -12,14 +12,15 @@ public class CompanyReviewMapper {
     if (review == null) {
       return null;
     }
-    return new CompanyReviewDto(
-        review.getId(),
-        review.getCompany().getId(),
-        review.getCompany().getName(),
-        review.getUser().getId(),
-        review.getUser().getName(),
-        review.getContent(),
-        review.getRating(),
-        review.getCreatedAt());
+    CompanyReviewDto dto = new CompanyReviewDto();
+    dto.setId(review.getId());
+    dto.setCompanyId(review.getCompany().getId());
+    dto.setCompanyName(review.getCompany().getName());
+    dto.setUserId(review.getUser().getId());
+    dto.setUserName(review.getUser().getName());
+    dto.setContent(review.getContent());
+    dto.setRating(review.getRating());
+    dto.setCreatedAt(review.getCreatedAt());
+    return dto;
   }
 }

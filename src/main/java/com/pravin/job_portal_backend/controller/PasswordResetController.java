@@ -31,16 +31,16 @@ public class PasswordResetController {
 
   @PostMapping("/forgot")
   public ResponseEntity<Map<String, String>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
-    PasswordResetResult result = passwordResetService.requestPasswordReset(request.email());
+    PasswordResetResult result = passwordResetService.requestPasswordReset(request.getEmail());
     String message = "If this email exists, a password reset link has been sent.";
 
-    if (isNonProd() && result.userFound()) {
-      if (result.emailSent()) {
-        return ResponseEntity.ok(Map.of("message", message, "resetLink", result.resetLink()));
+    if (isNonProd() && result.isUserFound()) {
+      if (result.isEmailSent()) {
+        return ResponseEntity.ok(Map.of("message", message, "resetLink", result.getResetLink()));
       }
       return ResponseEntity.ok(Map.of(
           "message", "Reset link was created, but email could not be sent. Check SMTP settings.",
-          "resetLink", result.resetLink()));
+          "resetLink", result.getResetLink()));
     }
 
     return ResponseEntity.ok(Map.of("message", message));
@@ -48,7 +48,7 @@ public class PasswordResetController {
 
   @PostMapping("/reset")
   public ResponseEntity<Map<String, String>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
-    passwordResetService.resetPassword(request.token(), request.newPassword());
+    passwordResetService.resetPassword(request.getToken(), request.getNewPassword());
     return ResponseEntity.ok(Map.of("message", "Password reset successfully."));
   }
 

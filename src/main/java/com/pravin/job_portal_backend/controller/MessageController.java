@@ -62,9 +62,9 @@ public class MessageController {
   @PostMapping
   public ResponseEntity<MessageDto> send(Authentication authentication, @Valid @RequestBody SendMessageRequest request) {
     User sender = userFor(authentication.getName());
-    User receiver = userRepository.findById(request.receiverId())
+    User receiver = userRepository.findById(request.getReceiverId())
         .orElseThrow(() -> new IllegalArgumentException("Receiver not found."));
-    Message message = Message.builder().sender(sender).receiver(receiver).content(request.content()).build();
+    Message message = Message.builder().sender(sender).receiver(receiver).content(request.getContent()).build();
     return ResponseEntity.status(HttpStatus.CREATED).body(MessageMapper.toDto(messageRepository.save(message)));
   }
 

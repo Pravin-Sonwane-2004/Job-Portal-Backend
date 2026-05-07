@@ -59,8 +59,8 @@ public class CompanyReviewController {
     CompanyReview review = CompanyReview.builder()
         .company(company)
         .user(user)
-        .content(request.content())
-        .rating(request.rating())
+        .content(request.getContent())
+        .rating(request.getRating())
         .build();
     return ResponseEntity.status(HttpStatus.CREATED).body(CompanyReviewMapper.toDto(reviewRepository.save(review)));
   }

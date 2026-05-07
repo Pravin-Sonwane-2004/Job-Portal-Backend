@@ -12,6 +12,12 @@ public class JobAlertMapper {
     if (alert == null) {
       return null;
     }
-    return new JobAlertDto(alert.getId(), alert.getKeywords(), alert.getLocation(), alert.isActive(), alert.getCreatedAt());
+    JobAlertDto dto = new JobAlertDto();
+    dto.setId(alert.getId());
+    dto.setKeywords(alert.getKeywords());
+    dto.setLocation(alert.getLocation());
+    dto.setActive(alert.isActive());
+    dto.setCreatedAt(alert.getCreatedAt());
+    return dto;
   }
 }

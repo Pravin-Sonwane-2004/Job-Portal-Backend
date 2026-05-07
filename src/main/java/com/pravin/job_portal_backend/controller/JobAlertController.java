@@ -49,8 +49,8 @@ public class JobAlertController {
     User user = userFor(authentication);
     JobAlert alert = JobAlert.builder()
         .user(user)
-        .keywords(request.keywords())
-        .location(request.location())
+        .keywords(request.getKeywords())
+        .location(request.getLocation())
         .active(true)
         .build();
     return ResponseEntity.status(HttpStatus.CREATED).body(JobAlertMapper.toDto(jobAlertRepository.save(alert)));

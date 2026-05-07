@@ -51,27 +51,27 @@ public class CompanyPortalServiceImpl implements CompanyPortalService {
   @Override
   @Transactional
   public CompanyDto signupCompany(CompanySignupRequest request) {
-    companyRepository.findByNameIgnoreCase(request.companyName()).ifPresent(company -> {
+    companyRepository.findByNameIgnoreCase(request.getCompanyName()).ifPresent(company -> {
       throw new IllegalArgumentException("Company name is already registered.");
     });
-    userRepository.findByEmail(request.ownerEmail()).ifPresent(user -> {
+    userRepository.findByEmail(request.getOwnerEmail()).ifPresent(user -> {
       throw new IllegalArgumentException("Owner email is already registered.");
     });
 
     Company company = Company.builder()
-        .name(request.companyName())
-        .description(request.description())
-        .website(request.website())
-        .industry(request.industry())
-        .location(request.location())
-        .logoUrl(request.logoUrl())
+        .name(request.getCompanyName())
+        .description(request.getDescription())
+        .website(request.getWebsite())
+        .industry(request.getIndustry())
+        .location(request.getLocation())
+        .logoUrl(request.getLogoUrl())
         .build();
     Company savedCompany = companyRepository.save(company);
 
     User owner = User.builder()
-        .name(request.ownerName())
-        .email(request.ownerEmail())
-        .password(passwordEncoder.encode(request.password()))
+        .name(request.getOwnerName())
+        .email(request.getOwnerEmail())
+        .password(passwordEncoder.encode(request.getPassword()))
         .role(Role.COMPANY_ADMIN)
         .designation("Company Admin")
         .company(savedCompany)
@@ -107,11 +107,11 @@ public class CompanyPortalServiceImpl implements CompanyPortalService {
     User current = userFor(email);
     requireCompanyAdmin(current);
     Company company = current.getCompany();
-    company.setDescription(request.description());
-    company.setWebsite(request.website());
-    company.setIndustry(request.industry());
-    company.setLocation(request.location());
-    company.setLogoUrl(request.logoUrl());
+    company.setDescription(request.getDescription());
+    company.setWebsite(request.getWebsite());
+    company.setIndustry(request.getIndustry());
+    company.setLocation(request.getLocation());
+    company.setLogoUrl(request.getLogoUrl());
     return toDto(companyRepository.save(company));
   }
 
@@ -126,17 +126,17 @@ public class CompanyPortalServiceImpl implements CompanyPortalService {
   public UserDto addEmployee(String email, CompanyEmployeeRequest request) {
     User current = userFor(email);
     requireCompanyAdmin(current);
-    userRepository.findByEmail(request.email()).ifPresent(user -> {
+    userRepository.findByEmail(request.getEmail()).ifPresent(user -> {
       throw new IllegalArgumentException("Employee email is already registered.");
     });
 
     User employee = User.builder()
-        .name(request.name())
-        .email(request.email())
-        .password(passwordEncoder.encode(request.password()))
+        .name(request.getName())
+        .email(request.getEmail())
+        .password(passwordEncoder.encode(request.getPassword()))
         .role(Role.COMPANY_EMPLOYEE)
-        .designation(request.designation())
-        .phoneNumber(request.phoneNumber())
+        .designation(request.getDesignation())
+        .phoneNumber(request.getPhoneNumber())
         .company(current.getCompany())
         .status(UserStatus.ACTIVE)
         .isDeleted(false)

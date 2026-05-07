@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -86,13 +85,12 @@ public class PublicController {
         "**Welcome aboard and best of luck in your journey!**\n\n" +
         "Best regards,  \nThe SkillSync Team";
       com.pravin.job_portal_backend.entity.EmailRequest email = new com.pravin.job_portal_backend.entity.EmailRequest(to, subject, body);
-      // Welcome email is non-critical, so it uses EmailService.sendEmailAsync()
-      // and the request can return without waiting for SMTP.
-      CompletableFuture<Boolean> welcomeEmail = emailService.sendEmailAsync(email);
-      welcomeEmail.exceptionally(mailError -> {
+      // Email is non-critical: signup should still succeed if SMTP fails.
+      try {
+        emailService.sendEmail(email);
+      } catch (Exception mailError) {
         log.warn("Welcome email could not be sent to {}: {}", to, mailError.getMessage());
-        return false;
-      });
+      }
       return ResponseEntity.ok("User registered successfully with ID: " + createdUser.get().getId());
     } else {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Signup failed");

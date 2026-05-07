@@ -54,16 +54,16 @@ public class InterviewController {
   public ResponseEntity<InterviewDto> schedule(Authentication authentication,
       @Valid @RequestBody ScheduleInterviewRequest request) {
     User employer = userFor(authentication.getName());
-    ApplyJob application = jobApplyRepository.findById(request.applicationId())
+    ApplyJob application = jobApplyRepository.findById(request.getApplicationId())
         .orElseThrow(() -> new IllegalArgumentException("Application not found."));
 
     Interview interview = Interview.builder()
         .application(application)
         .candidate(application.getUser())
         .employer(employer)
-        .scheduledTime(request.scheduledTime())
-        .meetingLink(request.meetingLink())
-        .notes(request.notes())
+        .scheduledTime(request.getScheduledTime())
+        .meetingLink(request.getMeetingLink())
+        .notes(request.getNotes())
         .status("SCHEDULED")
         .build();
     return ResponseEntity.status(HttpStatus.CREATED).body(InterviewMapper.toDto(interviewRepository.save(interview)));

@@ -6,12 +6,13 @@ import com.pravin.job_portal_backend.entity.SavedJob;
 public class SavedJobMapper {
     public static SavedJobDto toDto(SavedJob savedJob) {
         if (savedJob == null) return null;
-        return SavedJobDto.builder()
-                .id(savedJob.getId())
-                .userId(savedJob.getUser() != null ? savedJob.getUser().getId() : null)
-                .jobId(savedJob.getJob() != null ? savedJob.getJob().getId() : null)
-                .savedAt(savedJob.getSavedAt())
-                .build();
+
+        SavedJobDto dto = new SavedJobDto();
+        dto.setId(savedJob.getId());
+        dto.setUserId(savedJob.getUser() != null ? savedJob.getUser().getId() : null);
+        dto.setJobId(savedJob.getJob() != null ? savedJob.getJob().getId() : null);
+        dto.setSavedAt(savedJob.getSavedAt());
+        return dto;
     }
 
     public static SavedJob toEntity(SavedJobDto dto) {

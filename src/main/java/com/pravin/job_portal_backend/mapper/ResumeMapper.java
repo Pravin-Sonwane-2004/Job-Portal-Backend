@@ -6,12 +6,13 @@ import com.pravin.job_portal_backend.entity.Resume;
 public class ResumeMapper {
     public static ResumeDto toDto(Resume resume) {
         if (resume == null) return null;
-        return ResumeDto.builder()
-                .id(resume.getId())
-                .userId(resume.getUser() != null ? resume.getUser().getId() : null)
-                .filePath(resume.getFilePath())
-                .uploadedAt(resume.getUploadedAt())
-                .build();
+
+        ResumeDto dto = new ResumeDto();
+        dto.setId(resume.getId());
+        dto.setUserId(resume.getUser() != null ? resume.getUser().getId() : null);
+        dto.setFilePath(resume.getFilePath());
+        dto.setUploadedAt(resume.getUploadedAt());
+        return dto;
     }
 
     public static Resume toEntity(ResumeDto dto) {

@@ -9,24 +9,25 @@ import com.pravin.job_portal_backend.entity.User;
 public class UserMapper {
     public static UserDto toDto(User user) {
         if (user == null) return null;
-        return UserDto.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .name(user.getName())
-                .avatarUrl(user.getAvatarUrl())
-                .designation(user.getDesignation())
-                .verified(user.getVerified())
-                .location(user.getLocation())
-                .bio(user.getBio())
-                .phoneNumber(user.getPhoneNumber())
-                .linkedinUrl(user.getLinkedinUrl())
-                .jobRole(user.getJobRole())
-                .role(user.getRole() != null ? user.getRole().name() : null)
-                .experienceLevel(user.getExperienceLevel())
-                .skills(user.getSkills() != null ? user.getSkills().stream().collect(Collectors.toList()) : null)
-                .companyId(user.getCompany() != null ? user.getCompany().getId() : null)
-                .companyName(user.getCompany() != null ? user.getCompany().getName() : null)
-                .build();
+
+        UserDto dto = new UserDto();
+        dto.setId(user.getId());
+        dto.setEmail(user.getEmail());
+        dto.setName(user.getName());
+        dto.setAvatarUrl(user.getAvatarUrl());
+        dto.setDesignation(user.getDesignation());
+        dto.setVerified(user.getVerified());
+        dto.setLocation(user.getLocation());
+        dto.setBio(user.getBio());
+        dto.setPhoneNumber(user.getPhoneNumber());
+        dto.setLinkedinUrl(user.getLinkedinUrl());
+        dto.setJobRole(user.getJobRole());
+        dto.setRole(user.getRole() != null ? user.getRole().name() : null);
+        dto.setExperienceLevel(user.getExperienceLevel());
+        dto.setSkills(user.getSkills() != null ? user.getSkills().stream().collect(Collectors.toList()) : null);
+        dto.setCompanyId(user.getCompany() != null ? user.getCompany().getId() : null);
+        dto.setCompanyName(user.getCompany() != null ? user.getCompany().getName() : null);
+        return dto;
     }
 
     public static User toEntity(UserDto dto) {

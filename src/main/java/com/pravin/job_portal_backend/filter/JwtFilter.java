@@ -81,7 +81,6 @@ public class JwtFilter extends OncePerRequestFilter {
         // Adds request details such as remote address/session id for auditing.
         auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-        // SecurityContextHolder stores Authentication for the current thread.
         // Controllers and @PreAuthorize read the logged-in user from here.
         SecurityContextHolder.getContext().setAuthentication(auth);
       }

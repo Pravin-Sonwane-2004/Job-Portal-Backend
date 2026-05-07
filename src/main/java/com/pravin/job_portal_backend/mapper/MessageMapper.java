@@ -12,14 +12,15 @@ public class MessageMapper {
     if (message == null) {
       return null;
     }
-    return new MessageDto(
-        message.getId(),
-        message.getSender().getId(),
-        message.getSender().getName(),
-        message.getReceiver().getId(),
-        message.getReceiver().getName(),
-        message.getContent(),
-        message.getSentAt(),
-        message.isRead());
+    MessageDto dto = new MessageDto();
+    dto.setId(message.getId());
+    dto.setSenderId(message.getSender().getId());
+    dto.setSenderName(message.getSender().getName());
+    dto.setReceiverId(message.getReceiver().getId());
+    dto.setReceiverName(message.getReceiver().getName());
+    dto.setContent(message.getContent());
+    dto.setSentAt(message.getSentAt());
+    dto.setRead(message.isRead());
+    return dto;
   }
 }

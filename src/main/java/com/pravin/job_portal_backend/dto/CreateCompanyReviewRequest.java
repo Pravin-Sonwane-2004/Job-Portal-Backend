@@ -3,8 +3,20 @@ package com.pravin.job_portal_backend.dto;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public record CreateCompanyReviewRequest(
-    @NotBlank String content,
-    @Min(1) @Max(5) int rating) {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class CreateCompanyReviewRequest {
+    @NotBlank
+    private String content;
+
+    @Min(1)
+    @Max(5)
+    private int rating;
 }

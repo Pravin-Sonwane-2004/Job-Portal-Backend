@@ -1,8 +1,17 @@
 package com.pravin.job_portal_backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public record CreateJobAlertRequest(
-    @NotBlank String keywords,
-    String location) {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class CreateJobAlertRequest {
+    @NotBlank
+    private String keywords;
+    private String location;
 }

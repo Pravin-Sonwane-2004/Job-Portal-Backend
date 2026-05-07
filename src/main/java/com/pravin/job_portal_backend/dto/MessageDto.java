@@ -2,13 +2,22 @@ package com.pravin.job_portal_backend.dto;
 
 import java.time.LocalDateTime;
 
-public record MessageDto(
-    Long id,
-    Long senderId,
-    String senderName,
-    Long receiverId,
-    String receiverName,
-    String content,
-    LocalDateTime sentAt,
-    boolean read) {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class MessageDto {
+    private Long id;
+    private Long senderId;
+    private String senderName;
+    private Long receiverId;
+    private String receiverName;
+    private String content;
+    private LocalDateTime sentAt;
+    private boolean read;
 }

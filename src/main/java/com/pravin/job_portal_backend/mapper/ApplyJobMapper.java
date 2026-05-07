@@ -21,27 +21,27 @@ public class ApplyJobMapper {
         User user = applyJob.getUser();
         Job job = applyJob.getJob();
 
-        return ApplyJobDto.builder()
-                .id(applyJob.getId())
-                .userId(user != null ? user.getId() : null)
-                .jobId(job != null ? job.getId() : null)
-                .appliedAt(applyJob.getAppliedAt())
-                .updatedAt(applyJob.getUpdatedAt())
-                .status(applyJob.getStatus())
-                .recruiterRemarks(applyJob.getRecruiterRemarks())
-                .resumeLink(applyJob.getResumeLink())
-                .coverLetter(applyJob.getCoverLetter())
-                .phoneNumber(applyJob.getPhoneNumber())
-                .linkedinUrl(applyJob.getLinkedinUrl())
-                .portfolioUrl(applyJob.getPortfolioUrl())
-                .expectedSalary(applyJob.getExpectedSalary())
-                .noticePeriod(applyJob.getNoticePeriod())
-                .appliedFromIp(applyJob.getAppliedFromIp())
-                .source(applyJob.getSource())
-                .userAgent(applyJob.getUserAgent())
-                .user(UserMapper.toDto(user))
-                .job(JobMapper.toDto(job))
-                .build();
+        ApplyJobDto dto = new ApplyJobDto();
+        dto.setId(applyJob.getId());
+        dto.setUserId(user != null ? user.getId() : null);
+        dto.setJobId(job != null ? job.getId() : null);
+        dto.setAppliedAt(applyJob.getAppliedAt());
+        dto.setUpdatedAt(applyJob.getUpdatedAt());
+        dto.setStatus(applyJob.getStatus());
+        dto.setRecruiterRemarks(applyJob.getRecruiterRemarks());
+        dto.setResumeLink(applyJob.getResumeLink());
+        dto.setCoverLetter(applyJob.getCoverLetter());
+        dto.setPhoneNumber(applyJob.getPhoneNumber());
+        dto.setLinkedinUrl(applyJob.getLinkedinUrl());
+        dto.setPortfolioUrl(applyJob.getPortfolioUrl());
+        dto.setExpectedSalary(applyJob.getExpectedSalary());
+        dto.setNoticePeriod(applyJob.getNoticePeriod());
+        dto.setAppliedFromIp(applyJob.getAppliedFromIp());
+        dto.setSource(applyJob.getSource());
+        dto.setUserAgent(applyJob.getUserAgent());
+        dto.setUser(UserMapper.toDto(user));
+        dto.setJob(JobMapper.toDto(job));
+        return dto;
     }
 
     /**

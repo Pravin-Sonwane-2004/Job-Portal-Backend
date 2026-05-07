@@ -10,25 +10,25 @@ public class JobMapper {
     if (job == null)
       return null;
 
-    return JobDto.builder()
-        .id(job.getId())
-        .title(job.getTitle())
-        .location(job.getLocation())
-        .salary(job.getSalary())
-        .company(job.getCompany())
-        .description(job.getDescription())
-        .requirements(job.getRequirements())
-        .jobType(job.getJobType())
-        .experienceLevel(job.getExperienceLevel())
-        .status(job.getStatus())
-        .category(job.getCategory())
-        .postedById(job.getPostedBy() != null ? job.getPostedBy().getId() : null)
-        .postedByName(job.getPostedBy() != null ? job.getPostedBy().getName() : null)
-        .postedDate(job.getPostedDate())
-        .lastDateToApply(job.getLastDateToApply())
-        .updatedAt(job.getUpdatedAt())
-        .postedDaysAgo(job.postedDaysAgo())
-        .build();
+    JobDto dto = new JobDto();
+    dto.setId(job.getId());
+    dto.setTitle(job.getTitle());
+    dto.setLocation(job.getLocation());
+    dto.setSalary(job.getSalary());
+    dto.setCompany(job.getCompany());
+    dto.setDescription(job.getDescription());
+    dto.setRequirements(job.getRequirements());
+    dto.setJobType(job.getJobType());
+    dto.setExperienceLevel(job.getExperienceLevel());
+    dto.setStatus(job.getStatus());
+    dto.setCategory(job.getCategory());
+    dto.setPostedById(job.getPostedBy() != null ? job.getPostedBy().getId() : null);
+    dto.setPostedByName(job.getPostedBy() != null ? job.getPostedBy().getName() : null);
+    dto.setPostedDate(job.getPostedDate());
+    dto.setLastDateToApply(job.getLastDateToApply());
+    dto.setUpdatedAt(job.getUpdatedAt());
+    dto.setPostedDaysAgo(job.postedDaysAgo());
+    return dto;
   }
 
   public static Job toEntity(JobDto dto) {

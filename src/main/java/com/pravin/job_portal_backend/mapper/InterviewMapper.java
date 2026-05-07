@@ -12,16 +12,17 @@ public class InterviewMapper {
     if (interview == null) {
       return null;
     }
-    return new InterviewDto(
-        interview.getId(),
-        interview.getApplication().getId(),
-        interview.getCandidate().getId(),
-        interview.getCandidate().getName(),
-        interview.getEmployer().getId(),
-        interview.getEmployer().getName(),
-        interview.getScheduledTime(),
-        interview.getStatus(),
-        interview.getMeetingLink(),
-        interview.getNotes());
+    InterviewDto dto = new InterviewDto();
+    dto.setId(interview.getId());
+    dto.setApplicationId(interview.getApplication().getId());
+    dto.setCandidateId(interview.getCandidate().getId());
+    dto.setCandidateName(interview.getCandidate().getName());
+    dto.setEmployerId(interview.getEmployer().getId());
+    dto.setEmployerName(interview.getEmployer().getName());
+    dto.setScheduledTime(interview.getScheduledTime());
+    dto.setStatus(interview.getStatus());
+    dto.setMeetingLink(interview.getMeetingLink());
+    dto.setNotes(interview.getNotes());
+    return dto;
   }
 }

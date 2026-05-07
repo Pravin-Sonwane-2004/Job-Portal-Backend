@@ -2,7 +2,6 @@ package com.pravin.job_portal_backend.controller;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,14 +67,14 @@ public class AdminController {
    // Admin: Get all applications with applicant profiles
   @GetMapping("/admin/all-appliers")
   @PreAuthorize("hasRole('ADMIN')")
-  public CompletableFuture<ResponseEntity<Object>> getAllApplicationsWithProfiles() {
-    // JobApplyService returns a CompletableFuture from an @Async method.
-    // Returning the future lets Spring MVC complete the HTTP response when
-    // the background work finishes instead of blocking this request thread.
-    return jobApplicationService.getAllApplicationsWithProfiles()
-        .thenApply((List<ApplicationProfileDtoAdmin> applications) -> ResponseEntity.ok((Object) applications))
-        .exceptionally(e -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body("Failed to fetch applications: " + e.getMessage()));
+  public ResponseEntity<Object> getAllApplicationsWithProfiles() {
+    try {
+      List<ApplicationProfileDtoAdmin> applications = jobApplicationService.getAllApplicationsWithProfiles();
+      return ResponseEntity.ok(applications);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body("Failed to fetch applications: " + e.getMessage());
+    }
   }
 
   @DeleteMapping("/user/{username}")

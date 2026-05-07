@@ -12,16 +12,17 @@ public class CompanyMapper {
     if (company == null) {
       return null;
     }
-    return new CompanyDto(
-        company.getId(),
-        company.getName(),
-        company.getDescription(),
-        company.getWebsite(),
-        company.getIndustry(),
-        company.getLocation(),
-        company.getLogoUrl(),
-        company.isVerified(),
-        employeeCount,
-        jobCount);
+    CompanyDto dto = new CompanyDto();
+    dto.setId(company.getId());
+    dto.setName(company.getName());
+    dto.setDescription(company.getDescription());
+    dto.setWebsite(company.getWebsite());
+    dto.setIndustry(company.getIndustry());
+    dto.setLocation(company.getLocation());
+    dto.setLogoUrl(company.getLogoUrl());
+    dto.setVerified(company.isVerified());
+    dto.setEmployeeCount(employeeCount);
+    dto.setJobCount(jobCount);
+    return dto;
   }
 }

@@ -6,12 +6,11 @@ import com.pravin.job_portal_backend.dto.ApplyJobResponseDTO;
 import com.pravin.job_portal_backend.dto.ApplicationProfileDtoAdmin;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public interface JobApplyService {
     String applyForJob(Long userId, Long jobId);
     String applyForJob(Long userId, Long jobId, ApplyJobRequestDTO request);
-    CompletableFuture<List<ApplicationProfileDtoAdmin>> getAllApplicationsWithProfiles();
+    List<ApplicationProfileDtoAdmin> getAllApplicationsWithProfiles();
     List<ApplyJobResponseDTO> getAppliedJobByUserDTO(Long userId);
     String cancelApplication(Long userId, Long jobId);
     List<ApplyJobDto> getAllApplications();

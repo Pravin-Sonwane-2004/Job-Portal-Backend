@@ -3,14 +3,11 @@ package com.pravin.job_portal_backend.service.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pravin.job_portal_backend.config.AsyncConfig;
 import com.pravin.job_portal_backend.dto.ApplicationProfileDtoAdmin;
 import com.pravin.job_portal_backend.dto.ApplyJobDto;
 import com.pravin.job_portal_backend.dto.ApplyJobRequestDTO;
@@ -145,13 +142,10 @@ public class JobApplyServiceImpl implements JobApplyService {
     }
 
     @Override
-    @Async(AsyncConfig.APPLICATION_TASK_EXECUTOR)
     @Transactional(readOnly = true)
-    public CompletableFuture<List<ApplicationProfileDtoAdmin>> getAllApplicationsWithProfiles() {
-        // This method runs on AsyncConfig.APPLICATION_TASK_EXECUTOR, not the HTTP request thread.
-        // The transaction is opened inside that async thread so JPA can safely read related entities.
+    public List<ApplicationProfileDtoAdmin> getAllApplicationsWithProfiles() {
         List<ApplyJob> applications = jobApplicationRepository.findAll();
-        List<ApplicationProfileDtoAdmin> result = applications.stream().map(app -> {
+        return applications.stream().map(app -> {
             Job job = app.getJob();
             User user = app.getUser();
             return ApplicationProfileDtoAdmin.builder()
@@ -163,7 +157,6 @@ public class JobApplyServiceImpl implements JobApplyService {
                     .applicantProfile(user.getBio())
                     .build();
         }).toList();
-        return CompletableFuture.completedFuture(result);
     }
 
     @Override

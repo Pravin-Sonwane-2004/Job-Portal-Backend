@@ -1,9 +1,16 @@
 package com.pravin.job_portal_backend.dto;
 
-//PasswordResetResult result =
-//        new PasswordResetResult(true, true, "http://localhost:8080/reset?token=abc");
-public record PasswordResetResult(
-    boolean userFound,
-    boolean emailSent,
-    String resetLink) {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class PasswordResetResult {
+    private boolean userFound;
+    private boolean emailSent;
+    private String resetLink;
 }
