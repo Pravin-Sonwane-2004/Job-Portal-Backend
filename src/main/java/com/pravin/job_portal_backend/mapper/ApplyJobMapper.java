@@ -10,6 +10,7 @@ import com.pravin.job_portal_backend.entity.User;
  *
  * Mapping is kept out of services so business logic stays readable.
  */
+
 public class ApplyJobMapper {
     /**
      * Entity -> DTO for API responses.
